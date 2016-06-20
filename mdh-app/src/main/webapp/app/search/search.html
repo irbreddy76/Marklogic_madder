@@ -1,0 +1,105 @@
+<h1>MDH-Data Lake Search Application</h1>
+  <tabset>
+    <tab heading="Advanced Search">
+<div class="row" ng-if="!ctrl.currentUser">Please log in to see content</div>
+<div class="row" ng-if="ctrl.currentUser">
+  <div class="col-md-12">
+    <ml-input qtext="ctrl.qtext" search="ctrl.search(qtext)" suggest="ctrl.suggest(val)" template="fa" class="search"></ml-input>
+  </div>
+</div>
+
+<div class="search row" ng-if="ctrl.currentUser">
+	<div class="col-md-3 right-col">
+		<!--
+		<div class="checkbox">
+			<label>
+				<input type="checkbox" ng-model="ctrl.runMapSearch" ng-change="ctrl.toggleMapSearch()">
+				Limit results to the visible map
+			</label>
+		</div>
+		-->
+		<ml-facets facets="ctrl.response.facets" toggle="ctrl.toggleFacet(facet, value)" active-facets="ctrl.mlSearch.activeFacets" negate="ctrl.toggleNegatedFacet(facet,value)"></ml-facets>
+	</div>
+		
+  <div class="col-md-9">
+    <h4 ng-if="ctrl.response.total === 0">No results to show</h4>
+	<!--
+		<ml-esri-search-map options="ctrl.mapOptions" features-list="ctrl.response.results" facets="ctrl.myFacets.facets" bounds-changed="ctrl.mapBoundsChanged(bounds)"></ml-esri-search-map>
+	-->
+		<br/>
+    <div ng-if="ctrl.response.total > 0" class="results">
+      <div class="pagination-ctrls">
+        <pagination class="pagination pagination-sm" ng-model="ctrl.page" ng-change="ctrl.search()" max-size="10" boundary-links="true" total-items="ctrl.response.total" items-per-page="ctrl.response['page-length']">
+        </pagination>
+        <ml-snippet set-snippet="ctrl.setSnippet(type)"></ml-snippet>
+      </div>
+      <ml-metrics search="ctrl.response" ></ml-metrics>
+      <ml-results template="app/search/search-results.html" results="ctrl.response.results"></ml-results>
+    </div>
+  </div>
+</div>
+	</tab>
+    <tab heading="Search">
+<div class="row" ng-if="!ctrl.currentUser">Please log in to see content</div>
+<!--
+<div class="row" ng-if="ctrl.currentUser">
+  <div class="col-md-12">
+    <ml-input qtext="ctrl.qtext" search="ctrl.search(qtext)" suggest="ctrl.suggest(val)" template="fa" class="search"></ml-input>
+  </div>
+</div>
+-->
+<div class="search row" ng-if="ctrl.currentUser">
+	<div class="col-md-3 right-col">
+		<!--
+		<div class="checkbox">
+			<label>
+				<input type="checkbox" ng-model="ctrl.runMapSearch" ng-change="ctrl.toggleMapSearch()">
+				Limit results to the visible map
+			</label>
+		</div>
+		-->
+		<ml-facets facets="ctrl.response.facets" toggle="ctrl.toggleFacet(facet, value)" active-facets="ctrl.mlSearch.activeFacets" negate="ctrl.toggleNegatedFacet(facet,value)"></ml-facets>
+	</div>
+	<div class="col-md-9">
+	  <form novalidate class="simple-form" ng-submit="ctrl.update(ctrl.user)">
+		Last Name: <input type="text" ng-model="ctrl.user.lastName" />&nbsp&nbsp
+		First Name: <input type="text" ng-model="ctrl.user.firstName" /><br>&nbsp&nbsp</br>
+		Address:&nbsp&nbsp&nbsp<input type="text" ng-model="ctrl.user.address" />&nbsp&nbsp&nbsp&nbsp
+	<h4>DOB:</h4>
+    <div class="row">		
+        <div class="col-md-6">
+            <p class="input-group">
+              <input type="text" class="form-control" datepicker-popup ng-model="ctrl.user.dob" is-open="status.opened" min-date="minDate" max-date="'2020-06-22'" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+              </span>
+            </p>
+        </div>
+    </div>		
+		<input type="button" class="btn btn-primary" ng-click="ctrl.reset()" value="Reset" />
+		<input type="button" class="btn btn-primary" ng-click="ctrl.update(ctrl.user)" value="Search" />
+		<pre>user = {{ctrl.user | json}}</pre>
+		<pre>master = {{ctrl.master | json}}</pre>
+
+
+		
+  <div class="col-md-9">
+    <h4 ng-if="ctrl.response.total === 0">No results to show</h4>
+	<!--
+		<ml-esri-search-map options="ctrl.mapOptions" features-list="ctrl.response.results" facets="ctrl.myFacets.facets" bounds-changed="ctrl.mapBoundsChanged(bounds)"></ml-esri-search-map>
+	-->
+		<br/>
+    <div ng-if="ctrl.response.total > 0" class="results">
+      <div class="pagination-ctrls">
+        <pagination class="pagination pagination-sm" ng-model="ctrl.page" ng-change="ctrl.search()" max-size="10" boundary-links="true" total-items="ctrl.response.total" items-per-page="ctrl.response['page-length']">
+        </pagination>
+        <ml-snippet set-snippet="ctrl.setSnippet(type)"></ml-snippet>
+      </div>
+      <ml-metrics search="ctrl.response" ></ml-metrics>
+      <ml-results template="app/search/search-results.html" results="ctrl.response.results"></ml-results>
+    </div>
+  </div>
+  </div>
+</div>
+    </tab>
+  </tabset>

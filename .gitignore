@@ -1,0 +1,11 @@
+mdh-app/bin/
+mdh-app/build/
+mdh-app/.idea
+mdh-app/.classpath
+mdh-app/.project
+mdh-app/.gradle
+mdh-app/.settings
+mdh-app/node_modules
+mdh-app/src/main/resources/static
+mdh-app/src/main/resources/templates
+mdh-app/src/main/resources/bower_components
