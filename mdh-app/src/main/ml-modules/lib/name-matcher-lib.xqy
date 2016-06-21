@@ -4,20 +4,10 @@ import module namespace qh = 'http://marklogic.com/query-helper' at
   '/lib/query-helper.xqy';
 import module namespace ah = 'http://marklogic.com/address-helper' at
   '/lib/address-helper.xqy';
-    
-(: Dictionary URIs :)
-declare variable $DICTIONARY_LAST_NAME as xs:string := "/dictionaries/last-names.xml";
-declare variable $DICTIONARY_MALE_NAMES as xs:string := "/dictionaries/male-first-names.xml";
-declare variable $DICTIONARY_FEMALE_NAMES as xs:string := "/dictionaries/female-first-names.xml";
+import module namespace d = 'http://marklogic.com/dictionary' at
+  '/lib/dictionary-lib.xqy';
 
 (: Enumerated values :)
-declare variable $GENDER_MALE as xs:string := "M";
-declare variable $GENDER_FEMALE as xs:string := "F";
-declare variable $GENDER_UNSPECIFIED as xs:string := "U";
-declare variable $SEPARATOR_DATE as xs:string := "-";
-declare variable $SEPARATOR_SSN as xs:string := "-";
-declare variable $SEPARATOR_ZIP as xs:string := "-";
-declare variable $SEPARATOR_PHONE as xs:string := "-";
 declare variable $OPERATOR_EQUALS as xs:string := "=";
 declare variable $OPERATOR_LESS_THAN as xs:string := "<";
 declare variable $OPERATOR_LESS_THAN_OR_EQUAL as xs:string := "<=";
@@ -26,400 +16,498 @@ declare variable $OPERATOR_GREATER_THAN_OR_EQUAL as xs:string := ">=";
 declare variable $TRACE_LEVEL_TRACE as xs:string := "NAME-MATCH-TRACE";
 declare variable $TRACE_LEVEL_DETAIL as xs:string := "NAME-MATCH-DETAIL";
 declare variable $TRACE_LEVEL_FINE as xs:string := "NAME-MATCH-FINE";
-declare variable $SUFFIX_WEIGHT as xs:string := "weight";
-declare variable $SUFFIX_MULTIPLIER as xs:string := "multiplier";
-
-(: Argument Parameter Names :)
-declare variable $PARAM_SSN as xs:string := "id";
-declare variable $PARAM_DOB as xs:string := "dob";
-declare variable $PARAM_MIDDLE_NAME as xs:string := "middle";
-declare variable $PARAM_LAST_NAME as xs:string := "last";
-declare variable $PARAM_FIRST_NAME as xs:string := "first";
-declare variable $PARAM_MAIDEN_NAME as xs:string := "maiden";
-declare variable $PARAM_STREET as xs:string := "street";
-declare variable $PARAM_CITY as xs:string := "city";
-declare variable $PARAM_STATE as xs:string := "state";
-declare variable $PARAM_ZIP as xs:string := "zip";
-declare variable $PARAM_RACE as xs:string := "race";
-declare variable $PARAM_EMAIL as xs:string := "email";
-declare variable $PARAM_PHONE as xs:string := "phone"; 
-declare variable $PARAM_WEIGHT_SUFFIX as xs:string := "_wt";
-declare variable $PARAM_MIN_SCORE as xs:string := "minscore";
-declare variable $PARAM_MAX_DISTANCE as xs:string := "maxdist";
-declare variable $PARAM_MAX_RESULTS as xs:string := "maxcount";
-declare variable $PARAM_MULTIPLIER_SUFFIX as xs:string := "_mult";
-declare variable $PARAM_GENDER as xs:string := "gender";
-
-(: Default Weights :)
-declare variable $WEIGHT_SSN as xs:double := 37;
-declare variable $WEIGHT_SSN_AREA as xs:double := $WEIGHT_SSN;
-declare variable $WEIGHT_SSN_GROUP as xs:double := $WEIGHT_SSN;
-declare variable $WEIGHT_SSN_SERIAL as xs:double := $WEIGHT_SSN;
-declare variable $WEIGHT_DOB as xs:double := 10;
-declare variable $WEIGHT_DOB_YEAR as xs:double := $WEIGHT_DOB;
-declare variable $WEIGHT_DOB_MONTH as xs:double := $WEIGHT_DOB;
-declare variable $WEIGHT_DOB_DAY as xs:double := $WEIGHT_DOB;
-declare variable $WEIGHT_GENDER as xs:double := 5;
-declare variable $WEIGHT_NAME as xs:double := 27;
-declare variable $WEIGHT_NAME_FIRST as xs:double := $WEIGHT_NAME;
-declare variable $WEIGHT_NAME_MIDDLE as xs:double := $WEIGHT_NAME;
-declare variable $WEIGHT_NAME_LAST as xs:double := $WEIGHT_NAME;
-declare variable $WEIGHT_NAME_MAIDEN as xs:double := $WEIGHT_NAME;
-declare variable $WEIGHT_STREET as xs:double := 10;
-declare variable $WEIGHT_CITY as xs:double := 6;
-declare variable $WEIGHT_STATE as xs:double := 2;
-declare variable $WEIGHT_ZIP as xs:double := 5;
-declare variable $WEIGHT_ZIP_EXTENSION as xs:double := 2.5;
-declare variable $WEIGHT_EMAIL as xs:double := 5;
-declare variable $WEIGHT_PHONE as xs:double := 5;
-declare variable $WEIGHT_PHONE_AREA as xs:double := $WEIGHT_PHONE;
-declare variable $WEIGHT_PHONE_INTERCHANGE as xs:double := $WEIGHT_PHONE;
-declare variable $WEIGHT_PHONE_NUMBER as xs:double := $WEIGHT_PHONE;
-declare variable $WEIGHT_PHONE_EXTENSION as xs:double := $WEIGHT_PHONE;
-declare variable $WEIGHT_RACE as xs:double := 5;
-declare variable $MULTIPLIER as xs:double := 0.5;
-
-(: JSON Property Names :)
-declare variable $PROPERTY_SSN as xs:string := "IdentificationID";
-declare variable $PROPERTY_DOB as xs:string := "PersonBirthDate";
-declare variable $PROPERTY_MIDDLE_NAME as xs:string := "PersonMiddleName";
-declare variable $PROPERTY_LAST_NAME as xs:string := "PersonSurName";
-declare variable $PROPERTY_FIRST_NAME as xs:string := "PersonGivenName";
-declare variable $PROPERTY_MAIDEN_NAME as xs:string := "PersonMaidenName";
-declare variable $PROPERTY_STREET as xs:string := "LocationStreet";
-declare variable $PROPERTY_CITY as xs:string := "LocationCityName";
-declare variable $PROPERTY_STATE as xs:string := "LocationStateName";
-declare variable $PROPERTY_ZIP as xs:string := "LocationPostalCode";
-declare variable $PROPERTY_ZIP_EXTENSION as xs:string := "LocationPostalCodeExtension";
-declare variable $PROPERTY_RACE as xs:string := "PersonRaceCode";
-declare variable $PROPERTY_EMAIL as xs:string := "ContactEmailID";
-declare variable $PROPERTY_PHONE as xs:string := "FullTelephoneNumber"; 
-declare variable $PROPERTY_GENDER as xs:string := "PersonSexCode";
-
-(: Algorithm Thresholds :)
-declare variable $MAX_RESULTS as xs:integer := 100;
-declare variable $MAX_DISTANCE as xs:integer := 30;
-declare variable $MIN_SCORE as xs:integer := 0;
-
-(: Old Variables 
-declare variable $ALG_CONFIG_SCORE_SSN as xs:integer := 37;
-declare variable $ALG_CONFIG_SCORE_DOB_YEAR as xs:integer := 8;
-declare variable $ALG_CONFIG_SCORE_DOB_MONTH as xs:integer := 5;
-declare variable $ALG_CONFIG_SCORE_DOB_DAY as xs:integer := 10;
-declare variable $ALG_CONFIG_SCORE_NAME_FIRST as xs:integer := 12;
-declare variable $ALG_CONFIG_SCORE_NAME_LAST as xs:integer := 17;
-declare variable $ALG_CONFIG_SCORE_ADDR_STATE as xs:integer := 2;
-declare variable $ALG_CONFIG_SCORE_ADDR_CITY as xs:integer := 6;
-declare variable $ALG_CONFIG_SCORE_ADDR_POSTAL_CODE as xs:integer := 5;
-declare variable $ALG_CONFIG_SCORE_ADDR_STREET_LINE as xs:integer := 10;
-declare variable $ALG_CONFIG_SCORE_EMAIL as xs:integer := 24;
-:)
+declare variable $TYPE_NUMBER as xs:string := "number";
+declare variable $TYPE_WORD as xs:string := "word";
+declare variable $ALG_TOKEN_MATCH as xs:string := "token-match";
+declare variable $ALG_DICTIONARY as xs:string := "dictionary";
+declare variable $ALG_NONE as xs:string := "none";
+declare variable $CONFIG := 
+<configuration>
+  <ssn>
+    <!-- Property name used for JSON queries -->
+    <property>IdentificationID</property>
+    <separator>-</separator>
+    <!--<dictionary>/dictionaries/ssn.xml</dictionary>-->
+    <!-- Key values used on the parameter and config maps -->
+    <param>
+      <key>ssn</key>
+      <algorithm>ssn_algorithm</algorithm>
+      <weight>ssn_wt</weight>
+      <edit-distance>ssn_edit_distance</edit-distance>
+      <word-distance>ssn_word_distance</word-distance>
+      <weight-multiplier>ssn_mult</weight-multiplier>
+      <similar-limit>ssn_limit</similar-limit>
+    </param>
+    <!-- Default weights/values -->
+    <weight type="xs:double">36</weight>
+    <token-weight type="xs:double">12</token-weight>
+    <edit-distance type="xs:integer">4</edit-distance>
+    <word-distance type="xs:integer">30</word-distance>
+    <multiplier type="xs:double">0.5</multiplier>
+    <similar-limit type="xs:integer">10</similar-limit>
+    <algorithm type="xs:string">{$ALG_TOKEN_MATCH}</algorithm>
+  </ssn>
+  <dob>
+    <!-- Property name used for JSON queries -->
+    <property>PersonBirthDate</property>
+    <separator>-</separator>
+    <!--<dictionary>/dictionaries/birth-date.xml</dictionary>-->
+    <!-- Key values used on the parameter and config maps -->
+    <param>
+      <key>dob</key>
+      <algorithm>dob_algorithm</algorithm>
+      <weight>dob_wt</weight>
+      <edit-distance>dob_edit_distance</edit-distance>
+      <word-distance>dob_word_distance</word-distance>
+      <weight-multiplier>dob_mult</weight-multiplier>
+      <similar-limit>dob_limit</similar-limit>
+    </param>
+    <!-- Default weights/values -->
+    <weight type="xs:double">24</weight>
+    <token-weight type="xs:double">8</token-weight>
+    <edit-distance type="xs:integer">4</edit-distance>
+    <word-distance type="xs:integer">30</word-distance>
+    <multiplier type="xs:double">0.5</multiplier>
+    <similar-limit type="xs:integer">10</similar-limit>
+    <algorithm type="xs:string">{$ALG_TOKEN_MATCH}</algorithm>
+  </dob>
+  <middle>
+    <!-- Property name used for JSON queries -->
+    <property>PersonMiddleName</property>
+    <separator> </separator>
+    <dictionary>/dictionaries/male-first-names.xml</dictionary>
+    <dictionary>/dictionaries/female-first-names.xml</dictionary>
+    <dictionary>/dictionaries/last-names.xml</dictionary>
+    <!-- Key values used on the parameter and config maps -->
+    <param>
+      <key>middle</key>
+      <algorithm>middle_algorithm</algorithm>
+      <weight>middle_wt</weight>
+      <word-distance>middle_word_distance</word-distance>
+      <weight-multiplier>middle_mult</weight-multiplier>
+      <similar-limit>middle_limit</similar-limit>
+    </param>
+    <!-- Default weights/values -->
+    <weight type="xs:double">12</weight>
+    <token-weight type="xs:double">8</token-weight>
+    <word-distance type="xs:integer">30</word-distance>
+    <multiplier type="xs:double">0.5</multiplier>
+    <similar-limit type="xs:integer">10</similar-limit>
+    <algorithm type="xs:string">{$ALG_NONE}</algorithm>
+  </middle>
+  <first>
+    <!-- Property name used for JSON queries -->
+    <property>PersonGivenName</property>
+    <separator> </separator>
+    <dictionary>/dictionaries/male-first-names.xml</dictionary>
+    <dictionary>/dictionaries/female-first-names.xml</dictionary>
+    <!-- Key values used on the parameter and config maps -->
+    <param>
+      <key>first</key>
+      <algorithm>first_algorithm</algorithm>
+      <weight>first_wt</weight>
+      <word-distance>first_word_distance</word-distance>
+      <weight-multiplier>first_mult</weight-multiplier>
+      <similar-limit>first_limit</similar-limit>
+    </param>
+    <!-- Default weights/values -->
+    <weight type="xs:double">24</weight>
+    <token-weight type="xs:double">18</token-weight>
+    <word-distance type="xs:integer">30</word-distance>
+    <multiplier type="xs:double">0.5</multiplier>
+    <similar-limit type="xs:integer">10</similar-limit>
+    <algorithm type="xs:string">{$ALG_DICTIONARY}</algorithm>
+  </first>
+  <last>
+    <!-- Property name used for JSON queries -->
+    <property>PersonSurName</property>
+    <property>PersonMaidenName</property>
+    <separator> </separator>
+    <dictionary>/dictionaries/last-names.xml</dictionary>
+    <!-- Key values used on the parameter and config maps -->
+    <param>
+      <key>last</key>
+      <algorithm>last_algorithm</algorithm>
+      <weight>last_wt</weight>
+      <word-distance>last_word_distance</word-distance>
+      <weight-multiplier>last_mult</weight-multiplier>
+      <similar-limit>last_limit</similar-limit>
+    </param>
+    <!-- Default weights/values -->
+    <weight type="xs:double">24</weight>
+    <token-weight type="xs:double">18</token-weight>
+    <word-distance type="xs:integer">30</word-distance>
+    <multiplier type="xs:double">0.5</multiplier>
+    <similar-limit type="xs:integer">10</similar-limit>
+    <algorithm type="xs:string">{$ALG_DICTIONARY}</algorithm>
+  </last>
+  <race>
+    <!-- Property name used for JSON queries -->
+    <property>PersonRaceCode</property>
+    <!-- <separator> </separator> -->
+    <!-- <dictionary>/dictionaries/last-names.xml</dictionary> -->
+    <!-- Key values used on the parameter and config maps -->
+    <param>
+      <key>race</key>
+      <algorithm>race_algorithm</algorithm>
+      <weight>race_wt</weight>
+      <word-distance>race_word_distance</word-distance>
+      <weight-multiplier>race_mult</weight-multiplier>
+      <similar-limit>race_limit</similar-limit>
+    </param>
+    <!-- Default weights/values -->
+    <weight type="xs:double">12</weight>
+    <!--<token-weight type="xs:double">18</token-weight>-->
+    <word-distance type="xs:integer">30</word-distance>
+    <multiplier type="xs:double">0.5</multiplier>
+    <similar-limit type="xs:integer">10</similar-limit>
+    <algorithm type="xs:string">{$ALG_NONE}</algorithm>
+  </race>
+  <street>
+    <!-- Property name used for JSON queries -->
+    <property>LocationStreet</property>
+    <!-- <separator> </separator> -->
+    <!-- <dictionary>/dictionaries/last-names.xml</dictionary> -->
+    <!-- Key values used on the parameter and config maps -->
+    <param>
+      <key>street</key>
+      <algorithm>street_algorithm</algorithm>
+      <weight>street_wt</weight>
+      <word-distance>street_word_distance</word-distance>
+      <weight-multiplier>street_mult</weight-multiplier>
+      <similar-limit>street_limit</similar-limit>
+    </param>
+    <!-- Default weights/values -->
+    <weight type="xs:double">18</weight>
+    <!--<token-weight type="xs:double">18</token-weight>-->
+    <word-distance type="xs:integer">30</word-distance>
+    <multiplier type="xs:double">0.5</multiplier>
+    <similar-limit type="xs:integer">10</similar-limit>
+    <algorithm type="xs:string">{$ALG_NONE}</algorithm>
+  </street>
+  <city>
+    <!-- Property name used for JSON queries -->
+    <property>LocationCityName</property>
+    <!-- <separator> </separator> -->
+    <!-- <dictionary>/dictionaries/last-names.xml</dictionary> -->
+    <!-- Key values used on the parameter and config maps -->
+    <param>
+      <key>city</key>
+      <algorithm>city_algorithm</algorithm>
+      <weight>city_wt</weight>
+      <word-distance>city_word_distance</word-distance>
+      <weight-multiplier>city_mult</weight-multiplier>
+      <similar-limit>city_limit</similar-limit>
+    </param>
+    <!-- Default weights/values -->
+    <weight type="xs:double">12</weight>
+    <!--<token-weight type="xs:double">18</token-weight>-->
+    <word-distance type="xs:integer">30</word-distance>
+    <multiplier type="xs:double">0.5</multiplier>
+    <similar-limit type="xs:integer">10</similar-limit>
+    <algorithm type="xs:string">{$ALG_NONE}</algorithm>
+  </city>
+  <state>
+    <!-- Property name used for JSON queries -->
+    <property>LocationStateName</property>
+    <!-- <separator> </separator> -->
+    <!-- <dictionary>/dictionaries/last-names.xml</dictionary> -->
+    <!-- Key values used on the parameter and config maps -->
+    <param>
+      <key>state</key>
+      <algorithm>state_algorithm</algorithm>
+      <weight>state_wt</weight>
+      <word-distance>state_word_distance</word-distance>
+      <weight-multiplier>state_mult</weight-multiplier>
+      <similar-limit>state_limit</similar-limit>
+    </param>
+    <!-- Default weights/values -->
+    <weight type="xs:double">6</weight>
+    <!--<token-weight type="xs:double">18</token-weight>-->
+    <word-distance type="xs:integer">30</word-distance>
+    <multiplier type="xs:double">0.5</multiplier>
+    <similar-limit type="xs:integer">10</similar-limit>
+    <algorithm type="xs:string">{$ALG_NONE}</algorithm>
+  </state>
+  <zip>
+    <!-- Property name used for JSON queries -->
+    <property>LocationPostalCode</property>
+    <separator>-</separator>
+    <!-- <dictionary>/dictionaries/last-names.xml</dictionary> -->
+    <!-- Key values used on the parameter and config maps -->
+    <param>
+      <key>zip</key>
+      <algorithm>zip_algorithm</algorithm>
+      <weight>zip_wt</weight>
+      <edit-distance>zip_edit_distance</edit-distance>
+      <word-distance>zip_word_distance</word-distance>
+      <weight-multiplier>zip_mult</weight-multiplier>
+      <similar-limit>zip_limit</similar-limit>
+    </param>
+    <!-- Default weights/values -->
+    <weight type="xs:double">8</weight>
+    <token-weight type="xs:double">4</token-weight>
+    <edit-distance type="xs:integer">7</edit-distance>
+    <word-distance type="xs:integer">30</word-distance>
+    <multiplier type="xs:double">0.5</multiplier>
+    <similar-limit type="xs:integer">10</similar-limit>
+    <algorithm type="xs:string">{$ALG_NONE}</algorithm>
+  </zip>
+  <zipext>
+    <!-- Property name used for JSON queries -->
+    <property>LocationPostalCodeExtension</property>
+    <separator>-</separator>
+    <!-- <dictionary>/dictionaries/last-names.xml</dictionary> -->
+    <!-- Key values used on the parameter and config maps -->
+    <param>
+      <key>zipext</key>
+      <algorithm>zipext_algorithm</algorithm>
+      <weight>ziextp_wt</weight>
+      <edit-distance>zipext_edit_distance</edit-distance>
+      <word-distance>zipext_word_distance</word-distance>
+      <weight-multiplier>zipext_mult</weight-multiplier>
+      <similar-limit>zipext_limit</similar-limit>
+    </param>
+    <!-- Default weights/values -->
+    <weight type="xs:double">8</weight>
+    <token-weight type="xs:double">4</token-weight>
+    <edit-distance type="xs:integer">7</edit-distance>
+    <word-distance type="xs:integer">30</word-distance>
+    <multiplier type="xs:double">0.5</multiplier>
+    <similar-limit type="xs:integer">10</similar-limit>
+    <algorithm type="xs:string">{$ALG_NONE}</algorithm>
+  </zipext>
+  <phone>
+    <!-- Property name used for JSON queries -->
+    <property>FullTelephoneNumber</property>
+    <separator>-</separator>
+    <!-- <dictionary>/dictionaries/last-names.xml</dictionary> -->
+    <!-- Key values used on the parameter and config maps -->
+    <param>
+      <key>phone</key>
+      <algorithm>phone_algorithm</algorithm>
+      <weight>phone_wt</weight>
+      <word-distance>phone_word_distance</word-distance>
+      <weight-multiplier>phone_mult</weight-multiplier>
+      <similar-limit>phone_limit</similar-limit>
+    </param>
+    <!-- Default weights/values -->
+    <weight type="xs:double">9</weight>
+    <token-weight type="xs:double">3</token-weight>
+    <edit-distance type="xs:integer">4</edit-distance>
+    <word-distance type="xs:integer">30</word-distance>
+    <multiplier type="xs:double">0.5</multiplier>
+    <similar-limit type="xs:integer">10</similar-limit>
+    <algorithm type="xs:string">{$ALG_TOKEN_MATCH}</algorithm>
+  </phone>
+  <email>
+    <!-- Property name used for JSON queries -->
+    <property>ContactEmailId</property>
+    <!-- <separator> </separator> -->
+    <!-- <dictionary>/dictionaries/last-names.xml</dictionary> -->
+    <!-- Key values used on the parameter and config maps -->
+    <param>
+      <key>email</key>
+      <algorithm>email_algorithm</algorithm>
+      <weight>email_wt</weight>
+      <word-distance>email_word_distance</word-distance>
+      <weight-multiplier>email_mult</weight-multiplier>
+      <similar-limit>email_limit</similar-limit>
+    </param>
+    <!-- Default weights/values -->
+    <weight type="xs:double">8</weight>
+    <!--<token-weight type="xs:double">18</token-weight>-->
+    <word-distance type="xs:integer">30</word-distance>
+    <multiplier type="xs:double">0.5</multiplier>
+    <similar-limit type="xs:integer">10</similar-limit>
+    <algorithm type="xs:string">{$ALG_NONE}</algorithm>
+  </email>
+  <config>
+    <result-limit>
+      <key>limit</key>
+      <value type="xs:integer">100</value>
+    </result-limit>
+    <min-score>
+      <key>score</key>
+      <value type="xs:double">0</value>
+    </min-score>
+  </config>
+</configuration>;
 
 (: Helper Functions :)
 declare function nm:is-string-empty($string as xs:string*) as xs:boolean { 
   if(empty($string) or $string = "") then fn:true() else fn:false()
 };
 
-declare function nm:get-suffixed-param-name($param-name as xs:string, 
-  $suffix as xs:string) as xs:string {
-  fn:concat($param-name, 
-    if($suffix = $SUFFIX_WEIGHT) then $PARAM_WEIGHT_SUFFIX
-    else $PARAM_MULTIPLIER_SUFFIX
-  )
-};
-
-declare function nm:get-dictionary-options($distance as xs:integer?) as element() {
-  <options xmlns="http://marklogic.com/xdmp/spell">
-    <maximum>{$MAX_RESULTS}</maximum>
-    <distance-threshold>
-      {if(fn:empty($distance)) then $MAX_DISTANCE else $distance}
-    </distance-threshold>
-  </options>
-};
-
+(: Attempt to read a map value.  If the specified key does not exist,
+ : replace it with the specified default value.  Cast the return value
+ : as the simple type identified in the default value :)
 declare function nm:read-map-value($map as map:map, $key as xs:string, 
-  $default as xs:anyAtomicType?) as xs:anyAtomicType? {
-  let $value := map:get($map, $key)
+  $default as element()) as xs:anyAtomicType? {
+  let $value := (map:get($map, $key), $default)[1]
   return
-    if(fn:empty($value)) then $default else 
-      if($default instance of xs:date) then xs:date($value)
-      else if($default instance of xs:dateTime) then xs:dateTime($value)
-      else if($default instance of xs:time) then xs:time($value)
-      else if($default instance of xs:duration) then xs:duration($value)
-      else if($default instance of xs:float) then xs:float($value)
-      else if($default instance of xs:double) then xs:double($value)
-      else if($default instance of xs:decimal) then xs:decimal($value)
-      else if($default instance of xs:string) then xs:string($value)
-      else if($default instance of xs:boolean) then xs:boolean($value)
-      else $value
+    if(fn:empty($value)) then ()
+    else  
+      let $type := $default/@type
+      return
+        if($type = "xs:date") then xs:date($value)
+        else if($type = "xs:dateTime") then xs:dateTime($value)
+        else if($type = "xs:time") then xs:time($value)
+        else if($type = "xs:duration") then xs:duration($value)
+        else if($type = "xs:float") then xs:float($value)
+        else if($type = "xs:double") then xs:double($value)
+        else if($type = "xs:decimal") then xs:decimal($value)
+        else if($type = "xs:string") then xs:string($value)
+        else if($type = "xs:boolean") then xs:boolean($value)
+        else $value
 };
 
-(: Query Builders :)
-declare function nm:build-person-query($params as map:map) as cts:query? {
-  let $queries := (
-    nm:build-ssn-query(map:get($params, $PARAM_SSN), 
-      nm:read-map-value($params, nm:get-suffixed-param-name($PARAM_SSN, $SUFFIX_WEIGHT), $WEIGHT_SSN),
-      nm:read-map-value($params, nm:get-suffixed-param-name($PARAM_SSN, $SUFFIX_MULTIPLIER), $MULTIPLIER)
-    ),
-    nm:build-dob-query(map:get($params, $PARAM_DOB), 
-      nm:read-map-value($params, nm:get-suffixed-param-name($PARAM_DOB, $SUFFIX_WEIGHT), $WEIGHT_DOB),
-      nm:read-map-value($params, nm:get-suffixed-param-name($PARAM_DOB, $SUFFIX_MULTIPLIER), $MULTIPLIER)
-    ),
-    let $gender := nm:read-map-value($params, $PARAM_GENDER, $GENDER_UNSPECIFIED)
-    return 
-      if($gender = $GENDER_UNSPECIFIED) then ()
-      else 
-        let $weight := nm:read-map-value($params, 
-            nm:get-suffixed-param-name($PARAM_GENDER, $SUFFIX_WEIGHT), $WEIGHT_GENDER
-        )
-        let $fuzzy-weight := $weight * nm:read-map-value($params, 
-            nm:get-suffixed-param-name($PARAM_GENDER, $SUFFIX_MULTIPLIER), $MULTIPLIER
-          )
-        return qh:value-q($PROPERTY_GENDER, $gender, (), $weight),
-    nm:build-query($PROPERTY_RACE, map:get($params, $PARAM_RACE), (),
-      nm:read-map-value($params, 
-        nm:get-suffixed-param-name($PARAM_RACE, $SUFFIX_WEIGHT), $WEIGHT_RACE
-      )
-    ),
-    nm:build-name-query($params)
-  )
-  let $_ :=
-    for $query in $queries
-    return fn:trace(fn:concat(" -- Query:", xdmp:quote($query)), $TRACE_LEVEL_DETAIL)
-  return
-    if(fn:empty($queries)) then ()
-    else cts:or-query($queries)
-};
-
-declare function nm:build-ssn-query($ssn as xs:string?, $weight as xs:double, $multiplier as xs:double)
-  as cts:query? {
-  if(nm:is-string-empty($ssn)) then ()
-  else
-    let $fuzzy-query := 
-      if(fn:empty($ssn)) then ()
-      else
-        let $parts := fn:tokenize($ssn, $SEPARATOR_SSN)
-        let $fuzzy-multiplier := $weight * $multiplier
-        return (
-          (: Ideally, we also store the 3 SSN parts for fuzzy matching :)
-          qh:word-q($PROPERTY_SSN, fn:concat($parts[1], $SEPARATOR_SSN), (), $fuzzy-multiplier),
-          qh:word-q($PROPERTY_SSN, fn:concat($SEPARATOR_SSN, $parts[2], $SEPARATOR_SSN), (), $fuzzy-multiplier),
-          qh:word-q($PROPERTY_SSN, fn:concat($SEPARATOR_SSN, $parts[3]), (), $fuzzy-multiplier)          
-        )
-    return cts:or-query((qh:value-q($PROPERTY_SSN, $ssn, (), $weight), $fuzzy-query))
-};
-
-declare function nm:build-dob-query($dob as xs:string?, $weight as xs:double, $multiplier as xs:double)
-  as cts:query? {
-  if(nm:is-string-empty($dob)) then ()
-  else
-    let $fuzzy-query := 
-      let $parts := fn:tokenize($dob, $SEPARATOR_DATE)
-      let $fuzzy-multiplier := $weight * $multiplier
-      return (
-        (: Ideally, we also store the 3 date tokens separately for fuzzy matching :)
-        qh:word-q($PROPERTY_DOB, fn:concat($parts[1], $SEPARATOR_DATE), (), $fuzzy-multiplier),
-        qh:word-q($PROPERTY_DOB, fn:concat($SEPARATOR_DATE, $parts[2], $SEPARATOR_DATE), (), $fuzzy-multiplier),
-        qh:word-q($PROPERTY_DOB, fn:concat($SEPARATOR_DATE, $parts[3]), (), $fuzzy-multiplier)
-      )
-    return cts:or-query((qh:range-q($PROPERTY_DOB, xs:date($dob), $OPERATOR_EQUALS, (), $weight), $fuzzy-query))
-};
-
-declare function nm:build-name-query($params as map:map) as cts:query? {
-  let $queries := (
-    nm:build-firstname-query($params),
-    nm:build-surname-query($params)
-  )
-  let $middle-q := 
-    let $middle := fn:lower-case(map:get($params, $PARAM_MIDDLE_NAME))
-    return
-      nm:build-query($PROPERTY_MIDDLE_NAME, $middle, (),  
-        nm:read-map-value($params, 
-          nm:get-suffixed-param-name($PARAM_MIDDLE_NAME, $SUFFIX_WEIGHT), $WEIGHT_NAME)
-      )
-  return
-    if(fn:empty(($queries, $middle-q))) then ()
-    else 
-      cts:or-query((
-        if(fn:empty($queries)) then () else cts:and-query($queries),
-        $middle-q
-      ))
-};
-
-declare function nm:build-surname-query($params as map:map) as cts:query? {
-  let $surname := fn:lower-case(map:get($params, $PARAM_LAST_NAME))
-  return
-    if(nm:is-string-empty($surname)) then ()
-    else
-      let $similar-names := nm:get-similar-names($surname, $DICTIONARY_LAST_NAME, 
-        nm:get-dictionary-options(map:get($params, $PARAM_MAX_DISTANCE)))
-      let $gender := nm:read-map-value($params, $PARAM_GENDER, $GENDER_UNSPECIFIED)
-      let $weight := nm:read-map-value($params, 
-          nm:get-suffixed-param-name($PARAM_LAST_NAME, $SUFFIX_WEIGHT), $WEIGHT_NAME)
-      let $fuzzy-multiplier := $weight *
-        nm:read-map-value($params, 
-          nm:get-suffixed-param-name($PARAM_LAST_NAME, $SUFFIX_MULTIPLIER), $MULTIPLIER)
-      let $queries := (
-        qh:value-q($PROPERTY_LAST_NAME, $surname, (), $weight),
-        if(fn:empty($similar-names)) then () else
-          qh:value-q($PROPERTY_LAST_NAME, $similar-names, (), $fuzzy-multiplier),
-        if($gender = $GENDER_MALE) then ()
-        else (
-          qh:value-q($PROPERTY_MAIDEN_NAME, $surname, (), $weight),
-          if(fn:empty($similar-names)) then () else
-          qh:value-q($PROPERTY_MAIDEN_NAME, $similar-names, (), $fuzzy-multiplier)
-        )
-      )
-      return cts:or-query($queries)
-};
-
-declare function nm:build-firstname-query($params as map:map) as cts:query? {
-  let $firstname := fn:lower-case(map:get($params, $PARAM_FIRST_NAME)) 
-  return
-    if(nm:is-string-empty($firstname)) then ()
-    else
-      let $gender := nm:read-map-value($params, $PARAM_GENDER, $GENDER_UNSPECIFIED)
-      let $similar-names := nm:get-similar-names($firstname, 
-        if($gender = $GENDER_MALE) then $DICTIONARY_MALE_NAMES
-        else if($gender = $GENDER_FEMALE) then $DICTIONARY_FEMALE_NAMES
-        else ($DICTIONARY_MALE_NAMES, $DICTIONARY_FEMALE_NAMES),
-        nm:get-dictionary-options(map:get($params, $PARAM_MAX_DISTANCE))
-      )
-      let $weight := nm:read-map-value($params, 
-          nm:get-suffixed-param-name($PARAM_FIRST_NAME, $SUFFIX_WEIGHT), $WEIGHT_NAME)
-      let $fuzzy-multiplier := $weight *
-        nm:read-map-value($params, 
-          nm:get-suffixed-param-name($PARAM_FIRST_NAME, $SUFFIX_MULTIPLIER), $MULTIPLIER)
-      let $queries := (
-        qh:value-q($PROPERTY_FIRST_NAME, $firstname, (), $weight),
-        if(fn:empty($similar-names)) then () else
-          qh:value-q($PROPERTY_FIRST_NAME, $similar-names, (), $fuzzy-multiplier)
-      )
-      return cts:or-query($queries)
-};
-
-declare function nm:build-contact-query($params as map:map) as cts:query? {
-  let $street := fn:lower-case(map:get($params, $PARAM_STREET))
-  let $city := fn:lower-case(map:get($params, $PARAM_CITY))
-  let $state := fn:lower-case(map:get($params, $PARAM_STATE))
-  let $zip := map:get($params, $PARAM_ZIP)
-  let $validated-address := if((nm:is-string-empty($street),
-    nm:is-string-empty($city), nm:is-string-empty($state), nm:is-string-empty($zip))) then ()
-    else ah:validate-address($street, $city, $state, $zip)
-  let $queries := (
-    if(nm:is-string-empty($street)) then () 
-    else
-      ah:build-street-query($PROPERTY_STREET, $street, $validated-address/LocationStreet,
-        nm:read-map-value($params, nm:get-suffixed-param-name($PARAM_STREET, $SUFFIX_WEIGHT), $WEIGHT_STREET),
-        nm:read-map-value($params, nm:get-suffixed-param-name($PARAM_STREET, $SUFFIX_MULTIPLIER), $MULTIPLIER)
-      ),
-    if(nm:is-string-empty($city)) then () 
-    else
-      ah:build-citystate-query($PROPERTY_CITY, $city, $validated-address/LocationCityName,
-        nm:read-map-value($params, nm:get-suffixed-param-name($PARAM_CITY, $SUFFIX_WEIGHT), $WEIGHT_CITY)),
-    if(nm:is-string-empty($state)) then () 
-    else
-      ah:build-citystate-query($PROPERTY_STATE, $state, $validated-address/LocationStateName,
-        nm:read-map-value($params, nm:get-suffixed-param-name($PARAM_STATE, $SUFFIX_WEIGHT), $WEIGHT_STATE)),
-    if(nm:is-string-empty($zip)) then ()
-    else
-      let $zip-parts := fn:tokenize($zip, $SEPARATOR_ZIP)
-      return (
-        ah:build-zip-query($PROPERTY_ZIP, $zip-parts[1], $validated-address/LocationPostalCode,
-          nm:read-map-value($params, nm:get-suffixed-param-name($PARAM_ZIP, $SUFFIX_WEIGHT), $WEIGHT_ZIP)),
-        ah:build-zip-query($PROPERTY_ZIP, $zip-parts[2], $validated-address/LocationPostalCodeExtension,
-          nm:read-map-value($params, nm:get-suffixed-param-name(fn:concat($PARAM_ZIP, "ext"), $SUFFIX_WEIGHT), 
-            $WEIGHT_ZIP_EXTENSION))
-      ),
-    nm:build-query($PROPERTY_EMAIL, fn:lower-case(map:get($params, $PARAM_EMAIL)), (),
-      nm:read-map-value($params, nm:get-suffixed-param-name($PARAM_EMAIL, $SUFFIX_WEIGHT),
-        $WEIGHT_EMAIL)
-    ),
-    nm:build-phone-query($params)
-  )
-  let $_ :=
-    for $query in $queries
-    return fn:trace(fn:concat(" -- Query:", xdmp:quote($query)), $TRACE_LEVEL_DETAIL)
-  return
-    if(fn:empty($queries)) then ()
-    else cts:or-query($queries)
-};
-
-declare function nm:build-query($property as xs:string, $terms as xs:string*, $options as xs:string*,
-  $weight as xs:double) as cts:query? {
-    if(nm:is-string-empty($terms)) then ()
-    else qh:value-q($property, $terms, $options, $weight)
-};
-
-declare function nm:build-phone-query($params as map:map) as cts:query? {
-  let $phone := map:get($params, $PARAM_PHONE)
-  return
-    if(nm:is-string-empty($phone)) then ()
-    else
-      let $weight := nm:read-map-value($params, 
-        nm:get-suffixed-param-name($PARAM_PHONE, $SUFFIX_WEIGHT), $WEIGHT_PHONE)
-      let $fuzzy-weight := $weight *
-        nm:read-map-value($params, 
-          nm:get-suffixed-param-name($PARAM_PHONE, $SUFFIX_MULTIPLIER), $MULTIPLIER)
-      let $fuzzy-query := 
-        let $parts := fn:tokenize(
-          fn:replace(
-            fn:replace($phone, "(", ""), ")", $SEPARATOR_PHONE
-          ), $SEPARATOR_PHONE)
-        return (
-          qh:word-q($PROPERTY_PHONE, fn:concat("(", $parts[1], ")"), (), $fuzzy-weight),
-          qh:word-q($PROPERTY_PHONE, fn:concat($parts[2], $SEPARATOR_PHONE), (), $fuzzy-weight),
-          qh:word-q($PROPERTY_PHONE, fn:concat($SEPARATOR_PHONE, $parts[3]), (), $fuzzy-weight)
-        )
-      return cts:or-query((qh:value-q($PROPERTY_PHONE, $phone, (), $weight), $fuzzy-query))
-};
-
-(: Check against name dictionary :)
-declare function nm:get-similar-names($name as xs:string, $dictionaries as xs:string*, 
-  $dictionary-options as element()?) as xs:string* {
-  for $candidate in spell:suggest-detailed($dictionaries, $name, $dictionary-options)
-  let $similar-name := $candidate/spell:word
-  where nm:compare-metaphone($name, $similar-name) and
-    $name != $similar-name and $similar-name/@distance <= $MAX_DISTANCE
-  return $similar-name
-};
-
-(: filter names by sound :)
-declare function nm:compare-metaphone($original as xs:string, $target as xs:string) as xs:boolean {
-  let $original-meta := spell:double-metaphone($original)
-  let $target-meta := spell:double-metaphone($target)
+declare function nm:get-query($params as map:map, $config as map:map,  $output as xs:string) { 
   let $_ := (
-    fn:trace(fn:string-join((" -- Original:", $original-meta), " "), $TRACE_LEVEL_FINE),
-    fn:trace(fn:string-join((" -- Target:", $target-meta), " "), $TRACE_LEVEL_FINE)
-  )
-  return
-    if(($original-meta[1] = $target-meta[1]) and 
-      ($original-meta[2] = $target-meta[2])) then fn:true()
-    else fn:false()
-};
-
-declare function nm:algorithm-new($params as map:map) {
-  let $_ := (
-    fn:trace("nm:algorithm-new CALLED", $TRACE_LEVEL_TRACE),
+    fn:trace("GET-QUERY -- CALLED", $TRACE_LEVEL_TRACE),
     for $key in map:keys($params)
-    return fn:trace(fn:concat(" -- Param:", $key, "=", map:get($params, $key)), $TRACE_LEVEL_DETAIL)
-  )  
-  
-  (: Person information :)
-  let $_ := fn:trace(" -- Getting person info....", $TRACE_LEVEL_TRACE)
-  let $personQuery := nm:build-person-query($params)
-  
-  (: Contact information :)
-  let $_ := fn:trace(" -- Getting address info....", $TRACE_LEVEL_TRACE)
-  let $contactQuery := nm:build-contact-query($params)
+    return
+      fn:trace(" -- params.key:" || $key || "=" || map:get($params, $key), $TRACE_LEVEL_DETAIL),
+    for $key in map:keys($config)
+    return
+      fn:trace(" -- config.key:" || $key || "=" || map:get($config, $key), $TRACE_LEVEL_DETAIL),
+    fn:trace(" -- output:" || $output, $TRACE_LEVEL_DETAIL)  
+  )
+  let $queries := (
+    nm:build-query(map:get($params, $CONFIG/ssn/param/key), $config, $CONFIG/ssn, $output, $TYPE_NUMBER),
+    nm:build-query(map:get($params, $CONFIG/dob/param/key), $config, $CONFIG/dob, $output, $TYPE_NUMBER),
+    nm:build-query(fn:lower-case(map:get($params, $CONFIG/middle/param/key)), $config, $CONFIG/middle, 
+      $output, $TYPE_WORD),
+    nm:build-query(fn:lower-case(map:get($params, $CONFIG/first/param/key)), $config, $CONFIG/first,
+      $output, $TYPE_WORD),
+    nm:build-query(fn:lower-case(map:get($params, $CONFIG/last/param/key)), $config, $CONFIG/last,
+      $output, $TYPE_WORD),    
+    nm:build-query(fn:lower-case(map:get($params, $CONFIG/race/param/key)), $config, $CONFIG/race,
+      $output, $TYPE_WORD),
+    nm:build-query(map:get($params, $CONFIG/phone/param/key), $config, $CONFIG/phone, $output, $TYPE_NUMBER),
+    nm:build-query(fn:lower-case(map:get($params, $CONFIG/email/param/key)), $config, $CONFIG/email,
+      $output, $TYPE_WORD),
+    nm:build-address-query($params, $config, $output)
+  )
+  return
+    if(fn:empty($queries)) then ()
+    else if(fn:count($queries) = 1) then $queries
+    else 
+      if($output = $qh:OUTPUT_JSON) then 
+        let $json := json:object()
+        let $array :=
+          let $target := json:array()
+          let $_ := for $query in $queries return json:array-push($target, $query)
+          return $target
+        let $queryobject :=
+          let $object := json:object()
+          let $_ := map:put($object, "queries", $array)
+          return $object
+        let $_ := map:put($json, "or-query", $queryobject)
+        return $json
+      else cts:or-query($queries)
+};
+
+declare function nm:build-address-query($params as map:map, $config as map:map, $output as xs:string) {
+  let $street := fn:lower-case(map:get($params, $CONFIG/street/param/key))
+  let $city := fn:lower-case(map:get($params, $CONFIG/city/param/key))
+  let $state := fn:lower-case(map:get($params, $CONFIG/state/param/key))
+  let $zip := map:get($params, $CONFIG/zip/param/key)
+  let $zip-ext := map:get($params, $CONFIG/zipext/param/key)
+  let $usps-address := ah:validate-address($street, $city, $state, $zip, $zip-ext)
+  return (
+    nm:build-query(fn:distinct-values(($street, $usps-address/LocationStreet)), 
+      $config, $CONFIG/street, $output, $TYPE_WORD),
+    nm:build-query(fn:distinct-values(($city, $usps-address/LocationCityName)),
+      $config, $CONFIG/city, $output, $TYPE_WORD),
+    nm:build-query(fn:distinct-values(($state, $usps-address/LocationStateName)),
+      $config, $CONFIG/state, $output, $TYPE_WORD),
+    nm:build-query(fn:distinct-values(($zip, $usps-address/LocationPostalCode)), 
+      $config, $CONFIG/zip, $output, $TYPE_NUMBER),
+    nm:build-query(fn:distinct-values(($zip-ext, $usps-address/LocationPostalCodeExtension)),
+      $config, $CONFIG/zipext, $output, $TYPE_NUMBER)
+  )
+};
+
+declare function nm:build-query($term as xs:string*, $config as map:map, $defaults as element(),
+  $output as xs:string, $type as xs:string) {
+  let $_ := (
+    fn:trace("build-query -- called", $TRACE_LEVEL_DETAIL),
+    fn:trace(" -- defaults:" || xdmp:quote($defaults), $TRACE_LEVEL_FINE),
+    fn:trace(" -- output:" || $output, $TRACE_LEVEL_FINE),
+    fn:trace(" -- type:" || $type, $TRACE_LEVEL_FINE)
+  )
+  return
+  if(nm:is-string-empty($term)) then ()
+  else
+    let $algorithm := nm:read-map-value($config, $defaults/param/algorithm, $defaults/algorithm)
+    return
+      if($algorithm = $ALG_TOKEN_MATCH) then
+        (: tokenize the term.  each matching part contributes to the score :)
+        let $parts := 
+          for $part in fn:tokenize($term, $defaults/separator)
+          where fn:string-length($part) > 1
+          return $part
+        let $weight := nm:read-map-value($config, $defaults/param/weight, $defaults/token-weight)
+        for $property in $defaults/property
+        let $query := qh:word-q($property, $parts, (), $weight, $output)
+        let $_ := fn:trace(fn:concat(" -- query:",  
+          if($output = $qh:OUTPUT_JSON) then xdmp:to-json-string($query)
+          else xdmp:quote($query)), $TRACE_LEVEL_FINE)
+        return $query
+      else if($algorithm = $ALG_DICTIONARY) then
+        (: Get similar terms from a dictionary.  Matches to the primary term are
+           assigned the full weight while matches to similar terms are adjusted by a multiplier :)
+        let $similar := 
+          if($type = $TYPE_NUMBER) then 
+            d:get-similar-numbers($term, $defaults/dictionary, 
+              nm:read-map-value($config, $defaults/param/edit-distance, $defaults/edit-distance),
+              nm:read-map-value($config, $defaults/param/word-distance, $defaults/word-distance),
+              nm:read-map-value($config, $defaults/param/similar-limit, $defaults/similar-limit))
+          else
+            d:get-similar-words($term, $defaults/dictionary, 
+              nm:read-map-value($config, $defaults/param/word-distance, $defaults/word-distance),
+              nm:read-map-value($config, $defaults/param/similar-limit, $defaults/similar-limit))
+        let $weight := nm:read-map-value($config, $defaults/param/weight, $defaults/weight)
+        for $property in $defaults/property
+        let $query := qh:value-q($property, $term, (), $weight, $output)
+        let $similar-query := 
+          if(fn:empty($similar)) then ()
+          else qh:value-q($property, $similar, (), $weight *
+            nm:read-map-value($config, $defaults/param/weight-multiplier, $defaults/multiplier),
+            $output
+          )
+        let $_ := (
+          fn:trace(fn:concat(" -- query:", 
+            if($output = $qh:OUTPUT_JSON) then xdmp:to-json-string($query)
+            else xdmp:quote($query)), $TRACE_LEVEL_FINE),
+          fn:trace(fn:concat(" -- similar-query:", 
+            if($output = $qh:OUTPUT_JSON) then xdmp:to-json-string($similar-query)
+            else xdmp:quote($similar-query)), $TRACE_LEVEL_FINE)
+        )
+        return ($query, $similar-query)
+      else  (: Default search is to just try to match on the term :)
+        let $weight := nm:read-map-value($config, $defaults/param/weight, $defaults/weight)
+        for $property in $defaults/property
+        let $query := qh:value-q($property, $term, (), $weight, $output)
+        let $_ := fn:trace(fn:concat(" -- query:", 
+          if($output = $qh:OUTPUT_JSON) then xdmp:to-json-string($query)
+          else xdmp:quote($query)), $TRACE_LEVEL_FINE)
+        return $query
+};
+
+declare function nm:algorithm-new($params as map:map, $config as map:map) {
+  let $_ := fn:trace("algorithm-new -- CALLED", $TRACE_LEVEL_TRACE)
+
+  let $query := nm:get-query($params, $config, "xquery")
   
   let $candidates := 
-    if(fn:empty(($personQuery, $contactQuery))) then ()
+    if(fn:empty($query)) then ()
     else 
-      cts:search(fn:doc(), cts:and-query(($personQuery, $contactQuery)), 
-        ("score-simple","unfiltered", cts:score-order("descending")))[1 to nm:read-map-value($params, $PARAM_MAX_RESULTS, $MAX_RESULTS)]
-  let $_ := fn:trace(fn:concat(" -- Candidates found:", fn:string(cts:remainder($candidates[1]))), 
-    $TRACE_LEVEL_TRACE)
+      cts:search(fn:doc(), $query, 
+        ("score-simple","unfiltered", cts:score-order("descending")))[1 to 
+          nm:read-map-value($params, $CONFIG/config/result-limit/key, $CONFIG/config/result-limit/value)]
+  let $_ := fn:trace(fn:concat(" -- Candidates found:", fn:string(cts:remainder($candidates[1]))), $TRACE_LEVEL_TRACE)
   let $array := json:array()
   let $_ := (
     for $candidate in $candidates
@@ -429,14 +517,15 @@ declare function nm:algorithm-new($params as map:map) {
       map:put($candidate-entry, "candidate", $candidate),
       map:put($candidate-entry, "score", $score)
     )
-    where $score >= nm:read-map-value($params, $PARAM_MIN_SCORE, $MIN_SCORE)
+    where $score >= nm:read-map-value($params, $CONFIG/config/min-score/key, $CONFIG/config/min-score/value)
     return json:array-push($array, $candidate-entry)
   )
   let $json := json:object()
   let $_ := (
     map:put($json, "results", $array),
     map:put($json, "count", json:array-size($array)),
-    map:put($json, "params", $params)
+    map:put($json, "params", $params),
+    map:put($json, "config", $config)
   )       
   return $json 
 };
