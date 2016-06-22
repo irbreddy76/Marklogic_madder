@@ -39,7 +39,7 @@
         params['rs:middle'] = person.middleName;
       }
       
-      if(person.lastname) {
+      if(person.lastName) {
         params['rs:last'] = person.lastName;
       }
       

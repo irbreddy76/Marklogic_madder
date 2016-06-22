@@ -5,13 +5,13 @@
   angular.module('app.search')
     .controller('SearchCtrl', SearchCtrl);
 
-  SearchCtrl.$inject = ['$scope', '$location', 'userService', 'MLSearchFactory'];
+  SearchCtrl.$inject = ['$scope', '$location', 'userService', 'MLSearchFactory', 'personHelper', 'MLRest'];
 
   // inherit from MLSearchController
   var superCtrl = MLSearchController.prototype;
   SearchCtrl.prototype = Object.create(superCtrl);
 
-  function SearchCtrl($scope, $location, userService, searchFactory) {
+  function SearchCtrl($scope, $location, userService, searchFactory, personHelper, MLRest) {
     var ctrl = this;
     ctrl.runMapSearch = false;
 	ctrl.master = {};
@@ -22,6 +22,8 @@
 	ctrl.myFacets = {};
 
     superCtrl.constructor.call(ctrl, $scope, $location, mlSearch);
+
+    ctrl.person = {};
 
     ctrl.init();
 
@@ -34,6 +36,37 @@
       mlSearch.setSnippet(type);
       ctrl.search();
     };
+
+    // Re-run search based off current mode
+    ctrl.setMode = function(mode) {
+      switch(mode) {
+        case 'detailed':
+          ctrl.doSearch(ctrl.person);
+          break;
+        default:
+          ctrl.search(this.qtext);
+          break;
+      }
+    };    
+
+    ctrl.doSearch = function(person) {
+      //console.log(ctrl.person.lastName);
+      var params = personHelper.getPersonQueryParams(person);
+      console.log(params);
+      MLRest.extension('person', {
+        method: 'GET',
+        params: params
+      }).then(this.submitSearch.bind(this));
+   
+    };   
+    
+    ctrl.submitSearch = function(response) {
+       if(response.data) {
+         mlSearch.additionalQueries = [];
+         mlSearch.additionalQueries.push(response.data);
+         return this._search();
+       }
+    };     
 
     ctrl.search = function(qtext) {
 			if ( arguments.length ) {
@@ -101,6 +134,39 @@
     $scope.$watch(userService.currentUser, function(newValue) {
       ctrl.currentUser = newValue;
     });
+
+    ctrl.clearText = function(field) {
+    	console.log(field);
+      switch(field) {
+        case 'firstname':
+          ctrl.person.firstName = null;
+          break;
+        case 'middlename':
+          ctrl.person.middleName = null;
+          break;
+        case 'lastname':
+          ctrl.person.lastname = null;
+          break;
+        case 'dob':
+          ctrl.person.dob = null;
+          break;
+        case 'street':
+          ctrl.person.address.street = null;
+          break;
+        case 'street':
+          ctrl.person.address.city = null;
+          break;
+        case 'street':
+          ctrl.person.address.state = null;
+          break;
+        case 'street':
+          ctrl.person.address.zip = null;
+          break;	
+        default:
+          ctrl.person = {};
+          break;
+      }
+    };    
 // Start Angular Datepicker functions
 // Following functions are used by angular datePicker 
 // We may need to move this to a separate file - TBD	

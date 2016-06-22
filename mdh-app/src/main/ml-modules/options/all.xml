@@ -71,7 +71,7 @@
       </transform-results>
     </state>
   </operator>
-
+  <!--
 	<constraint name="geo-point">
 		<custom facet="true">
 			<parse apply="parse-structured" ns="http://marklogic.com/appservices/viz/geo" at="/ext/constraint/geo.xqy" />
@@ -85,5 +85,5 @@
 			</geo-elem>
 		</annotation>
 	</constraint>
-	
+	-->
 </options>
