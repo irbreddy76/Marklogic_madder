@@ -1,4 +1,32 @@
 <div class="row detail">
+  <h3>Person Detail</h3>
+  <div>
+    <dl ng-repeat="name in ctrl.doc.content.Person.PersonName">
+      <dt>Name Type</dt>
+      <dd>{{name.PersonNameType}}</dd>
+      <dt>Person Given Name</dt>
+      <dd>{{name.PersonGivenName}}</dd>
+      <dt ng-if="name.PersonMiddleName">Person Middle Name</dt>
+      <dd>{{name.PersonMiddleName}}</dd>
+      <dt>Person Family Name</dt>
+      <dd>{{name.PersonSurName}}</dd>
+      <dt>Gender</dt>
+      <dd>{{ctrl.doc.content.Person.PersonSexCode}}</dd>
+      <dt>Race</dt>
+      <dd>{{ctrl.doc.content.Person.PersonRaceCode}}</dd>
+      <dt>Date of Birth</dt>
+      <dd>{{ctrl.doc.content.Person.PersonBirthDate}}</dd>
+      <dt>Social Security Number</dt>
+      <dd>{{ctrl.doc.content.Person.PersonSSNIdentification[0].IdentificationID}}</dd>
+      <dt ng-if="ctrl.doc.content.Person.PersonDigitalImage.length > 0">Depiction(s)</dt>
+      <dd>
+        <div ng-repeat="img in ctrl.doc.content.Person.PersonDigitalImage">
+          <img src="{{img.src}}" alt="{{img.alt}}"/>
+        </div>
+      </dd>
+    </dl>
+  </div>
+  <hr/>
   <div class="col-sm-8">
     <tabset type="pills">
       <tab active="true">
