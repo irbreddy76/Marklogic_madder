@@ -1,0 +1,18 @@
+{
+  "database-name": "%%STAGING_DB_NAME%%",
+  "range-element-index": [
+    {
+      "scalar-type": "unsignedInt",
+      "namespace-uri": "http://marklogic.com/data-hub/trace",
+      "localname": "is-tracing-enabled",
+      "collation": "",
+      "range-value-positions": false,
+      "invalid-values": "reject"
+    }
+  ],
+  "schema-database": "%%SCHEMAS_DATABASE%%",
+  "triggers-database": "%%TRIGGERS_DATABASE%%",
+  "triple-index": true,
+  "collection-lexicon": true,
+  "uri-lexicon": true
+}
