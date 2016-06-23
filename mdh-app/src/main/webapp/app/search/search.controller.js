@@ -17,7 +17,7 @@
 	ctrl.master = {};
 	ctrl.user = {};
 
-    var mlSearch = searchFactory.newContext();
+    var mlSearch = searchFactory.newContext({ queryOptions: 'all' });
 
 	ctrl.myFacets = {};
 
