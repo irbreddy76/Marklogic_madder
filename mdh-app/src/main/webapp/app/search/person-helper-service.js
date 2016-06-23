@@ -4,9 +4,9 @@
   angular.module('search.personhelper', ['ml.common'])
     .service('personHelper', PersonHelper);
     
-  PersonHelper.$inject = ['$rootScope', 'MLRest', '$filter'];
+  PersonHelper.$inject = ['$rootScope', '$filter'];
   
-  function PersonHelper($rootScope, MLRest, $filter) {
+  function PersonHelper($rootScope, $filter) {
     var personQueryPending;
     var personObject;
     
