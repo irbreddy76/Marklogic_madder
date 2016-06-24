@@ -34,6 +34,7 @@
         <element ns="" name="PersonRaceCode"/>
         <facet-option>frequency-order</facet-option>
         <facet-option>descending</facet-option>
+        <facet-option>limit=5</facet-option>
       </range>
     </constraint>
   <constraint name="City">
@@ -41,7 +42,7 @@
         <element ns="" name="LocationCityName"/>
         <facet-option>frequency-order</facet-option>
         <facet-option>descending</facet-option>
-        <facet-option>limit=15</facet-option>
+        <facet-option>limit=5</facet-option>
       </range>
     </constraint>
     <constraint name="County">
@@ -49,6 +50,7 @@
         <element ns="" name="LocationCounty"/>
         <facet-option>frequency-order</facet-option>
         <facet-option>descending</facet-option>
+        <facet-option>limit=5</facet-option>
       </range>
     </constraint>
   <constraint name="Status">
@@ -63,13 +65,15 @@
         <element ns="" name="Jurisdiction"/>
         <facet-option>frequency-order</facet-option>
         <facet-option>descending</facet-option>
+        <facet-option>limit=5</facet-option>
       </range>
     </constraint>
-  <constraint name="ProgramDetailParticipation">
+  <constraint name="Program">
       <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
         <element ns="" name="ProgramDetailParticipation"/>
         <facet-option>frequency-order</facet-option>
         <facet-option>descending</facet-option>
+        <facet-option>limit=5</facet-option>
       </range>
     </constraint> 
   <constraint name="SourceSystem">
@@ -144,4 +148,67 @@
 		</annotation>
 	</constraint>
 	-->
+  <values name="CaseType" style="default">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="CaseType"/>
+      </range>
+      <values-option>descending</values-option>
+      <values-option>frequency-order</values-option>
+  </values>
+  <values name="Gender" style="default">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="PersonSexCode"/>
+      </range>
+      <values-option>descending</values-option>
+      <values-option>frequency-order</values-option>
+  </values>
+  <values name="Race" style="default">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="PersonRaceCode"/>
+      </range>
+      <values-option>descending</values-option>
+      <values-option>frequency-order</values-option>
+  </values>
+  <values name="City" style="default">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="LocationCityName"/>
+      </range>
+      <values-option>descending</values-option>
+      <values-option>frequency-order</values-option>
+  </values>
+  <values name="County" style="default">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="LocationCounty"/>
+      </range>
+      <values-option>descending</values-option>
+      <values-option>frequency-order</values-option>
+  </values>
+  <values name="Status" style="default">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="status"/>
+      </range>
+      <values-option>descending</values-option>
+      <values-option>frequency-order</values-option>
+  </values>
+  <values name="Jurisdiction" style="default">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="Jurisdiction"/>
+      </range>
+      <values-option>descending</values-option>
+      <values-option>frequency-order</values-option>
+  </values>
+  <values name="Program" style="default">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="ProgramDetailParticipation"/>
+      </range>
+      <values-option>descending</values-option>
+      <values-option>frequency-order</values-option>
+  </values>
+  <values name="SourceSystem" style="default">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="SourceSystem"/>
+      </range>
+      <values-option>descending</values-option>
+      <values-option>frequency-order</values-option>
+  </values>   
 </options>
