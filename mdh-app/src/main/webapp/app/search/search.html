@@ -17,7 +17,10 @@
                 <div class="col-sm-4">
                   <label>First:</label>
                   <input ng-model="ctrl.person.firstName" type="text" class="form-control"
-                    placeholder="First Name..." autocomplete="off"></input>
+                    placeholder="First Name..." autocomplete="off"
+                    typeahead="suggestion for suggestion in ctrl.suggest($viewValue, 'suggest-firstname')" 
+                    typeahead-suggest-on-select="true" 
+                    typeahead-loading="loadingSuggestions.firstname"></input>
                 </div>
                 <div class="col-sm-4">
                   <label>Middle:</label>
@@ -27,7 +30,10 @@
                 <div class="col-sm-4">
                   <label>Last:</label>
                   <input ng-model="ctrl.person.lastName" type="text" class="form-control" 
-                    placeholder="Last Name..." autocomplete="off"></input>
+                    placeholder="Last Name..." autocomplete="off"
+                    typeahead="suggestion for suggestion in ctrl.suggest($viewValue, 'suggest-lastname')" 
+                    typeahead-suggest-on-select="true" 
+                    typeahead-loading="loadingSuggestions"></input>
                 </div>
               </div>
             </accordion-group>
@@ -43,7 +49,10 @@
                 <div class="col-sm-5">
                   <label>City:</label>
                   <input ng-model="ctrl.person.address.city" type="text" class="form-control" 
-                    placeholder="City..." autocomplete="off"></input>
+                    placeholder="City..." autocomplete="off"
+                    typeahead="suggestion for suggestion in ctrl.suggest($viewValue, 'suggest-city')" 
+                    typeahead-suggest-on-select="true" 
+                    typeahead-loading="loadingSuggestions"></input>
                 </div>
                 <div class="col-sm-3">
                   <label>State:</label>
@@ -110,7 +119,7 @@
     </div>
     -->
     <ml-facets facets="ctrl.response.facets" toggle="ctrl.toggleFacet(facet, value)" 
-      active-facets="ctrl.mlSearch.activeFacets" show-more="ctrl.showMoreFacets(facet, facetName)"
+      active-facets="ctrl.mlSearch.activeFacets" show-more="ctrl.mlSearch.showMoreFacets(facet, facetName)"
       negate="ctrl.toggleNegatedFacet(facet,value)"></ml-facets>
   </div>
   <div class="col-md-9">
