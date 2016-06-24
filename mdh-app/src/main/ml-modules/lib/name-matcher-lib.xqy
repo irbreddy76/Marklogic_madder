@@ -498,13 +498,16 @@ declare function nm:build-query($term as xs:string*, $config as map:map, $defaul
 
 declare function nm:algorithm-new($params as map:map, $config as map:map) {
   let $_ := fn:trace("algorithm-new -- CALLED", $TRACE_LEVEL_TRACE)
-
+  let $target := map:get($params, "target")
   let $query := nm:get-query($params, $config, "xquery")
-  
+  let $collection := 
+    if($target = "person") then cts:collection-query("Person")
+    else if($target = "personparticipation") then cts:collection-query("PersonParticipation")
+    else cts:collection-query(("Person", "PersonParticipation"))
   let $candidates := 
     if(fn:empty($query)) then ()
     else 
-      cts:search(fn:doc(), $query, 
+      cts:search(fn:doc(), cts:and-query(($query, $collection)), 
         ("score-simple","unfiltered", cts:score-order("descending")))[1 to 
           nm:read-map-value($params, $CONFIG/config/result-limit/key, $CONFIG/config/result-limit/value)]
   let $_ := fn:trace(fn:concat(" -- Candidates found:", fn:string(cts:remainder($candidates[1]))), $TRACE_LEVEL_TRACE)

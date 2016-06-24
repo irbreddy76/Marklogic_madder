@@ -15,7 +15,7 @@ declare function get(
     xdmp:set-response-code(200, "Ok"),
     let $target := map:get($params, "target")
     let $result := 
-      if($target = "person") then nm:algorithm-new($params, map:map())
+      if($target = ("person", "personparticipation")) then nm:algorithm-new($params, map:map())
       else nm:get-query($params, map:map(), "json")
     return xdmp:to-json($result)
   } catch($e) {

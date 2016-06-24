@@ -70,6 +70,7 @@ declare function s:buildPersonParticipation($header as map:map, $content as map:
   let $personId := (map:get($ids, "cisId"), map:get($ids,"chessieId"))[1]
   let $name := map:get($header, "PersonPrimaryName")
   let $cases := map:get($header, "ParticipationIdentifiers")
+  let $person := map:get($content, "Person")
   let $_ := (
     map:put($json, "recordType", "PersonParticipation"),
     map:put($json, "personId", $personId),
@@ -77,8 +78,8 @@ declare function s:buildPersonParticipation($header as map:map, $content as map:
     map:put($json, "middleName", map:get($name, "PersonMiddleName")),
     map:put($json, "lastName", map:get($name, "PersonSurName")),
     map:put($json, "id", map:get($header, "SSNIdentificationId")),
-    map:put($json, "gender", map:get($content, "PersonSexCode")),
-    map:put($json, "race", map:get($content, "PersonRaceCode")),
+    map:put($json, "gender", map:get($person, "PersonSexCode")),
+    map:put($json, "race", map:get($person, "PersonRaceCode")),
     map:put($json, "caseCount", fn:count(map:keys($cases)))
   )
   return $json
