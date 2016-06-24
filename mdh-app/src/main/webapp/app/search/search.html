@@ -1,14 +1,163 @@
 <h1>Data Lake Search Application</h1>
-<tabset>
-<tab heading="Guided Search">
 <div class="row" ng-if="!ctrl.currentUser">Please log in to see content</div>
-<!--
+
 <div class="row" ng-if="ctrl.currentUser">
   <div class="col-md-12">
-    <ml-input qtext="ctrl.qtext" search="ctrl.search(qtext)" suggest="ctrl.suggest(val)" template="fa" class="search"></ml-input>
+    <tabset>
+      <tab heading="Basic Search" select="ctrl.setMode('basic')">
+        <ml-input qtext="ctrl.qtext" search="ctrl.search(qtext)" template="fa" 
+          class="search"></ml-input>
+      </tab>
+      <tab heading="Person Search" select="ctrl.setMode('person')">
+        <form ng-submit="ctrl.doSearch(ctrl.person)" class="`ml-input ml-search form-inline" 
+          role="search">
+          <accordion close-others="false">
+            <accordion-group heading="Name" is-open="status.isNameOpen">
+              <div class="row">
+                <div class="col-sm-2">
+                  <label>First Name:</label>
+                </div>
+                <div class="col-sm-4">
+                  <div class="input-group">  
+                    <input ng-model="ctrl.person.firstName" type="text" 
+                      class="form-control" placeholder="First Name..." autocomplete="off" />
+                    <span ng-show="ctrl.person.firstName" ng-click="ctrl.clearText('firstname')" 
+                      class="search-input-icon search-input-clear form-control-feedback">
+                      <i class="fa fa-times-circle"></i>
+                    </span>
+                  </div>
+                </div>
+                <div class="col-sm-2">
+                  <label>Middle Name:</label>
+                </div>
+                <div class="col-sm-4">
+                  <div class="input-group">
+                    <input ng-model="ctrl.person.middleName" type="text" class="form-control" 
+                      placeholder="Middle Name..." autocomplete="off" />
+                    <span ng-show="ctrl.person.middleName" ng-click="ctrl.clearText('middlename')" 
+                      class="search-input-icon search-input-clear form-control-feedback">
+                      <i class="fa fa-times-circle"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2">
+                  <label>Last Name:</label>
+                </div>
+                <div class="col-sm-10">
+                  <div class="input-group">
+                    <input ng-model="ctrl.person.lastName" type="text" class="form-control" 
+                      placeholder="Last Name..." autocomplete="off" />
+                    <span ng-show="ctrl.person.lastName" ng-click="ctrl.clearText('lastname')" 
+                      class="search-input-icon search-input-clear form-control-feedback">
+                      <i class="fa fa-times-circle"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </accordion-group>
+            <accordion-group heading="Address" is-open="status.isAddressOpen">
+              <div class="row">
+                <div class="col-sm-1">
+                  <label>Street:</label>
+                </div>
+                <div class="col-sm-11">
+                  <div class="input-group">
+                    <input ng-model="ctrl.person.address.street" type="text" class="form-control" 
+                      placeholder="Street..." autocomplete="off" />
+                    <span ng-show="ctrl.person.address.street" ng-click="ctrl.clearText('street')" 
+                      class="search-input-icon search-input-clear form-control-feedback">
+                      <i class="fa fa-times-circle"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-1">
+                  <label>City:</label>
+                </div>
+                <div class="col-sm-4">
+                  <div class="input-group">
+                    <input ng-model="ctrl.person.address.city" type="text" 
+                      class="form-control" placeholder="City..." autocomplete="off" />
+                    <span ng-show="ctrl.person.address.city" ng-click="ctrl.clearText('city')" 
+                      class="search-input-icon search-input-clear form-control-feedback">
+                      <i class="fa fa-times-circle"></i>
+                    </span>
+                  </div>
+                </div>
+                <div class="col-sm-1">
+                  <label>State:</label>
+                </div>
+                <div class="col-sm-2">
+                  <div class="input-group">
+                    <input ng-model="ctrl.person.address.state" type="text" 
+                      class="form-control" placeholder="State..." autocomplete="off" />
+                    <span ng-show="ctrl.person.address.state" ng-click="ctrl.clearText('state')" 
+                      class="search-input-icon search-input-clear form-control-feedback">
+                      <i class="fa fa-times-circle"></i>
+                    </span>
+                  </div>
+                </div>
+                <div class="col-sm-1">
+                  <label>Zip:</label>
+                </div>
+                <div class="col-sm-3">
+                  <div class="input-group">
+                    <input ng-model="ctrl.person.address.zip" type="text" 
+                      class="form-control" placeholder="Zip Code..." autocomplete="off" />
+                    <span ng-show="ctrl.person.address.zip" ng-click="ctrl.clearText('zip')" 
+                      class="search-input-icon search-input-clear form-control-feedback">
+                      <i class="fa fa-times-circle"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </accordion-group>
+            <accordion-group heading="Detail" is-open="status.isDetailOpen">
+              <div class="row">
+                <div class="col-sm-4">
+                  <label>Date of Birth:</label>
+                </div>
+                <div class="col-sm-5">
+                  <div class="input-group">
+                    <input type="text" class="form-control" datepicker-popup ng-model="ctrl.person.dob" 
+                      is-open="status.opened" min-date="minDate" max-date="'2020-06-22'" 
+                      datepicker-options="dateOptions" date-disabled="disabled(date, mode)" 
+                      ng-required="true" close-text="Close" />
+                    <span class="input-group-btn">
+                      <button type="button" class="btn btn-default" ng-click="open($event)">
+                        <i class="glyphicon glyphicon-calendar"></i>
+                      </button>
+                    </span>
+                  </div>                
+                </div>
+              </div>
+            </accordion-group>
+          </accordion>
+        </form>
+        <pre ng-if="ctrl.debug">person = {{ctrl.person | json}}</pre>
+        <div class="row">
+          <div class="col-sm-offset-1 col-sm-3">
+            <button id="single-button" type="button" class="btn btn-primary" 
+              dropdown-toggle ng-disabled="disabled" ng-click="ctrl.doSearch(ctrl.person)">
+              <i class="fa fa-search"></i> Search
+            </button>
+          </div>
+          <div class="col-sm-offset-1 col-sm-3">
+            <button id="single-button" type="button" class="btn btn-primary" 
+              dropdown-toggle ng-disabled="disabled"
+                  ng-click="ctrl.clearText('all')">
+              <i class="fa fa-times-circle"></i> Clear
+            </button>
+          </div>
+        </div>
+      </tab>
+    </tabset>
   </div>
 </div>
--->
+
 <div class="search row" ng-if="ctrl.currentUser">
   <div class="col-md-3 right-col">
     <!--
@@ -19,226 +168,28 @@
       </label>
     </div>
     -->
-    <ml-facets facets="ctrl.response.facets" toggle="ctrl.toggleFacet(facet, value)" active-facets="ctrl.mlSearch.activeFacets" negate="ctrl.toggleNegatedFacet(facet,value)"></ml-facets>
+    <ml-facets facets="ctrl.response.facets" toggle="ctrl.toggleFacet(facet, value)" 
+      active-facets="ctrl.mlSearch.activeFacets" 
+      negate="ctrl.toggleNegatedFacet(facet,value)"></ml-facets>
   </div>
-  <div class="col-md-9">
-
- <form ng-submit="search({person: person})" class="`ml-input ml-search form-inline" role="search">
-    <div class="row">
-      <div class="col-md-12">
-        <div class="panel panel-default">
-          <div class="panel-heading"><h4>Name</h4></div>
-          <div class="panel-body">
-            <div class="row">
-              <div class="col-sm-2">
-                <label>First Name:</label>
-              </div>
-              <div class="col-sm-3">
-                <div class="input-group">  
-                  <input ng-model="ctrl.person.firstName" type="text" class="form-control" 
-                    placeholder="First Name..." autocomplete="off" />
-                  <span ng-show="ctrl.person.firstName" ng-click="ctrl.clearText('firstname')" 
-                    class="search-input-icon search-input-clear form-control-feedback">
-                    <i class="fa fa-times-circle"></i>
-                  </span>
-                </div>
-              </div>
-              <div class="col-sm-2">
-                <label>Middle Name:</label>
-              </div>
-              <div class="col-sm-3">
-                <div class="input-group">
-                  <input ng-model="ctrl.person.middleName" type="text" class="form-control" 
-                    placeholder="Middle Name..." autocomplete="off" />
-                  <span ng-show="ctrl.person.middleName" ng-click="ctrl.clearText('middlename')" 
-                    class="search-input-icon search-input-clear form-control-feedback">
-                    <i class="fa fa-times-circle"></i>
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-sm-2">
-                <label>Last Name:</label>
-              </div>
-              <div class="col-sm-3">
-                <div class="input-group">                  
-                  <input ng-model="ctrl.person.lastName" type="text" class="form-control" 
-                    placeholder="Last Name..." autocomplete="off" />
-                  <span ng-show="ctrl.person.lastName" ng-click="ctrl.clearText('lastname')" 
-                    class="search-input-icon search-input-clear form-control-feedback">
-                    <i class="fa fa-times-circle"></i>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>  
-      <div class="col-md-12">
-        <div class="panel panel-default">
-          <div class="panel-heading"><h4>Address</h4></div>
-          <div class="panel-body">
-            <div class="row">
-              <div class="col-sm-1">
-                <label>Street:</label>
-              </div>
-              <div class="col-sm-9">
-                <div class="input-group">
-                  <input ng-model="ctrl.person.address.street" type="text" class="form-control" 
-                    placeholder="Street..." autocomplete="off" />
-                  <span ng-show="ctrl.person.address.street" ng-click="ctrl.clearText('street')" 
-                    class="search-input-icon search-input-clear form-control-feedback">
-                    <i class="fa fa-times-circle"></i>
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-sm-1">
-                <label>City:</label>
-              </div>
-              <div class="col-sm-3">
-                <div class="input-group">
-                  <input ng-model="ctrl.person.address.city" type="text" class="form-control" 
-                    placeholder="City..." autocomplete="off" />
-                  <span ng-show="ctrl.person.address.city" ng-click="ctrl.clearText('city')" 
-                    class="search-input-icon search-input-clear form-control-feedback">
-                    <i class="fa fa-times-circle"></i>
-                  </span>
-                </div>
-              </div>
-              <div class="col-sm-1">
-                <label>State:</label>
-              </div>
-              <div class="col-sm-2">
-                <div class="input-group">
-                  <input ng-model="ctrl.person.address.state" type="text" class="form-control" 
-                    placeholder="State..." autocomplete="off" />
-                  <span ng-show="ctrl.person.address.state" ng-click="ctrl.clearText('state')" 
-                    class="search-input-icon search-input-clear form-control-feedback">
-                    <i class="fa fa-times-circle"></i>
-                  </span>
-                </div>
-              </div>
-              <div class="col-sm-1">
-                <label>Zip:</label>
-              </div>
-              <div class="col-sm-3">
-                <div class="input-group">
-                  <input ng-model="ctrl.person.address.zip" type="text" class="form-control" 
-                    placeholder="Zip Code..." autocomplete="off" />
-                  <span ng-show="ctrl.person.address.zip" ng-click="ctrl.clearText('zip')" 
-                    class="search-input-icon search-input-clear form-control-feedback">
-                    <i class="fa fa-times-circle"></i>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div> 
-    <div class="row">
-      <div class="col-md-12">
-        <div class="panel panel-default">
-          <div class="panel-heading"><h4>Person Details</h4></div>
-          <div class="panel-body">
-            <div class="row">
-              <div class="col-sm-4">
-                <label>Date of Birth:</label>
-              </div>
-              <div class="col-sm-5">
-                <p class="input-group">
-                  <input type="text" class="form-control" datepicker-popup ng-model="ctrl.person.dob" is-open="status.opened" min-date="minDate" max-date="'2020-06-22'" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
-                  <span class="input-group-btn">
-                    <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-                  </span>
-                </p>                
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> 
-      <div class="row">
-      <div class="col-md-12">
-          <div class="row">
-            <div class="col-sm-offset-1 col-sm-3">
-                <button id="single-button" type="button" class="btn btn-primary" 
-                  dropdown-toggle ng-disabled="disabled"
-                  ng-click="ctrl.doSearch({person: ctrl.person})">
-                  <i class="fa fa-search"></i> Search
-                </button>
-            </div>
-              <div class="col-sm-offset-1 col-sm-3">
-                <button id="single-button" type="button" class="btn btn-primary" dropdown-toggle ng-disabled="disabled"
-                  ng-click="ctrl.clearText('all')">
-                  <i class="fa fa-times-circle"></i> Clear
-                </button>
-            </div>
-          </div>
-        </div>
-    </div>          
-  </form>
-    <pre>person = {{ctrl.person | json}}</pre>
-    
   <div class="col-md-9">
     <h4 ng-if="ctrl.response.total === 0">No results to show</h4>
   <!--
-    <ml-esri-search-map options="ctrl.mapOptions" features-list="ctrl.response.results" facets="ctrl.myFacets.facets" bounds-changed="ctrl.mapBoundsChanged(bounds)"></ml-esri-search-map>
+    <ml-esri-search-map options="ctrl.mapOptions" features-list="ctrl.response.results" 
+      facets="ctrl.myFacets.facets" 
+      bounds-changed="ctrl.mapBoundsChanged(bounds)"></ml-esri-search-map>
   -->
     <br/>
     <div ng-if="ctrl.response.total > 0" class="results">
       <div class="pagination-ctrls">
-        <pagination class="pagination pagination-sm" ng-model="ctrl.page" ng-change="ctrl.search()" max-size="10" boundary-links="true" total-items="ctrl.response.total" items-per-page="ctrl.response['page-length']">
+        <pagination class="pagination pagination-sm" ng-model="ctrl.page" 
+          ng-change="ctrl.selectPage()" max-size="10" boundary-links="true" 
+          total-items="ctrl.response.total" items-per-page="ctrl.response['page-length']">
         </pagination>
-        <ml-snippet set-snippet="ctrl.setSnippet(type)"></ml-snippet>
+        <!-- <ml-snippet set-snippet="ctrl.setSnippet(type)"></ml-snippet> -->
       </div>
       <ml-metrics search="ctrl.response" ></ml-metrics>
       <ml-results template="app/search/search-results.html" results="ctrl.response.results"></ml-results>
     </div>
   </div>
-  </div>
 </div>
-</div>  
-</tab>
-<tab heading="Keyword Search">
-<div class="row" ng-if="!ctrl.currentUser">Please log in to see content</div>
-<div class="row" ng-if="ctrl.currentUser">
-  <div class="col-md-12">
-    <ml-input qtext="ctrl.qtext" search="ctrl.search(qtext)" suggest="ctrl.suggest(val)" template="fa" class="search"></ml-input>
-  </div>
-</div>
-
-<div class="search row" ng-if="ctrl.currentUser">
-	<div class="col-md-3 right-col">
-		<!--
-		<div class="checkbox">
-			<label>
-				<input type="checkbox" ng-model="ctrl.runMapSearch" ng-change="ctrl.toggleMapSearch()">
-				Limit results to the visible map
-			</label>
-		</div>
-		-->
-		<ml-facets facets="ctrl.response.facets" toggle="ctrl.toggleFacet(facet, value)" active-facets="ctrl.mlSearch.activeFacets" negate="ctrl.toggleNegatedFacet(facet,value)"></ml-facets>
-	</div>
-		
-  <div class="col-md-9">
-    <h4 ng-if="ctrl.response.total === 0">No results to show</h4>
-	<!--
-		<ml-esri-search-map options="ctrl.mapOptions" features-list="ctrl.response.results" facets="ctrl.myFacets.facets" bounds-changed="ctrl.mapBoundsChanged(bounds)"></ml-esri-search-map>
-	-->
-		<br/>
-    <div ng-if="ctrl.response.total > 0" class="results">
-      <div class="pagination-ctrls">
-        <pagination class="pagination pagination-sm" ng-model="ctrl.page" ng-change="ctrl.search()" max-size="10" boundary-links="true" total-items="ctrl.response.total" items-per-page="ctrl.response['page-length']">
-        </pagination>
-        <ml-snippet set-snippet="ctrl.setSnippet(type)"></ml-snippet>
-      </div>
-      <ml-metrics search="ctrl.response" ></ml-metrics>
-      <ml-results template="app/search/search-results.html" results="ctrl.response.results"></ml-results>
-    </div>
-  </div>
-  </div>
-</tab>
-</tabset>

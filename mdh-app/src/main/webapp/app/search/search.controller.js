@@ -17,14 +17,15 @@
 	ctrl.master = {};
 	ctrl.user = {};
 
-    var mlSearch = searchFactory.newContext();
+    var mlSearch = searchFactory.newContext({ queryOptions: 'all' });
 
 	ctrl.myFacets = {};
 
     superCtrl.constructor.call(ctrl, $scope, $location, mlSearch);
 
     ctrl.person = {};
-
+    ctrl.mode = 'basic';
+    
     ctrl.init();
 
     ctrl.updateSearchResults = function (data) {
@@ -40,15 +41,28 @@
     // Re-run search based off current mode
     ctrl.setMode = function(mode) {
       switch(mode) {
-        case 'detailed':
+        case 'person':
+          ctrl.mode = mode;
           ctrl.doSearch(ctrl.person);
           break;
         default:
+          ctrl.mode = mode;
           ctrl.search(this.qtext);
           break;
       }
     };    
 
+    ctrl.selectPage = function() {
+      switch(ctrl.mode) {
+        case 'person':
+          ctrl.doSearch(ctrl.person);
+          break;
+        default:
+          ctrl.search();
+          break;
+      }
+    };
+    
     ctrl.doSearch = function(person) {
       //console.log(ctrl.person.lastName);
       var params = personHelper.getPersonQueryParams(person);
@@ -153,13 +167,13 @@
         case 'street':
           ctrl.person.address.street = null;
           break;
-        case 'street':
+        case 'city':
           ctrl.person.address.city = null;
           break;
-        case 'street':
+        case 'state':
           ctrl.person.address.state = null;
           break;
-        case 'street':
+        case 'zip':
           ctrl.person.address.zip = null;
           break;	
         default:
@@ -182,7 +196,10 @@
   $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
   $scope.format = $scope.formats[0];
   $scope.status = {
-    opened: false
+    opened: false,
+    isNameOpened: true,
+    isAddressOpened: false,
+    isDetailOpened: false
   };
 
   var tomorrow = new Date();
