@@ -15,64 +15,65 @@
     <collection prefix=""/>
   </constraint>
    --> 
-      <constraint name="CaseType">
-      <range type="xs:string" collation="http://marklogic.com/collation/">
-        <element ns="" name="caseType"/>
+    <constraint name="CaseType">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="CaseType"/>
         <facet-option>frequency-order</facet-option>
         <facet-option>descending</facet-option>
       </range>
     </constraint>
     <constraint name="Gender">
-      <range type="xs:string" collation="http://marklogic.com/collation/">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
         <element ns="" name="PersonSexCode"/>
         <facet-option>frequency-order</facet-option>
         <facet-option>descending</facet-option>
       </range>
     </constraint>
     <constraint name="Race">
-      <range type="xs:string" collation="http://marklogic.com/collation/">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
         <element ns="" name="PersonRaceCode"/>
         <facet-option>frequency-order</facet-option>
         <facet-option>descending</facet-option>
       </range>
     </constraint>
   <constraint name="City">
-      <range type="xs:string" collation="http://marklogic.com/collation/">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
         <element ns="" name="LocationCityName"/>
         <facet-option>frequency-order</facet-option>
         <facet-option>descending</facet-option>
+        <facet-option>limit=15</facet-option>
       </range>
     </constraint>
     <constraint name="County">
-      <range type="xs:string" collation="http://marklogic.com/collation/">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
         <element ns="" name="LocationCounty"/>
         <facet-option>frequency-order</facet-option>
         <facet-option>descending</facet-option>
       </range>
     </constraint>
   <constraint name="Status">
-      <range type="xs:string" collation="http://marklogic.com/collation/">
-        <element ns="" name="loc"/>
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="status"/>
         <facet-option>frequency-order</facet-option>
         <facet-option>descending</facet-option>
       </range>
     </constraint> 
   <constraint name="Jurisdiction">
-      <range type="xs:string" collation="http://marklogic.com/collation/">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
         <element ns="" name="Jurisdiction"/>
         <facet-option>frequency-order</facet-option>
         <facet-option>descending</facet-option>
       </range>
     </constraint>
   <constraint name="ProgramDetailParticipation">
-      <range type="xs:string" collation="http://marklogic.com/collation/">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
         <element ns="" name="ProgramDetailParticipation"/>
         <facet-option>frequency-order</facet-option>
         <facet-option>descending</facet-option>
       </range>
     </constraint> 
   <constraint name="SourceSystem">
-      <range type="xs:string" collation="http://marklogic.com/collation/">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
         <element ns="" name="SourceSystem"/>
         <facet-option>frequency-order</facet-option>
         <facet-option>descending</facet-option>
