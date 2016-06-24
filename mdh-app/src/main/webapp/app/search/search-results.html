@@ -22,23 +22,23 @@
     </h4>
     <div class="row">
       <div class="col-sm-2"><b>First Name:</b></div>
-      <div class="col-sm-3">{{result.matches.summary.firstName}}</div>
-      <div class="col-sm-1"><b>Middle:</b></div>
-      <div class="col-sm-1">{{result.matches.summary.middleName}}</div>
-      <div class="col-sm-2"><b>Last Name:</b></div>
-      <div class="col-sm-3">{{result.matches.summary.lastName}}</div>
+      <div class="col-sm-4">{{result.matches.summary.firstName}}</div>
+      <div class="col-sm-2"><b>Middle:</b></div>
+      <div class="col-sm-4">{{result.matches.summary.middleName}}</div>
     </div>
     <div class="row">
+      <div class="col-sm-2"><b>Last Name:</b></div>
+      <div class="col-sm-6">{{result.matches.summary.lastName}}</div>
       <div class="col-sm-1"><b>SSN:</b></div>
       <div class="col-sm-3">{{result.matches.summary.id}}</div>
+    </div>
+    <div class="row">
       <div class="col-sm-1"><b>Gender:</b></div>
       <div class="col-sm-3">{{result.matches.summary.gender}}</div>
       <div class="col-sm-1"><b>Race:</b></div>
       <div class="col-sm-3">{{result.matches.summary.race}}</div>
-    </div>
-    <div class="row">
       <div class="col-sm-1"><b>Cases:</b></div>
-      <div class="col-sm-1">{{result.matches.summary.caseCount}}</div>
+      <div class="col-sm-3">{{result.matches.summary.caseCount}}</div>
     </div>
   </div>
   <div ng-if="result.matches.summary.recordType == 'Person'">

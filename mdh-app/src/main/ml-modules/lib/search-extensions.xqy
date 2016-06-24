@@ -56,7 +56,7 @@ declare function s:buildPerson($header as map:map, $content as map:map) {
     map:put($json, "personId", $personId),
     map:put($json, "firstName", map:get($name, "PersonGivenName")),
     map:put($json, "middleName", map:get($name, "PersonMiddleName")),
-    map:put($json, "lastName", map:get($name, "PersonLastName")),
+    map:put($json, "lastName", map:get($name, "PersonSurName")),
     map:put($json, "id", map:get($header, "SSNIdentificationId")),
     map:put($json, "gender", map:get($content, "PersonSexCode")),
     map:put($json, "race", map:get($content, "PersonRaceCode"))
@@ -69,13 +69,13 @@ declare function s:buildPersonParticipation($header as map:map, $content as map:
   let $ids := map:get($header, "SystemIdentifiers")
   let $personId := (map:get($ids, "cisId"), map:get($ids,"chessieId"))[1]
   let $name := map:get($header, "PersonPrimaryName")
-  let $cases := map:get($header, "ParticipationIds")
+  let $cases := map:get($header, "ParticipationIdentifiers")
   let $_ := (
     map:put($json, "recordType", "PersonParticipation"),
     map:put($json, "personId", $personId),
     map:put($json, "firstName", map:get($name, "PersonGivenName")),
     map:put($json, "middleName", map:get($name, "PersonMiddleName")),
-    map:put($json, "lastName", map:get($name, "PersonLastName")),
+    map:put($json, "lastName", map:get($name, "PersonSurName")),
     map:put($json, "id", map:get($header, "SSNIdentificationId")),
     map:put($json, "gender", map:get($content, "PersonSexCode")),
     map:put($json, "race", map:get($content, "PersonRaceCode")),

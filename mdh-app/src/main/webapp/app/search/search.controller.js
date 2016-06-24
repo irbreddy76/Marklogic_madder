@@ -14,9 +14,7 @@
   function SearchCtrl($scope, $location, userService, searchFactory, personHelper, MLRest) {
     var ctrl = this;
     ctrl.runMapSearch = false;
-	ctrl.master = {};
-	ctrl.user = {};
-
+	
     var mlSearch = searchFactory.newContext({ queryOptions: 'all' });
 
 	ctrl.myFacets = {};
@@ -76,6 +74,7 @@
     
     ctrl.submitSearch = function(response) {
        if(response.data) {
+         mlSearch.setPage( this.page );
          mlSearch.additionalQueries = [];
          mlSearch.additionalQueries.push(response.data);
          return this._search();
@@ -120,21 +119,7 @@
 				}
 			};
 		};
-
-		  ctrl.reset = function() {
-			console.log("calling reset");
-			//ctrl.user = angular.extend({}, ctrl.master);
-			ctrl.user = angular.copy({});
-			console.log(ctrl.user);
-		  };
-		  
-		  ctrl.update = function(user) {
-			console.log("calling update");
-			ctrl.master = angular.copy(ctrl.user);
-			console.log(ctrl.user);
-			ctrl.search(ctrl.user.lastName);
-		  };			  
-	  
+ 	  
 		ctrl.toggleMapSearch = function (){
 			if(ctrl.runMapSearch) {
 				mlSearch.additionalQueries.push(ctrl.getGeoConstraint());
@@ -149,38 +134,10 @@
       ctrl.currentUser = newValue;
     });
 
-    ctrl.clearText = function(field) {
-    	console.log(field);
-      switch(field) {
-        case 'firstname':
-          ctrl.person.firstName = null;
-          break;
-        case 'middlename':
-          ctrl.person.middleName = null;
-          break;
-        case 'lastname':
-          ctrl.person.lastname = null;
-          break;
-        case 'dob':
-          ctrl.person.dob = null;
-          break;
-        case 'street':
-          ctrl.person.address.street = null;
-          break;
-        case 'city':
-          ctrl.person.address.city = null;
-          break;
-        case 'state':
-          ctrl.person.address.state = null;
-          break;
-        case 'zip':
-          ctrl.person.address.zip = null;
-          break;	
-        default:
-          ctrl.person = {};
-          break;
-      }
+    ctrl.clearText = function() {
+      ctrl.person = {};
     };    
+    
 // Start Angular Datepicker functions
 // Following functions are used by angular datePicker 
 // We may need to move this to a separate file - TBD	
@@ -197,9 +154,9 @@
   $scope.format = $scope.formats[0];
   $scope.status = {
     opened: false,
-    isNameOpened: true,
-    isAddressOpened: false,
-    isDetailOpened: false
+    isNameOpen: true,
+    isAddressOpen: false,
+    isDetailOpen: false
   };
 
   var tomorrow = new Date();
