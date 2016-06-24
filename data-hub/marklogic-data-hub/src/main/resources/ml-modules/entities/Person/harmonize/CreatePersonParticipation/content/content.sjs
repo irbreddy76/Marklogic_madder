@@ -88,8 +88,8 @@ function createContent(id, options) {
       // participation key
       var key = detail.ParticipationIdentifier[0].ParticipationKey;
       for(j = 0; j < participationById.length; j++) {
-        var role = participationById[j]
-        if(role.id === key) {
+        var role = participationById[j];
+        if(role.key.toString() == key.toString()) {
           partDetail.PersonRoles.push(role.entry);
         }
       }

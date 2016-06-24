@@ -38,7 +38,7 @@ function createHeaders(id, content, options) {
     }
   }
 
-  header.SSNIdentificationId = person.PersonSSNIdentification.IdentificationId;
+  header.SSNIdentificationId = person.PersonSSNIdentification[0].IdentificationID;
  
   for(i = 0; i < content.Participations.length; i++) {
     var participation = content.Participations[i];
