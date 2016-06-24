@@ -41,6 +41,7 @@
         <element ns="" name="LocationCityName"/>
         <facet-option>frequency-order</facet-option>
         <facet-option>descending</facet-option>
+        <facet-option>limit=15</facet-option>
       </range>
     </constraint>
     <constraint name="County">
