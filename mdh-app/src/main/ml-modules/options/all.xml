@@ -15,6 +15,69 @@
     <collection prefix=""/>
   </constraint>
    --> 
+      <constraint name="CaseType">
+      <range type="xs:string" collation="http://marklogic.com/collation/">
+        <element ns="" name="caseType"/>
+        <facet-option>frequency-order</facet-option>
+        <facet-option>descending</facet-option>
+      </range>
+    </constraint>
+    <constraint name="Gender">
+      <range type="xs:string" collation="http://marklogic.com/collation/">
+        <element ns="" name="PersonSexCode"/>
+        <facet-option>frequency-order</facet-option>
+        <facet-option>descending</facet-option>
+      </range>
+    </constraint>
+    <constraint name="Race">
+      <range type="xs:string" collation="http://marklogic.com/collation/">
+        <element ns="" name="PersonRaceCode"/>
+        <facet-option>frequency-order</facet-option>
+        <facet-option>descending</facet-option>
+      </range>
+    </constraint>
+  <constraint name="City">
+      <range type="xs:string" collation="http://marklogic.com/collation/">
+        <element ns="" name="LocationCityName"/>
+        <facet-option>frequency-order</facet-option>
+        <facet-option>descending</facet-option>
+      </range>
+    </constraint>
+    <constraint name="County">
+      <range type="xs:string" collation="http://marklogic.com/collation/">
+        <element ns="" name="LocationCounty"/>
+        <facet-option>frequency-order</facet-option>
+        <facet-option>descending</facet-option>
+      </range>
+    </constraint>
+  <constraint name="Status">
+      <range type="xs:string" collation="http://marklogic.com/collation/">
+        <element ns="" name="loc"/>
+        <facet-option>frequency-order</facet-option>
+        <facet-option>descending</facet-option>
+      </range>
+    </constraint> 
+  <constraint name="Jurisdiction">
+      <range type="xs:string" collation="http://marklogic.com/collation/">
+        <element ns="" name="Jurisdiction"/>
+        <facet-option>frequency-order</facet-option>
+        <facet-option>descending</facet-option>
+      </range>
+    </constraint>
+  <constraint name="ProgramDetailParticipation">
+      <range type="xs:string" collation="http://marklogic.com/collation/">
+        <element ns="" name="ProgramDetailParticipation"/>
+        <facet-option>frequency-order</facet-option>
+        <facet-option>descending</facet-option>
+      </range>
+    </constraint> 
+  <constraint name="SourceSystem">
+      <range type="xs:string" collation="http://marklogic.com/collation/">
+        <element ns="" name="SourceSystem"/>
+        <facet-option>frequency-order</facet-option>
+        <facet-option>descending</facet-option>
+      </range>
+    </constraint>   
   <default-suggestion-source>
     <word-lexicon collation="http://marklogic.com/collation/"></word-lexicon>
   </default-suggestion-source>
