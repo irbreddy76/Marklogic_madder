@@ -21,7 +21,7 @@
 
     superCtrl.constructor.call(ctrl, $scope, $location, mlSearch);
 
-    ctrl.person = {};
+    ctrl.person = personHelper.getPerson();
     ctrl.mode = 'basic';
     
     ctrl.init();
@@ -63,6 +63,7 @@
     
     ctrl.doSearch = function(person) {
       //console.log(ctrl.person.lastName);
+      personHelper.updatePerson(person);
       var params = personHelper.getPersonQueryParams(person);
       console.log(params);
       MLRest.extension('person', {

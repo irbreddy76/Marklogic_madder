@@ -1,0 +1,28 @@
+      <table class="table table-striped table-hover table-bordered">
+        <thead>
+          <tr>
+            <th>First Name</th>
+            <th>Middle</th>
+            <th>Last Name</th>
+            <th>SSN</th>
+            <th>DoB</th>
+            <th>Sex</th>
+            <th>Race</th>
+            <th>Cases</th>
+            <th>&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="result in results">
+            <td>{{result.matches.summary.firstName}}</td>
+            <td>{{result.matches.summary.middleName}}</td>
+            <td>{{result.matches.summary.lastName}}</td>
+            <td>{{result.matches.summary.id}}</td>
+            <td>{{result.matches.summary.dob}}</td>
+            <td>{{result.matches.summary.gender}}</td>
+            <td>{{result.matches.summary.race}}</td>
+            <td>{{result.matches.summary.caseCount}}</td>
+            <td><a ui-sref="root.view({uri: result.uri})">View</a></td>
+          </tr>
+        </tbody>
+      </table>

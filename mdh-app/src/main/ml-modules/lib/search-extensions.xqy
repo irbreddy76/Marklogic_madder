@@ -80,7 +80,8 @@ declare function s:buildPersonParticipation($header as map:map, $content as map:
     map:put($json, "id", map:get($header, "SSNIdentificationId")),
     map:put($json, "gender", map:get($person, "PersonSexCode")),
     map:put($json, "race", map:get($person, "PersonRaceCode")),
-    map:put($json, "caseCount", fn:count(map:keys($cases)))
+    map:put($json, "caseCount", fn:count(map:keys($cases))),
+    map:put($json, "dob", map:get($person, "PersonBirthDate"))
   )
   return $json
 };
