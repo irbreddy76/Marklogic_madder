@@ -26,6 +26,22 @@
       </dd>
     </dl>
   </div>
+</hr/>
+  <h3>Participation Detail</h3>
+  <div>
+    <dl class="dl-horizontal" ng-repeat="name in ctrl.doc.content.Participations">
+      <dt>Participation Type</dt>
+      <dd>{{name.ParticipationType}}</dd>
+      <dt>Participation Program</dt>
+      <dd>{{name.ParticipationProgramName}}</dd>
+      <dt>Open Date</dt>
+      <dd>{{name.OpenDate}}</dd>
+      <dt>Closed Date</dt>
+      <dd>{{name.CloseDate}}</dd>   
+      <dt>Closed Code</dt>
+      <dd>{{name.CloseCode}}</dd> 
+    </dl>
+   </div> 
   <hr/>
   <div class="col-sm-8">
     <tabset type="pills">
