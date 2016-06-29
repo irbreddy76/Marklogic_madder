@@ -9,3 +9,5 @@ mdh-app/node_modules
 mdh-app/src/main/resources/static
 mdh-app/src/main/resources/templates
 mdh-app/src/main/resources/bower_components
+data-hub/build/
+data-hub/environment.properties
