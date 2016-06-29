@@ -107,6 +107,52 @@
   <sort-order direction="descending">
     <score />
   </sort-order>
+  <operator name="sort">
+    <state name="bdd">
+      <sort-order direction="descending" type="xs:date">
+        <json-property>PersonBirthDate</json-property>
+      </sort-order>
+    </state>
+    <state name="bda">
+      <sort-order direction="ascending" type="xs:date">
+        <json-property>PersonBirthDate</json-property>
+      </sort-order>
+    </state>
+    <state name="wsd">
+      <sort-order direction="descending">
+        <score/>
+      </sort-order>
+    </state>
+    <state name="wsa">
+      <sort-order direction="ascending">
+        <score/>
+      </sort-order>
+    </state>
+    <state name="fnd">
+      <sort-order direction="descending" type="xs:string"
+        collation="http://marklogic.com/collation/codepoint">
+        <json-property>PersonGivenName</json-property>
+      </sort-order>
+    </state>
+    <state name="fna">
+      <sort-order direction="ascending" type="xs:string"
+        collation="http://marklogic.com/collation/codepoint">
+        <json-property>PersonGivenName</json-property>
+      </sort-order>
+    </state>
+    <state name="lnd">
+      <sort-order direction="descending" type="xs:string"
+        collation="http://marklogic.com/collation/codepoint">
+        <json-property>PersonSurName</json-property>
+      </sort-order>
+    </state>
+    <state name="lna">
+      <sort-order direction="ascending" type="xs:string"
+        collation="http://marklogic.com/collation/codepoint">
+        <json-property>PersonSurName</json-property>
+      </sort-order>
+    </state>
+  </operator>
   <transform-results apply="buildSummary" ns="http://marklogic.com/md-dhr/search-extensions"
       at="/lib/search-extensions.xqy">
   </transform-results>

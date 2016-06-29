@@ -331,6 +331,10 @@ declare variable $CONFIG :=
       <key>score</key>
       <value type="xs:double">0</value>
     </min-score>
+    <sort>
+      <key>sort</key>
+      <value type="xs:string">wsd</value>
+    </sort>
   </config>
 </configuration>;
 
@@ -508,7 +512,7 @@ declare function nm:algorithm-new($params as map:map, $config as map:map) {
     if(fn:empty($query)) then ()
     else 
       cts:search(fn:doc(), cts:and-query(($query, $collection)), 
-        ("score-simple","unfiltered", cts:score-order("descending")))[1 to 
+        ("score-simple","unfiltered", nm:get-sort-options($params)))[1 to 
           nm:read-map-value($params, $CONFIG/config/result-limit/key, $CONFIG/config/result-limit/value)]
   let $_ := fn:trace(fn:concat(" -- Candidates found:", fn:string(cts:remainder($candidates[1]))), $TRACE_LEVEL_TRACE)
   let $array := json:array()
@@ -531,4 +535,32 @@ declare function nm:algorithm-new($params as map:map, $config as map:map) {
     map:put($json, "config", $config)
   )       
   return $json 
+};
+
+declare function nm:get-sort-options($params as map:map) {
+  let $sort-string := nm:read-map-value($params, $CONFIG/config/sort/key, $CONFIG/config/sort/value)
+  return nm:parse-sort-option($sort-string)
+};
+
+declare function nm:parse-sort-option($sort-string as xs:string) {
+  let $option := fn:substring($sort-string, 1, 3)
+  let $next := fn:substring($sort-string, 4)
+  return (
+    if($option = "wsd") then cts:score-order("descending")
+    else if($option = "wsa") then cts:score-order("ascending")
+    else if($option = "gnd") then cts:index-order(cts:element-reference(xs:QName("PersonGivenName"), 
+      (type="xs:string", collation="http://marklogic.com/collation/codepoint")), "descending")
+    else if($option = "gna") then cts:index-order(cts:element-reference(xs:QName("PersonGivenName"), 
+      (type="xs:string", collation="http://marklogic.com/collation/codepoint")), "ascending")
+    else if($option = "snd") then cts:index-order(cts:element-reference(xs:QName("PersonSurName"), 
+      (type="xs:string", collation="http://marklogic.com/collation/codepoint")), "descending")
+    else if($option = "sna") then cts:index-order(cts:element-reference(xs:QName("PersonSurName"), 
+      (type="xs:string", collation="http://marklogic.com/collation/codepoint")), "ascending")
+    else if($option = "bdd") then cts:index-order(cts:element-reference(xs:QName("PersonBirthDate"), 
+      (type="xs:string", collation="http://marklogic.com/collation/codepoint")), "descending")
+    else if($option = "bda") then cts:index-order(cts:element-reference(xs:QName("PersonBirthDate"), 
+      (type="xs:string", collation="http://marklogic.com/collation/codepoint")), "ascending")
+    else (),
+    if(fn:empty($next) or fn:string-length($next) = 0) then ()
+    else nm:parse-sort-option($next)
 };

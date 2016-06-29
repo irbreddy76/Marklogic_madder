@@ -65,6 +65,9 @@
         params['rs:dob'] = $filter('date')(person.dob, 'yyyy-MM-dd');
       }
       
+      if(person.ssn) {
+        params['rs:id'] = person.ssn;
+      }
       return params;      
     }            
      

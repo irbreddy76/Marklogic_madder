@@ -49,17 +49,6 @@
           break;
       }
     };    
-
-    ctrl.selectPage = function() {
-      switch(ctrl.mode) {
-        case 'person':
-          ctrl.doSearch(ctrl.person);
-          break;
-        default:
-          ctrl.search();
-          break;
-      }
-    };
     
     ctrl.doSearch = function(person) {
       //console.log(ctrl.person.lastName);
@@ -75,24 +64,32 @@
     
     ctrl.submitSearch = function(response) {
        if(response.data) {
-         mlSearch.setPage( this.page );
+         this.mlSearch.setPage(this.page);
+         this.mlSearch.setPageLength(ctrl.pageLength);
          mlSearch.additionalQueries = [];
          mlSearch.additionalQueries.push(response.data);
          return this._search();
        }
     };     
 
-    ctrl.search = function(qtext) {
-			if ( arguments.length ) {
+    ctrl.search = function(qtext) {      
+      switch(ctrl.mode) {
+        case 'person':
+          ctrl.doSearch(ctrl.person);
+          break;
+        default:
+          if ( arguments.length ) {
 				this.qtext = qtext;
 			}
-			this.mlSearch.setText( this.qtext ).setPage( this.page );
+			this.mlSearch.setText( this.qtext ).setPage( this.page ).setPageLength(ctrl.pageLength);
 			if (ctrl.runMapSearch) {
 				mlSearch.additionalQueries = [];
 				mlSearch.additionalQueries.push(ctrl.getGeoConstraint());
 			}
 			return this._search();
-		};
+          break;
+      }	
+    };
 
 		ctrl.mapBoundsChanged = function(bounds) {
 			ctrl.bounds = bounds;
@@ -137,7 +134,32 @@
 
     ctrl.clearText = function() {
       ctrl.person = {};
+      ctrl.search();
     };    
+    
+    ctrl.toggleSort = function(field) {
+      if($scope.sort.field === field) {
+        if($scope.sort.order === 'd') {
+          $scope.sort.order = 'a';
+        } else {
+          $scope.sort.field = 'ws';
+          $scope.sort.order = 'd';
+        }
+      } else {
+        $scope.sort.field = field;
+        $scope.sort.order = 'd';
+      }
+      
+      this.mlSearch.setSort($scope.sort.field + $scope.sort.order);
+      ctrl.search(this.qtext);
+    };
+        
+    ctrl.pageLength = 10;
+    
+    $scope.sort = {
+      field: 'sc',
+      order: 'd'
+    };
     
 // Start Angular Datepicker functions
 // Following functions are used by angular datePicker 

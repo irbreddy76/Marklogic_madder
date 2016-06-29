@@ -84,6 +84,13 @@
                     </span>
                   </div>                
                 </div>
+                <div class="col-sm-2">
+                  <label>SSN:</label>
+                </div>
+                <div class="col-sm-2">
+                  <input type="text" class="form-control" ng-model="ctrl.person.ssn" 
+                    placeholder="SSN..." autocomplete="off"/>
+                </div>
               </div>
             </accordion-group>
           </accordion>
@@ -92,13 +99,13 @@
         <div class="row">
           <div class="col-sm-offset-2 col-sm-3">
             <button id="single-button" type="button" class="btn btn-primary" 
-              dropdown-toggle ng-disabled="disabled" ng-click="ctrl.doSearch(ctrl.person)">
+              ng-disabled="disabled" ng-click="ctrl.search()">
               <i class="fa fa-search"></i> Search
             </button>
           </div>
           <div class="col-sm-offset-2 col-sm-3">
             <button id="single-button" type="button" class="btn btn-primary" 
-              dropdown-toggle ng-disabled="disabled" ng-click="ctrl.clearText()">
+              ng-disabled="disabled" ng-click="ctrl.clearText()">
               <i class="fa fa-times-circle"></i> Clear
             </button>
           </div>
@@ -131,15 +138,29 @@
   -->
     <br/>
     <div ng-if="ctrl.response.total > 0" class="results">
-      <div class="pagination-ctrls">
-        <pagination class="pagination pagination-sm" ng-model="ctrl.page" 
-          ng-change="ctrl.selectPage()" max-size="10" boundary-links="true" 
-          total-items="ctrl.response.total" items-per-page="ctrl.response['page-length']">
-        </pagination>
-        <!-- <ml-snippet set-snippet="ctrl.setSnippet(type)"></ml-snippet> -->
+      <div class="row">
+        <div class="col-sm-8">
+          <div class="pagination-ctrls">
+            <pagination class="pagination pagination-sm" ng-model="ctrl.page" 
+              ng-change="ctrl.selectPage()" max-size="10" boundary-links="true" 
+              total-items="ctrl.response.total" items-per-page="ctrl.response['page-length']">
+            </pagination>
+          </div>
+        </div>
+        <div class="col-sm-2">
+          <p><b>Results per page:</b></p>
+        </div>
+        <div class="col-sm-2">
+          <!-- <ml-snippet set-snippet="ctrl.setSnippet(type)"></ml-snippet> -->
+          <form>
+              <input ng-model="pageLength" type="text" class="form-control" />
+          </form>
+        </div>
+      <!--<set-sort set-sort="ctrl.setSort()" sort-options="ctrl.sortOptions"></set-sort>-->
       </div>
       <ml-metrics search="ctrl.response" ></ml-metrics>
-      <ml-results template="app/search/search-results-table.html" results="ctrl.response.results"></ml-results>
+      <search-results template="app/search/search-results-table.html" results="ctrl.response.results"
+        toggle-sort="ctrl.toggleSort(field)"></search-results>
     </div>
   </div>
 </div>
