@@ -66,7 +66,7 @@
       }
       
       if(person.ssn) {
-        params['rs:id'] = person.ssn;
+        params['rs:ssn'] = person.ssn;
       }
       return params;      
     }            

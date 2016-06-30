@@ -166,7 +166,7 @@ declare variable $CONFIG :=
   <street>
     <!-- Property name used for JSON queries -->
     <property>LocationStreet</property>
-    <!-- <separator> </separator> -->
+    <separator> </separator>
     <!-- <dictionary>/dictionaries/last-names.xml</dictionary> -->
     <!-- Key values used on the parameter and config maps -->
     <param>
@@ -179,16 +179,16 @@ declare variable $CONFIG :=
     </param>
     <!-- Default weights/values -->
     <weight type="xs:double">18</weight>
-    <!--<token-weight type="xs:double">18</token-weight>-->
+    <token-weight type="xs:double">6</token-weight>
     <word-distance type="xs:integer">30</word-distance>
     <multiplier type="xs:double">0.5</multiplier>
     <similar-limit type="xs:integer">10</similar-limit>
-    <algorithm type="xs:string">{$ALG_NONE}</algorithm>
+    <algorithm type="xs:string">{$ALG_TOKEN_MATCH}</algorithm>
   </street>
   <city>
     <!-- Property name used for JSON queries -->
     <property>LocationCityName</property>
-    <!-- <separator> </separator> -->
+    <separator> </separator>
     <!-- <dictionary>/dictionaries/last-names.xml</dictionary> -->
     <!-- Key values used on the parameter and config maps -->
     <param>
@@ -201,11 +201,11 @@ declare variable $CONFIG :=
     </param>
     <!-- Default weights/values -->
     <weight type="xs:double">12</weight>
-    <!--<token-weight type="xs:double">18</token-weight>-->
+    <token-weight type="xs:double">6</token-weight>
     <word-distance type="xs:integer">30</word-distance>
     <multiplier type="xs:double">0.5</multiplier>
     <similar-limit type="xs:integer">10</similar-limit>
-    <algorithm type="xs:string">{$ALG_NONE}</algorithm>
+    <algorithm type="xs:string">{$ALG_TOKEN_MATCH}</algorithm>
   </city>
   <state>
     <!-- Property name used for JSON queries -->
@@ -448,9 +448,12 @@ declare function nm:build-query($term as xs:string*, $config as map:map, $defaul
     return
       if($algorithm = $ALG_TOKEN_MATCH) then
         (: tokenize the term.  each matching part contributes to the score :)
+        let $separator := 
+          if(fn:string-length($defaults/separator) > 0) then $defaults/separator 
+          else " "
         let $parts := 
-          for $part in fn:tokenize($term, $defaults/separator)
-          where fn:string-length($part) > 1
+          for $part in fn:tokenize($term, $separator)
+          where fn:string-length($part) > 2
           return $part
         let $weight := nm:read-map-value($config, $defaults/param/weight, $defaults/token-weight)
         for $property in $defaults/property
@@ -548,13 +551,13 @@ declare function nm:parse-sort-option($sort-string as xs:string) {
   return (
     if($option = "wsd") then cts:score-order("descending")
     else if($option = "wsa") then cts:score-order("ascending")
-    else if($option = "gnd") then cts:index-order(cts:element-reference(xs:QName("PersonGivenName"), 
+    else if($option = "fnd") then cts:index-order(cts:element-reference(xs:QName("PersonGivenName"), 
       (type="xs:string", collation="http://marklogic.com/collation/codepoint")), "descending")
-    else if($option = "gna") then cts:index-order(cts:element-reference(xs:QName("PersonGivenName"), 
+    else if($option = "fna") then cts:index-order(cts:element-reference(xs:QName("PersonGivenName"), 
       (type="xs:string", collation="http://marklogic.com/collation/codepoint")), "ascending")
-    else if($option = "snd") then cts:index-order(cts:element-reference(xs:QName("PersonSurName"), 
+    else if($option = "lnd") then cts:index-order(cts:element-reference(xs:QName("PersonSurName"), 
       (type="xs:string", collation="http://marklogic.com/collation/codepoint")), "descending")
-    else if($option = "sna") then cts:index-order(cts:element-reference(xs:QName("PersonSurName"), 
+    else if($option = "lna") then cts:index-order(cts:element-reference(xs:QName("PersonSurName"), 
       (type="xs:string", collation="http://marklogic.com/collation/codepoint")), "ascending")
     else if($option = "bdd") then cts:index-order(cts:element-reference(xs:QName("PersonBirthDate"), 
       (type="xs:string", collation="http://marklogic.com/collation/codepoint")), "descending")
@@ -563,4 +566,5 @@ declare function nm:parse-sort-option($sort-string as xs:string) {
     else (),
     if(fn:empty($next) or fn:string-length($next) = 0) then ()
     else nm:parse-sort-option($next)
+  )
 };
