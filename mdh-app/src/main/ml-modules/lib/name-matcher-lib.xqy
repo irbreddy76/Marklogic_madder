@@ -25,7 +25,7 @@ declare variable $CONFIG :=
 <configuration>
   <ssn>
     <!-- Property name used for JSON queries -->
-    <property>SSNIdentificationID</property>
+    <property>SSNIdentificationId</property>
     <separator>-</separator>
     <!--<dictionary>/dictionaries/ssn.xml</dictionary>-->
     <!-- Key values used on the parameter and config maps -->
