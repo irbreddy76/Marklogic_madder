@@ -6,7 +6,10 @@
  * @return - an array of ids or uris
  */
 function collect(options) {
-  return cts.uris(null, null, cts.trueQuery());
+  return cts.uris(null, null, cts.andNotQuery(
+    cts.collectionQuery(['CHESSIEAddress']),
+    cts.collectionQuery(['processed'])
+  ));
 }
 
 module.exports = {

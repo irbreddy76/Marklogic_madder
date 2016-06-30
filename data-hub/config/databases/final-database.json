@@ -52,6 +52,21 @@
     {
       "scalar-type": "string",
       "namespace-uri": "",
+      "localname": "PersonGivenName",
+      "collation": "http://marklogic.com/collation/codepoint",
+      "range-value-positions": false,
+      "invalid-values": "reject"
+    },
+    {
+      "scalar-type": "string",
+      "namespace-uri": "",
+      "localname": "PersonSurName",
+      "collation": "http://marklogic.com/collation/codepoint",
+      "range-value-positions": false,
+      "invalid-values": "reject"
+    },{
+      "scalar-type": "string",
+      "namespace-uri": "",
       "localname": "SourceSystem",
       "collation": "http://marklogic.com/collation/codepoint",
       "range-value-positions": false,
