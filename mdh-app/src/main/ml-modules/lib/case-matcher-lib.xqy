@@ -57,14 +57,14 @@ declare variable $CONFIG :=
       <similar-limit>cd_limit</similar-limit>
     </param>
     <!-- Default weights/values -->
-    <weight type="xs:double">24</weight>
-    <token-weight type="xs:double">8</token-weight>
+    <weight type="xs:double">36</weight>
+    <token-weight type="xs:double">12</token-weight>
     <edit-distance type="xs:integer">4</edit-distance>
     <word-distance type="xs:integer">30</word-distance>
     <multiplier type="xs:double">0.5</multiplier>
     <similar-limit type="xs:integer">10</similar-limit>
     <algorithm type="xs:string">{$ALG_TOKEN_MATCH}</algorithm>
-  </cd>
+  </cd>  
   <ccode>
     <!-- Property name used for JSON queries -->
     <property>CloseCode</property>
@@ -181,13 +181,14 @@ declare function cm:get-query($params as map:map, $config as map:map,  $output a
     fn:trace(" -- output:" || $output, $TRACE_LEVEL_DETAIL)  
   )
   let $queries := (
-    cm:build-query(fn:lower-case(map:get($params, $CONFIG/status/param/key)), $config, $CONFIG/status, $output, $TYPE_WORD),
+    cm:build-query(fn:lower-case(map:get($params, $CONFIG/status/param/key)), $config, $CONFIG/status, 
+      $output, $TYPE_WORD),    
     cm:build-query(map:get($params, $CONFIG/cd/param/key), $config, $CONFIG/cd, $output, $TYPE_NUMBER),
-    cm:build-query(fn:lower-case(map:get($params, $CONFIG/ccode/param/key)), $config, $CONFIG/ccode, 
+    cm:build-query(fn:lower-case(map:get($params, $CONFIG/ccode/param/key)), $config, $CONFIG/ccode,
       $output, $TYPE_WORD),
     cm:build-query(fn:lower-case(map:get($params, $CONFIG/ctype/param/key)), $config, $CONFIG/ctype,
-      $output, $TYPE_WORD),
-    cm:build-query(map:get($params, $CONFIG/ppn/param/key), $config, $CONFIG/ppn,
+      $output, $TYPE_WORD),    
+    cm:build-query(fn:lower-case(map:get($params, $CONFIG/ppn/param/key)), $config, $CONFIG/ppn,
       $output, $TYPE_WORD)
   )
   return
@@ -209,7 +210,6 @@ declare function cm:get-query($params as map:map, $config as map:map,  $output a
       else cts:or-query($queries)
 };
 
-
 declare function cm:build-query($term as xs:string*, $config as map:map, $defaults as element(),
   $output as xs:string, $type as xs:string) {
   let $_ := (
@@ -225,9 +225,12 @@ declare function cm:build-query($term as xs:string*, $config as map:map, $defaul
     return
       if($algorithm = $ALG_TOKEN_MATCH) then
         (: tokenize the term.  each matching part contributes to the score :)
+        let $separator := 
+          if(fn:string-length($defaults/separator) > 0) then $defaults/separator 
+          else " "
         let $parts := 
-          for $part in fn:tokenize($term, $defaults/separator)
-          where fn:string-length($part) > 1
+          for $part in fn:tokenize($term, $separator)
+          where fn:string-length($part) > 2
           return $part
         let $weight := cm:read-map-value($config, $defaults/param/weight, $defaults/token-weight)
         for $property in $defaults/property
@@ -243,7 +246,7 @@ declare function cm:build-query($term as xs:string*, $config as map:map, $defaul
           if($type = $TYPE_NUMBER) then 
             dict:get-similar-numbers($term, $defaults/dictionary, 
               cm:read-map-value($config, $defaults/param/edit-distance, $defaults/edit-distance),
-              cm:read-map-value($config,$defaults/param/word-distance, $defaults/word-distance),
+              cm:read-map-value($config, $defaults/param/word-distance, $defaults/word-distance),
               cm:read-map-value($config, $defaults/param/similar-limit, $defaults/similar-limit))
           else
             dict:get-similar-words($term, $defaults/dictionary, 
@@ -337,4 +340,5 @@ declare function cm:parse-sort-option($sort-string as xs:string) {
     else (),
     if(fn:empty($next) or fn:string-length($next) = 0) then ()
     else cm:parse-sort-option($next)
+  )
 };
