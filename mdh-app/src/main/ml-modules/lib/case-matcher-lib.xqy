@@ -125,6 +125,27 @@ declare variable $CONFIG :=
     <similar-limit type="xs:integer">10</similar-limit>
     <algorithm type="xs:string">{$ALG_NONE}</algorithm>
   </ppn>
+  <caseId>
+    <!-- Property name used for JSON queries -->
+    <property>serviceCaseId</property>
+    <param>
+      <key>caseId</key>
+      <algorithm>caseId_algorithm</algorithm>
+      <weight>caseId_wt</weight>
+      <edit-distance>caseId_edit_distance</edit-distance>
+      <word-distance>caseId_word_distance</word-distance>
+      <weight-multiplier>caseId_mult</weight-multiplier>
+      <similar-limit>caseId_limit</similar-limit>
+    </param>
+    <!-- Default weights/values -->
+    <weight type="xs:double">36</weight>
+    <token-weight type="xs:double">12</token-weight>
+    <edit-distance type="xs:integer">4</edit-distance>
+    <word-distance type="xs:integer">30</word-distance>
+    <multiplier type="xs:double">0.5</multiplier>
+    <similar-limit type="xs:integer">10</similar-limit>
+    <algorithm type="xs:string">{$ALG_NONE}</algorithm>
+  </caseId>  
   <config>
     <result-limit>
       <key>limit</key>
@@ -189,7 +210,9 @@ declare function cm:get-query($params as map:map, $config as map:map,  $output a
     cm:build-query(fn:lower-case(map:get($params, $CONFIG/ctype/param/key)), $config, $CONFIG/ctype,
       $output, $TYPE_WORD),    
     cm:build-query(fn:lower-case(map:get($params, $CONFIG/ppn/param/key)), $config, $CONFIG/ppn,
-      $output, $TYPE_WORD)
+      $output, $TYPE_WORD),
+    cm:build-query(map:get($params, $CONFIG/caseId/param/key), $config, $CONFIG/caseId, 
+      $output, $TYPE_NUMBER)    
   )
   return
     if(fn:empty($queries)) then ()
@@ -284,7 +307,9 @@ declare function cm:algorithm-new($params as map:map, $config as map:map) {
   let $_ := fn:trace("algorithm-new -- CALLED", $TRACE_LEVEL_TRACE)
   let $target := map:get($params, "target")
   let $query := cm:get-query($params, $config, "xquery")
-  let $collection := cts:collection-query("ParticipationDetail")
+  let $collection := 
+    if($target = "personParticipation") then cts:collection-query("PersonParticipation")
+    else cts:collection-query("ParticipationDetail")  
   let $candidates := 
     if(fn:empty($query)) then ()
     else 
