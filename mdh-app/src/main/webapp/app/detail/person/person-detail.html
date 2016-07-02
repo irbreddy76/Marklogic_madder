@@ -1,0 +1,102 @@
+<accordion close-others="false">
+  <accordion-group heading="Person Detail" is-open="status.isPersonOpen">
+    <div ng-repeat="name in person.content.Person.PersonName">
+      <dl class="dl-horizontal">
+        <dt>Name Type</dt>
+        <dd>{{name.PersonNameType}}</dd>
+        <dt>Person Given Name</dt>
+        <dd>{{name.PersonGivenName}}</dd>
+        <dt ng-if="name.PersonMiddleName">Person Middle Name</dt>
+        <dd>{{name.PersonMiddleName}}</dd>
+        <dt>Person Family Name</dt>
+        <dd>{{name.PersonSurName}}</dd>
+        <dt>Gender</dt>
+        <dd>{{person.content.Person.PersonSexCode}}</dd>
+        <dt>Race</dt>
+        <dd>{{person.content.Person.PersonRaceCode}}</dd>
+        <dt>Date of Birth</dt>
+        <dd>{{person.content.Person.PersonBirthDate | date: 'MM-dd-yyyy'}}</dd>
+        <dt>Social Security Number</dt>
+        <dd>{{person.content.Person.PersonSSNIdentification[0].IdentificationID}}</dd>
+        <dt ng-if="person.content.Person.PersonDigitalImage.length > 0">Depiction(s)</dt>
+        <dd>
+          <div ng-repeat="img in person.content.Person.PersonDigitalImage">
+            <img src="{{img.src}}" alt="{{img.alt}}"/>
+          </div>
+        </dd>
+      </dl>
+      <hr ng-if="!$last"></hr>
+    </div>
+  </accordion-group>
+  <accordion-group heading="Addresses" is-open="status.isAddressOpen">
+    <div ng-repeat="address in person.headers.Addresses">
+      <dl class="dl-horizontal">
+        <dt>Address Type</dt>
+        <dd>{{address.AddressType}}</dd>
+        <dt>Start Date</dt>
+        <dd>{{address.StartDate | date: 'MM-dd-yyyy'}}</dd>
+        <dt>Close Date</dt>
+        <dd>{{address.CloseDate | date: 'MM-dd-yyyy'}}</dd>
+        <dt>Street</dt>
+        <dd>{{address.LocationStreet}}</dd>   
+        <dt>City</dt>
+        <dd>{{address.LocationCityName}}</dd> 
+        <dt>County</dt>
+        <dd>{{address.LocationCounty}}</dd>
+        <dt>State</dt>
+        <dd>{{address.LocationStateName}}</dd>
+        <dt>Postal Code</dt>
+        <dd>{{address.PostalCode}}</dd>
+        <dt>Postal Code Extension</dt>
+        <dd>{{address.PostalCodeExtension}}</dd>
+      </dl>
+      <hr ng-if="!$last"></hr>
+    </div>
+  </accordion-group>
+  <accordion-group heading="Participation Detail" is-open="status.isParticipationOpen">
+    <div ng-repeat="name in person.content.Participations">
+      <dl class="dl-horizontal">
+        <dt>Participation Type</dt>
+        <dd>{{name.ParticipationType}}</dd>
+        <dt>Participation Program</dt>
+        <dd>{{name.ParticipationProgramName}}</dd>
+        <dt>Open Date</dt>
+        <dd>{{name.OpenDate | date: 'MM-dd-yyyy'}}</dd>
+        <dt>Closed Date</dt>
+        <dd>{{name.CloseDate | date: 'MM-dd-yyyy'}}</dd>   
+        <dt>Closed Code</dt>
+        <dd>{{name.CloseCode}}</dd> 
+      </dl>
+      <accordion>
+        <accordion-group heading="Programs" is-open="stats.isProgramOpen">
+          <div ng-repeat="program in name.PersonRoles">
+            <dl class="dl-horizontal">
+              <dt>Program</dt>
+              <dd>{{program.Program}}</dd>
+              <dt>Participation Type</dt>
+              <dd>{{program.ProgramParticipationType}}</dd>
+              <dt>Participation Detail</dt>
+              <dd>{{program.ProgramDetailParticipation}}</dd>
+              <dt>Start Date</dt>
+              <dd>{{program.StartDate | date: 'MM-dd-yyyy'}}</dd>
+              <dt>End Date</dt>
+              <dd>{{program.EndDate | date: 'MM-dd-yyyy'}}</dd>
+              <dt>Close Date</dt>
+              <dd>{{program.CloseDate | date: 'MM-dd-yyyy'}}</dd>   
+              <dt>Closed Code</dt>
+              <dd>{{program.CloseCode}}</dd>
+              <dt>Jurisdiction</dt>
+              <dd>{{program.Jurisdiction}}</dd>
+              <dt>Office Code</dt>
+              <dd>{{program.OfficeCode}}</dd>
+              <dt>Office Name</dt>
+              <dd>{{program.OfficeName}}</dd>
+            </dl>
+            <hr ng-if="!$last"></hr>
+          </div>
+        </accordion-group>
+      </accordion>     
+      <hr ng-if="!$last"></hr>
+    </div> 
+  </accordion-group>
+</accordion>

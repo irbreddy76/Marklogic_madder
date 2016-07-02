@@ -8,7 +8,7 @@
   
   function PersonHelper($rootScope, $filter) {
     var personQueryPending;
-    var personObject;
+    var personObject = {};
     
     function getPerson() {
       return personObject;

@@ -27,6 +27,7 @@ declare variable $CONFIG :=
     <!-- Property name used for JSON queries -->
     <property>SSNIdentificationId</property>
     <separator>-</separator>
+    <type>number</type> 
     <!--<dictionary>/dictionaries/ssn.xml</dictionary>-->
     <!-- Key values used on the parameter and config maps -->
     <param>
@@ -45,7 +46,7 @@ declare variable $CONFIG :=
     <word-distance type="xs:integer">30</word-distance>
     <multiplier type="xs:double">0.5</multiplier>
     <similar-limit type="xs:integer">10</similar-limit>
-    <algorithm type="xs:string">{$ALG_TOKEN_MATCH}</algorithm>
+    <algorithm type="xs:string">{$ALG_NONE}</algorithm>
   </ssn>
   <dob>
     <!-- Property name used for JSON queries -->
@@ -53,6 +54,7 @@ declare variable $CONFIG :=
     <separator>-</separator>
     <!--<dictionary>/dictionaries/birth-date.xml</dictionary>-->
     <!-- Key values used on the parameter and config maps -->
+    <type>string</type>
     <param>
       <key>dob</key>
       <algorithm>dob_algorithm</algorithm>
@@ -75,6 +77,7 @@ declare variable $CONFIG :=
     <!-- Property name used for JSON queries -->
     <property>PersonMiddleName</property>
     <separator> </separator>
+    <type>string</type>
     <dictionary>/dictionaries/male-first-names.xml</dictionary>
     <dictionary>/dictionaries/female-first-names.xml</dictionary>
     <dictionary>/dictionaries/last-names.xml</dictionary>
@@ -99,6 +102,7 @@ declare variable $CONFIG :=
     <!-- Property name used for JSON queries -->
     <property>PersonGivenName</property>
     <separator> </separator>
+    <type>string</type>
     <dictionary>/dictionaries/male-first-names.xml</dictionary>
     <dictionary>/dictionaries/female-first-names.xml</dictionary>
     <!-- Key values used on the parameter and config maps -->
@@ -123,6 +127,7 @@ declare variable $CONFIG :=
     <property>PersonSurName</property>
     <property>PersonMaidenName</property>
     <separator> </separator>
+    <type>string</type>
     <dictionary>/dictionaries/last-names.xml</dictionary>
     <!-- Key values used on the parameter and config maps -->
     <param>
@@ -145,6 +150,7 @@ declare variable $CONFIG :=
     <!-- Property name used for JSON queries -->
     <property>PersonRaceCode</property>
     <!-- <separator> </separator> -->
+    <type>string</type>
     <!-- <dictionary>/dictionaries/last-names.xml</dictionary> -->
     <!-- Key values used on the parameter and config maps -->
     <param>
@@ -167,6 +173,7 @@ declare variable $CONFIG :=
     <!-- Property name used for JSON queries -->
     <property>LocationStreet</property>
     <separator> </separator>
+    <type>string</type>
     <!-- <dictionary>/dictionaries/last-names.xml</dictionary> -->
     <!-- Key values used on the parameter and config maps -->
     <param>
@@ -189,6 +196,7 @@ declare variable $CONFIG :=
     <!-- Property name used for JSON queries -->
     <property>LocationCityName</property>
     <separator> </separator>
+    <type>string</type>
     <!-- <dictionary>/dictionaries/last-names.xml</dictionary> -->
     <!-- Key values used on the parameter and config maps -->
     <param>
@@ -211,6 +219,7 @@ declare variable $CONFIG :=
     <!-- Property name used for JSON queries -->
     <property>LocationStateName</property>
     <!-- <separator> </separator> -->
+    <type>string</type>
     <!-- <dictionary>/dictionaries/last-names.xml</dictionary> -->
     <!-- Key values used on the parameter and config maps -->
     <param>
@@ -233,6 +242,7 @@ declare variable $CONFIG :=
     <!-- Property name used for JSON queries -->
     <property>LocationPostalCode</property>
     <separator>-</separator>
+    <type>number</type>
     <!-- <dictionary>/dictionaries/last-names.xml</dictionary> -->
     <!-- Key values used on the parameter and config maps -->
     <param>
@@ -257,6 +267,7 @@ declare variable $CONFIG :=
     <!-- Property name used for JSON queries -->
     <property>LocationPostalCodeExtension</property>
     <separator>-</separator>
+    <type>number</type>
     <!-- <dictionary>/dictionaries/last-names.xml</dictionary> -->
     <!-- Key values used on the parameter and config maps -->
     <param>
@@ -281,6 +292,7 @@ declare variable $CONFIG :=
     <!-- Property name used for JSON queries -->
     <property>FullTelephoneNumber</property>
     <separator>-</separator>
+    <type>number</type>
     <!-- <dictionary>/dictionaries/last-names.xml</dictionary> -->
     <!-- Key values used on the parameter and config maps -->
     <param>
@@ -304,6 +316,7 @@ declare variable $CONFIG :=
     <!-- Property name used for JSON queries -->
     <property>ContactEmailId</property>
     <!-- <separator> </separator> -->
+    <type>string</type>
     <!-- <dictionary>/dictionaries/last-names.xml</dictionary> -->
     <!-- Key values used on the parameter and config maps -->
     <param>
@@ -325,7 +338,7 @@ declare variable $CONFIG :=
   <config>
     <result-limit>
       <key>limit</key>
-      <value type="xs:integer">100</value>
+      <value type="xs:integer">10</value>
     </result-limit>
     <min-score>
       <key>score</key>
@@ -394,9 +407,6 @@ declare function nm:get-query($params as map:map, $config as map:map,  $output a
     nm:build-address-query($params, $config, $output)
   )
   return
-    if(fn:empty($queries)) then ()
-    else if(fn:count($queries) = 1) then $queries
-    else 
       if($output = $qh:OUTPUT_JSON) then 
         let $json := json:object()
         let $array :=
@@ -407,9 +417,11 @@ declare function nm:get-query($params as map:map, $config as map:map,  $output a
           let $object := json:object()
           let $_ := map:put($object, "queries", $array)
           return $object
-        let $_ := map:put($json, "or-query", $queryobject)
+        let $_ := if(fn:count($queries) > 0) then
+          map:put($json, "or-query", $queryobject) else ()
         return $json
-      else cts:or-query($queries)
+      else if(fn:count($queries) > 0) then cts:or-query($queries)
+      else ()
 };
 
 declare function nm:build-address-query($params as map:map, $config as map:map, $output as xs:string) {
@@ -448,12 +460,10 @@ declare function nm:build-query($term as xs:string*, $config as map:map, $defaul
     return
       if($algorithm = $ALG_TOKEN_MATCH) then
         (: tokenize the term.  each matching part contributes to the score :)
-        let $separator := 
-          if(fn:string-length($defaults/separator) > 0) then $defaults/separator 
-          else " "
+        let $separator := if(fn:string-length($defaults/separator) > 0) then $defaults/separator else " "
         let $parts := 
           for $part in fn:tokenize($term, $separator)
-          where fn:string-length($part) > 2
+          where fn:string-length($part) > 1
           return $part
         let $weight := nm:read-map-value($config, $defaults/param/weight, $defaults/token-weight)
         for $property in $defaults/property
@@ -477,12 +487,12 @@ declare function nm:build-query($term as xs:string*, $config as map:map, $defaul
               nm:read-map-value($config, $defaults/param/similar-limit, $defaults/similar-limit))
         let $weight := nm:read-map-value($config, $defaults/param/weight, $defaults/weight)
         for $property in $defaults/property
-        let $query := qh:value-q($property, $term, (), $weight, $output)
+        let $query := qh:value-q($property, $term, (), $weight, $output, $defaults/type)
         let $similar-query := 
           if(fn:empty($similar)) then ()
           else qh:value-q($property, $similar, (), $weight *
             nm:read-map-value($config, $defaults/param/weight-multiplier, $defaults/multiplier),
-            $output
+            $output, $defaults/type
           )
         let $_ := (
           fn:trace(fn:concat(" -- query:", 
@@ -496,7 +506,7 @@ declare function nm:build-query($term as xs:string*, $config as map:map, $defaul
       else  (: Default search is to just try to match on the term :)
         let $weight := nm:read-map-value($config, $defaults/param/weight, $defaults/weight)
         for $property in $defaults/property
-        let $query := qh:value-q($property, $term, (), $weight, $output)
+        let $query := qh:value-q($property, $term, (), $weight, $output, $defaults/type)
         let $_ := fn:trace(fn:concat(" -- query:", 
           if($output = $qh:OUTPUT_JSON) then xdmp:to-json-string($query)
           else xdmp:quote($query)), $TRACE_LEVEL_FINE)
@@ -512,8 +522,6 @@ declare function nm:algorithm-new($params as map:map, $config as map:map) {
     else if($target = "personparticipation") then cts:collection-query("PersonParticipation")
     else cts:collection-query(("Person", "PersonParticipation"))
   let $candidates := 
-    if(fn:empty($query)) then ()
-    else 
       cts:search(fn:doc(), cts:and-query(($query, $collection)), 
         ("score-simple","unfiltered", nm:get-sort-options($params)))[1 to 
           nm:read-map-value($params, $CONFIG/config/result-limit/key, $CONFIG/config/result-limit/value)]

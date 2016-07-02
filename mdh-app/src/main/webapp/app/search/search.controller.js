@@ -59,12 +59,11 @@
         method: 'GET',
         params: params
       }).then(this.submitSearch.bind(this));
-   
+      
     };   
     
     ctrl.submitSearch = function(response) {
        if(response.data) {
-         this.mlSearch.setPage(this.page);
          this.mlSearch.setPageLength(ctrl.pageLength);
          mlSearch.additionalQueries = [];
          mlSearch.additionalQueries.push(response.data);
@@ -72,6 +71,11 @@
        }
     };     
 
+    ctrl.newSearch = function(qtext) {
+      this.page = 1;
+      ctrl.search(qtext);
+    }
+    
     ctrl.search = function(qtext) {      
       switch(ctrl.mode) {
         case 'person':
@@ -81,7 +85,7 @@
           if ( arguments.length ) {
 				this.qtext = qtext;
 			}
-			this.mlSearch.setText( this.qtext ).setPage( this.page ).setPageLength(ctrl.pageLength);
+			this.mlSearch.setText( this.qtext ).setPageLength(ctrl.pageLength);
 			if (ctrl.runMapSearch) {
 				mlSearch.additionalQueries = [];
 				mlSearch.additionalQueries.push(ctrl.getGeoConstraint());
@@ -134,7 +138,7 @@
 
     ctrl.clearText = function() {
       ctrl.person = {};
-      ctrl.search();
+      ctrl.clearFacets();
     };    
     
     ctrl.toggleSort = function(field) {
@@ -155,48 +159,16 @@
     };
         
     ctrl.pageLength = 10;
-    
+   
+    ctrl.selectPage = function() {
+      this.mlSearch.setPage(this.page);
+      ctrl.search(this.qtext);
+    };
+ 
     $scope.sort = {
       field: 'sc',
       order: 'd'
     };
     
-// Start Angular Datepicker functions
-// Following functions are used by angular datePicker 
-// We may need to move this to a separate file - TBD	
-  $scope.open = function($event) {
-    $scope.status.opened = true;
-  };
-
-  $scope.dateOptions = {
-    formatYear: 'yy',
-    startingDay: 1
-  };
-
-  $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
-  $scope.format = $scope.formats[0];
-  $scope.status = {
-    opened: false,
-    isNameOpen: true,
-    isAddressOpen: false,
-    isDetailOpen: false
-  };
-
-  var tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  var afterTomorrow = new Date();
-  afterTomorrow.setDate(tomorrow.getDate() + 2);
-  $scope.events =
-    [
-      {
-        date: tomorrow,
-        status: 'full'
-      },
-      {
-        date: afterTomorrow,
-        status: 'partially'
-      }
-    ];
-// End Angular Datepicker functions	
   }
 }());

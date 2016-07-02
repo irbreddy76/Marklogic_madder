@@ -1,0 +1,103 @@
+
+<form ng-submit="search({qtext: ''})" 
+  class="ml-input ml-search form-inline" role="search">
+  <accordion close-others="false">
+    <accordion-group heading="Name" is-open="status.isNameOpen">
+      <div class="row">
+        <div class="col-sm-4">
+          <label>First:</label>
+          <input ng-model="person.firstName" type="text" class="form-control"
+            placeholder="First Name..." autocomplete="off"
+            typeahead="suggestion for suggestion in suggest({value: $viewValue, field: 'suggest-firstname'})" 
+            typeahead-suggest-on-select="true" 
+            typeahead-loading="loadingSuggestions.firstname"></input>
+        </div>
+        <div class="col-sm-4">
+          <label>Middle:</label>
+          <input ng-model="person.middleName" type="text" class="form-control" 
+            placeholder="Middle Name..." autocomplete="off"></input>
+        </div>
+        <div class="col-sm-4">
+          <label>Last:</label>
+          <input ng-model="person.lastName" type="text" class="form-control" 
+            placeholder="Last Name..." autocomplete="off"
+            typeahead="suggestion for suggestion in suggest({value: $viewValue, field: 'suggest-lastname'})" 
+            typeahead-suggest-on-select="true" 
+            typeahead-loading="loadingSuggestions"></input>
+        </div>
+      </div>
+    </accordion-group>
+    <accordion-group heading="Address" is-open="status.isAddressOpen">
+      <div class="row">
+        <div class="col-sm-12">
+          <label>Street:</label>
+          <input ng-model="person.address.street" type="text" class="form-control" 
+            placeholder="Street..." autocomplete="off"></input>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-5">
+          <label>City:</label>
+          <input ng-model="person.address.city" type="text" class="form-control" 
+            placeholder="City..." autocomplete="off"
+            typeahead="suggestion for suggestion in suggest({value: $viewValue, field: 'suggest-city'})" 
+            typeahead-suggest-on-select="true" 
+            typeahead-loading="loadingSuggestions"></input>
+        </div>
+        <div class="col-sm-3">
+          <label>State:</label>
+            <input ng-model="person.address.state" type="text" class="form-control" 
+              placeholder="State..." autocomplete="off"></input>
+        </div>
+        <div class="col-sm-4">
+          <label>Zip:</label>
+          <input ng-model="person.address.zip" type="text" class="form-control" 
+            placeholder="Zip Code..." autocomplete="off"></input>
+        </div>
+      </div>
+    </accordion-group>
+    <accordion-group heading="Detail" is-open="status.isDetailOpen">
+      <div class="row">
+        <div class="col-sm-2">
+          <label>Date of Birth:</label>
+        </div>
+        <div class="col-sm-3">
+          <div class="input-group">
+            <input type="text" class="form-control" datepicker-popup ng-model="person.dob" 
+              is-open="status.opened" min-date="minDate" max-date="'2020-06-22'" 
+              datepicker-options="dateOptions" date-disabled="disabled(date, mode)" 
+              ng-required="true" close-text="Close" />
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-default" ng-click="open($event)">
+                <i class="glyphicon glyphicon-calendar"></i>
+              </button>
+            </span>
+          </div>                
+        </div>
+        <div class="col-sm-2">
+          <label>SSN:</label>
+        </div>
+        <div class="col-sm-2">
+          <input type="text" class="form-control" ng-model="person.ssn" 
+            placeholder="SSN..." autocomplete="off"/>
+        </div>
+      </div>
+    </accordion-group>
+  </accordion>
+</form>
+
+<pre ng-if="debug">person = {{person | json}}</pre>
+<div class="row">
+  <div class="col-sm-offset-2 col-sm-3">
+    <button id="single-button" type="button" class="btn btn-primary" 
+      ng-disabled="disabled" ng-click="search({qtext: ''})">
+      <i class="fa fa-search"></i> Search
+    </button>
+  </div>
+  <div class="col-sm-offset-2 col-sm-3">
+    <button id="single-button" type="button" class="btn btn-primary" 
+      ng-disabled="disabled" ng-click="clearText()">
+      <i class="fa fa-times-circle"></i> Clear
+    </button>
+  </div>
+</div>

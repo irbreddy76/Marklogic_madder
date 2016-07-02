@@ -21,12 +21,12 @@ declare function qh:score($item) {
  : @params output - JSON or cts:query
  :)
 declare function qh:value-q($name as xs:string, $term as xs:string*, $options as xs:string*,
-  $weight as xs:double, $output as xs:string?) {
+  $weight as xs:double, $output as xs:string?, $type as xs:string) {
     if($output = $qh:OUTPUT_JSON) then 
       let $json := json:object()
       let $value-query := json:object()
       let $_ := (
-        map:put($value-query, "type", "string"),
+        map:put($value-query, "type", $type),
         map:put($value-query, "json-property", $name),
         map:put($value-query, "text", qh:build-array($term)),
         if(fn:empty($options)) then ()

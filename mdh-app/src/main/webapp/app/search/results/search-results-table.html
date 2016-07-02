@@ -1,4 +1,5 @@
-      <table class="table table-striped table-hover table-bordered">
+      <table class="table table-striped table-hover table-bordered" 
+        ng-if="results[0].matches.summary.recordType == 'PersonParticipation'">
         <thead>
           <tr>
             <th ng-click="toggleSort({field: 'fn'})">First Name<span class="glyphicon glyphicon-sort"></span></th>
@@ -22,6 +23,29 @@
             <td>{{result.matches.summary.gender}}</td>
             <td>{{result.matches.summary.race}}</td>
             <td>{{result.matches.summary.caseCount}}</td>
+            <td><a ui-sref="root.view({uri: result.uri})">View</a></td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="table table-striped table-hover table-bordered" 
+        ng-if="results[0].matches.summary.recordType == 'Case'">
+        <thead>
+          <tr>
+            <th>Program</th>
+            <th>Type</th>
+            <th>Open Date</th>
+            <th>Close Date</th>
+            <th>Close Code</th>
+            <th>&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="result in results">
+            <td>{{result.matches.summary.program}}</td>
+            <td>{{result.matches.summary.caseType}}</td>
+            <td>{{result.matches.summary.status | date: 'MM-dd-yyyy'}}</td>
+            <td>{{result.matches.summary.closeDate | date: 'MM-dd-yyyy'}}</td>
+            <td>{{result.matches.summary.closeCode}}</td>
             <td><a ui-sref="root.view({uri: result.uri})">View</a></td>
           </tr>
         </tbody>

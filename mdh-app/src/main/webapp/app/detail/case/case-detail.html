@@ -1,0 +1,48 @@
+<div>
+  <h3>Case Detail</h3>
+  <dl class="dl-horizontal">
+    <dt>Participation Type</dt>
+    <dd>{{case.content.ParticipationType}}</dd>
+    <dt>Participation Program</dt>
+    <dd>{{case.content.ParticipationProgramName}}</dd>
+    <dt>Open Date</dt>
+    <dd>{{case.content.OpenDate | date: 'MM-dd-yyyy'}}</dd>
+    <dt>Closed Date</dt>
+    <dd>{{case.content.CloseDate | date: 'MM-dd-yyyy'}}</dd>   
+    <dt>Closed Code</dt>
+    <dd>{{case.content.CloseCode}}</dd> 
+  </dl>
+</div>
+<hr></hr>
+<div>
+  <h3>Participants:</h3>
+  <div class="search row">
+    <div class="col-md-12">
+      <h4 ng-if="ctrl.response.total === 0">No results to show</h4>
+      <br/>
+      <div ng-if="ctrl.response.total > 0" class="results">
+        <div class="row">
+          <div class="col-sm-8">
+            <div class="pagination-ctrls">
+              <pagination class="pagination pagination-sm" ng-model="ctrl.page" 
+                ng-change="ctrl.selectPage()" max-size="10" boundary-links="true" 
+                total-items="ctrl.response.total" items-per-page="ctrl.response['page-length']">
+              </pagination>
+            </div>
+          </div>
+          <div class="col-sm-2">
+            <p><b>Results per page:</b></p>
+          </div>
+          <div class="col-sm-2">
+            <form>
+              <input ng-model="ctrl.pageLength" type="text" class="form-control" />
+            </form>
+          </div>
+        </div>
+        <ml-metrics search="ctrl.response" ></ml-metrics>
+        <search-results template="app/search/results/search-results-table.html" results="ctrl.response.results"
+          toggle-sort="ctrl.toggleSort(field)"></search-results>
+      </div>
+    </div>
+  </div>
+</div>
