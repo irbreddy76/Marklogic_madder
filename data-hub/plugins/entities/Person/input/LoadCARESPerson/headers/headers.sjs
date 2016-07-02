@@ -9,13 +9,13 @@
  */
 function createHeaders(id, content, options) {
   var header = {
-    SystemIdentifiers: []
+    identifiers: []
   };
   var i;
   for(i = 0; i < content.SystemIdentifiers.length; i++) {
     var identifier = content.SystemIdentifiers[i];
     if(identifier.SourceSystem == 'MDCHESSIE') {
-      header.SystemIdentifiers.push({chessieId: identifier.SourceKey});
+      header.identifiers.push( {chessieId: identifier.SourceKey});
     } else if(identifier.SourceSystem == 'CIS') {
       header.identifiers.push( {cisId: identifier.SourceKey});
     }
