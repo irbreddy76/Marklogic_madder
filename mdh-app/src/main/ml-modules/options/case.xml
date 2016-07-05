@@ -62,12 +62,14 @@
   </sort-order>
   <operator name="sort">
     <state name="ctd">
-      <sort-order direction="descending" type="xs:date">
+      <sort-order direction="descending" type="xs:string"
+        collation="http://marklogic.com/collation/codepoint">
         <json-property>CaseType</json-property>
       </sort-order>
     </state>
     <state name="cta">
-      <sort-order direction="ascending" type="xs:date">
+      <sort-order direction="ascending" type="xs:string"
+        collation="http://marklogic.com/collation/codepoint">
         <json-property>CaseType</json-property>
       </sort-order>
     </state>
@@ -82,14 +84,12 @@
       </sort-order>
     </state>
     <state name="cdd">
-      <sort-order direction="descending" type="xs:string"
-        collation="http://marklogic.com/collation/codepoint">
+      <sort-order direction="descending" type="xs:date">
         <json-property>CloseDate</json-property>
       </sort-order>
     </state>
     <state name="cda">
-      <sort-order direction="ascending" type="xs:string"
-        collation="http://marklogic.com/collation/codepoint">
+      <sort-order direction="ascending" type="xs:date">
         <json-property>CloseDate</json-property>
       </sort-order>
     </state>

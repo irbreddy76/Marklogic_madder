@@ -16,15 +16,15 @@
     };
   }
 
-  CaseDetailCtrl.$inject = ['$scope', 'MLSearchFactory', 'MLRest'];
+  CaseDetailCtrl.$inject = ['$scope', '$location', 'MLSearchFactory', 'MLRest'];
   
   var superCtrl = MLSearchController.prototype;
   CaseDetailCtrl.prototype = Object.create(superCtrl);
   
-  function CaseDetailCtrl($scope, MLSearchFactory, MLRest) {
+  function CaseDetailCtrl($scope, $location, MLSearchFactory, MLRest) {
     var ctrl = this;
     
-    var mlSearch = searchFactory.newContext({ queryOptions: 'all' });
+    var mlSearch = MLSearchFactory.newContext({ queryOptions: 'all' });
     
     superCtrl.constructor.call(ctrl, $scope, $location, mlSearch);
     
