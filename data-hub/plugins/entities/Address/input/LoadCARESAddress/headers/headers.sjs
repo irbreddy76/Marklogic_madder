@@ -8,7 +8,19 @@
  * @return - an object of headers
  */
 function createHeaders(id, content, options) {
-  return {};
+  var header = {
+    SystemIdentifiers: []
+  };
+  var i;
+  for(i = 0; i < content.SystemIdentifiers.length; i++) {
+    var identifier = content.SystemIdentifiers[i];
+    if(identifier.SourceSystem == 'MDCHESSIE') {
+      header.SystemIdentifiers.push({chessieId: identifier.SourceKey});
+    } else if(identifier.SourceSystem == 'CIS') {
+      header.SystemIdentifiers.push( {cisId: identifier.SourceKey});
+    }
+  }
+  return header;
 }
 
 module.exports = {
