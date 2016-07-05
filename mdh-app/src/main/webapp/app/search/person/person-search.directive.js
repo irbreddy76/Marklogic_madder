@@ -17,7 +17,7 @@
         clearText: '&'
       },
       controller: 'PersonSearchCtrl',
-      templateUrl: 'app/search/person-search.html'
+      templateUrl: 'app/search/person/person-search.html'
     };
   }
 

@@ -1,8 +1,5 @@
 module namespace ah = 'http://marklogic.com/address-helper';
 
-import module namespace d = 'http://marklogic.com/dictionary' at
-  '/lib/dictionary-lib.xqy';
-  
 declare namespace http = "xdmp:http";
 
 declare variable $USERID as xs:string := "063000003894";

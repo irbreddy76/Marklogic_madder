@@ -1,0 +1,74 @@
+
+<form ng-submit="search({qtext: ''})" 
+  class="ml-input ml-search form-inline" role="search">
+  <div class="row">
+    <div class="col-sm-4">
+      <label>Program:</label>
+      <input ng-model="case.program" type="text" class="form-control"
+        placeholder="Program Name..." autocomplete="off"
+        typeahead="suggestion for suggestion in suggest({value: $viewValue, field: 'program'})" 
+        typeahead-suggest-on-select="true" 
+        typeahead-loading="loadingSuggestions.program"></input>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-2">
+          <label>Open Date:</label>
+        </div>
+        <div class="col-sm-3">
+          <div class="input-group">
+            <input type="text" class="form-control" datepicker-popup ng-model="case.openDate" 
+              is-open="status.openDate.opened" min-date="minDate" max-date="'2020-06-22'" 
+              datepicker-options="dateOptions" date-disabled="disabled(date, mode)" 
+              ng-required="true" close-text="Close" />
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-default" ng-click="openDateClicked($event)">
+                <i class="glyphicon glyphicon-calendar"></i>
+              </button>
+            </span>
+          </div>                
+        </div>
+     <div class="col-sm-2">
+          <label>Close Date:</label>
+        </div>
+        <div class="col-sm-3">
+          <div class="input-group">
+            <input type="text" class="form-control" datepicker-popup ng-model="case.closeDate" 
+              is-open="status.closeDate.opened" min-date="minDate" max-date="'2020-06-22'" 
+              datepicker-options="dateOptions" date-disabled="disabled(date, mode)" 
+              ng-required="true" close-text="Close" />
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-default" ng-click="closeDateClicked($event)">
+                <i class="glyphicon glyphicon-calendar"></i>
+              </button>
+            </span>
+          </div>                
+        </div>
+  </div>  
+        
+        <div class="col-sm-2">
+          <label>SSN:</label>
+        </div>
+        <div class="col-sm-2">
+          <input type="text" class="form-control" ng-model="person.ssn" 
+            placeholder="SSN..." autocomplete="off"/>
+        </div>
+      </div>
+    </accordion-group>
+  </accordion>
+</form>
+
+<div class="row">
+  <div class="col-sm-offset-2 col-sm-3">
+    <button id="single-button" type="button" class="btn btn-primary" 
+      ng-disabled="disabled" ng-click="search({qtext: ''})">
+      <i class="fa fa-search"></i> Search
+    </button>
+  </div>
+  <div class="col-sm-offset-2 col-sm-3">
+    <button id="single-button" type="button" class="btn btn-primary" 
+      ng-disabled="disabled" ng-click="clearText()">
+      <i class="fa fa-times-circle"></i> Clear
+    </button>
+  </div>
+</div>

@@ -5,13 +5,13 @@
   angular.module('app.search')
     .controller('SearchCtrl', SearchCtrl);
 
-  SearchCtrl.$inject = ['$scope', '$location', 'userService', 'MLSearchFactory', 'personHelper', 'MLRest'];
+  SearchCtrl.$inject = ['$scope', '$location', 'userService', 'MLSearchFactory', 'personHelper', 'caseHelper', 'MLRest'];
 
   // inherit from MLSearchController
   var superCtrl = MLSearchController.prototype;
   SearchCtrl.prototype = Object.create(superCtrl);
 
-  function SearchCtrl($scope, $location, userService, searchFactory, personHelper, MLRest) {
+  function SearchCtrl($scope, $location, userService, searchFactory, personHelper, caseHelper, MLRest) {
     var ctrl = this;
     ctrl.runMapSearch = false;
 	
@@ -21,6 +21,7 @@
 
     superCtrl.constructor.call(ctrl, $scope, $location, mlSearch);
 
+    ctrl.case = caseHelper.getCase();
     ctrl.person = personHelper.getPerson();
     ctrl.mode = 'basic';
     
@@ -38,28 +39,35 @@
 
     // Re-run search based off current mode
     ctrl.setMode = function(mode) {
-      switch(mode) {
-        case 'person':
-          ctrl.mode = mode;
-          ctrl.doSearch(ctrl.person);
-          break;
-        default:
-          ctrl.mode = mode;
-          ctrl.search(this.qtext);
-          break;
-      }
+      ctrl.mode = mode;
+      $scope.sort = {
+        field: 'ws',
+        order: 'd'
+      };
+      this.mlSearch.setSort($scope.sort.field + $scope.sort.order);
+      ctrl.search(this.qtext);
     };    
     
-    ctrl.doSearch = function(person) {
-      //console.log(ctrl.person.lastName);
+    ctrl.doPersonSearch = function(person) {
+      this.mlSearch.options.queryOptions = 'all';
       personHelper.updatePerson(person);
       var params = personHelper.getPersonQueryParams(person);
       console.log(params);
       MLRest.extension('person', {
         method: 'GET',
         params: params
-      }).then(this.submitSearch.bind(this));
-      
+      }).then(this.submitSearch.bind(this));      
+    };
+    
+    ctrl.doCaseSearch = function(caseParams) {
+      this.mlSearch.options.queryOptions = 'case';
+      caseHelper.updateCase(caseParams);
+      var params = caseHelper.getCaseQueryParams(caseParams);
+      console.log(params);
+      MLRest.extension('case', {
+        method: 'GET',
+        params: params
+      }).then(this.submitSearch.bind(this));      
     };   
     
     ctrl.submitSearch = function(response) {
@@ -79,7 +87,10 @@
     ctrl.search = function(qtext) {      
       switch(ctrl.mode) {
         case 'person':
-          ctrl.doSearch(ctrl.person);
+          ctrl.doPersonSearch(ctrl.person);
+          break;
+        case 'case':
+          ctrl.doCaseSearch(ctrl.case);
           break;
         default:
           if ( arguments.length ) {
@@ -137,21 +148,31 @@
     });
 
     ctrl.clearText = function() {
-      ctrl.person = {};
+      switch(ctrl.mode) {
+        case 'person':
+          ctrl.person = {};
+          personHelper.clearPerson();
+          break;
+        case 'case':
+          ctrl.case = {};
+          caseHelper.clearCase();
+          break;
+        default:
+          this.qtext = {};
+          break;
+      }
       ctrl.clearFacets();
     };    
     
     ctrl.toggleSort = function(field) {
-      if($scope.sort.field === field) {
-        if($scope.sort.order === 'd') {
-          $scope.sort.order = 'a';
-        } else {
-          $scope.sort.field = 'ws';
-          $scope.sort.order = 'd';
-        }
-      } else {
-        $scope.sort.field = field;
+      if($scope.sort.field === field && $scope.sort.order === 'a') {
+        $scope.sort.field = 'ws';
         $scope.sort.order = 'd';
+      } else if($scope.sort.field != field) {
+        $scope.sort.field = field;
+        $scope.sort.order  = 'd';
+      } else {
+        $scope.sort.order = 'a';
       }
       
       this.mlSearch.setSort($scope.sort.field + $scope.sort.order);
@@ -166,7 +187,7 @@
     };
  
     $scope.sort = {
-      field: 'sc',
+      field: 'ws',
       order: 'd'
     };
     

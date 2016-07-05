@@ -12,6 +12,10 @@
         <person-search person="ctrl.person" search="ctrl.newSearch(qtext)"
           suggest="ctrl.suggest(value, field)" clear-text="ctrl.clearText()"></person-search>
       </tab>
+      <tab heading="Case Search" select="ctrl.setMode('case')">
+        <case-search case="ctrl.case" search="ctrl.newSearch(qtext)"
+          suggest="ctrl.suggest(value, field)" clear-text="ctrl.clearText()"></case-search>
+      </tab>
     </tabset>
   </div>
 </div>
