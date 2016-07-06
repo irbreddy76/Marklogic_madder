@@ -121,7 +121,7 @@ declare variable $CONFIG :=
   <caseId>
     <!-- Property name used for JSON queries -->
     <property>serviceCaseId</property>
-    <type>{$qh:TYPE_STRING}</type>
+    <type>{$qh:TYPE_NUMBER}</type>
     <param>
       <key>caseId</key>
       <algorithm>caseId_algorithm</algorithm>
