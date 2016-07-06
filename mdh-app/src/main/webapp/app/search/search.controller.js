@@ -161,7 +161,8 @@
           this.qtext = {};
           break;
       }
-      ctrl.clearFacets();
+      this.mlSearch.clearAllFacets();
+      ctrl.search(this.qtext);
     };    
     
     ctrl.toggleSort = function(field) {
