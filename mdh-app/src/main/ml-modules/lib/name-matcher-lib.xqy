@@ -498,17 +498,17 @@ declare function nm:parse-sort-option($sort-string as xs:string) {
     if($option = "wsd") then cts:score-order("descending")
     else if($option = "wsa") then cts:score-order("ascending")
     else if($option = "fnd") then cts:index-order(cts:element-reference(xs:QName("PersonGivenName"), 
-      (type="xs:string", collation="http://marklogic.com/collation/codepoint")), "descending")
+      ('type=string', 'collation=')), "descending")
     else if($option = "fna") then cts:index-order(cts:element-reference(xs:QName("PersonGivenName"), 
-      (type="xs:string", collation="http://marklogic.com/collation/codepoint")), "ascending")
+      ('type=string', 'collation=')), "ascending")
     else if($option = "lnd") then cts:index-order(cts:element-reference(xs:QName("PersonSurName"), 
-      (type="xs:string", collation="http://marklogic.com/collation/codepoint")), "descending")
+      ('type=string', 'collation=')), "descending")
     else if($option = "lna") then cts:index-order(cts:element-reference(xs:QName("PersonSurName"), 
-      (type="xs:string", collation="http://marklogic.com/collation/codepoint")), "ascending")
+      ('type=string', 'collation=')), "ascending")
     else if($option = "bdd") then cts:index-order(cts:element-reference(xs:QName("PersonBirthDate"), 
-      (type="xs:string", collation="http://marklogic.com/collation/codepoint")), "descending")
+      ('type=date')), "descending")
     else if($option = "bda") then cts:index-order(cts:element-reference(xs:QName("PersonBirthDate"), 
-      (type="xs:string", collation="http://marklogic.com/collation/codepoint")), "ascending")
+      ('type=date')), "ascending")
     else (),
     if(fn:empty($next) or fn:string-length($next) = 0) then ()
     else nm:parse-sort-option($next)

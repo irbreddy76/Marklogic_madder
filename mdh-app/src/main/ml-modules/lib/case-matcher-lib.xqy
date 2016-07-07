@@ -234,17 +234,17 @@ declare function cm:parse-sort-option($sort-string as xs:string) {
     if($option = "wsd") then cts:score-order("descending")
     else if($option = "wsa") then cts:score-order("ascending")
     else if($option = "ctd") then cts:index-order(cts:element-reference(xs:QName("CaseType"), 
-      (type="xs:string", collation="http://marklogic.com/collation/codepoint")), "descending")
+      ('type=string', 'collation=http://marklogic.com/collation/codepoint')), "descending")
     else if($option = "cta") then cts:index-order(cts:element-reference(xs:QName("CaseType"), 
-      (type="xs:string", collation="http://marklogic.com/collation/codepoint")), "ascending")
+      ('type=string', 'collation=http://marklogic.com/collation/codepoint')), "ascending")
     else if($option = "std") then cts:index-order(cts:element-reference(xs:QName("status"), 
-      (type="xs:string", collation="http://marklogic.com/collation/codepoint")), "descending")
+      ('type=string', 'collation=http://marklogic.com/collation/codepoint')), "descending")
     else if($option = "sta") then cts:index-order(cts:element-reference(xs:QName("status"), 
-      (type="xs:string", collation="http://marklogic.com/collation/codepoint")), "ascending")
+      ('type=string', 'collation=http://marklogic.com/collation/codepoint')), "ascending")
     else if($option = "cdd") then cts:index-order(cts:element-reference(xs:QName("CloseDate"), 
-      (type="xs:string", collation="http://marklogic.com/collation/codepoint")), "descending")
+      ('type=date')), "descending")
     else if($option = "cda") then cts:index-order(cts:element-reference(xs:QName("CloseDate"), 
-      (type="xs:string", collation="http://marklogic.com/collation/codepoint")), "ascending")
+      ('type=date')), "ascending")
     else (),
     if(fn:empty($next) or fn:string-length($next) = 0) then ()
     else cm:parse-sort-option($next)
