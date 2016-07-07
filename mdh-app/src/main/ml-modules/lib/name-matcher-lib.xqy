@@ -42,10 +42,11 @@ declare variable $CONFIG :=
     <separator>-</separator>
     <!--<dictionary>/dictionaries/birth-date.xml</dictionary>-->
     <!-- Key values used on the parameter and config maps -->
-    <type>{$qh:TYPE_STRING}</type>
+    <type>{$qh:RANGE_TYPE_DATE}</type>
     <param>
       <key>dob</key>
       <algorithm>dob_algorithm</algorithm>
+      <time-range>dob_window</time-range>
       <weight>dob_wt</weight>
       <edit-distance>dob_edit_distance</edit-distance>
       <word-distance>dob_word_distance</word-distance>
@@ -54,13 +55,68 @@ declare variable $CONFIG :=
     </param>
     <!-- Default weights/values -->
     <weight type="xs:double">24</weight>
+    <time-window type="xs:yearMonthDuration">P3Y</time-window>
     <token-weight type="xs:double">8</token-weight>
     <edit-distance type="xs:integer">4</edit-distance>
     <word-distance type="xs:integer">30</word-distance>
     <multiplier type="xs:double">0.5</multiplier>
     <similar-limit type="xs:integer">10</similar-limit>
-    <algorithm type="xs:string">{$qh:ALG_TOKEN_MATCH}</algorithm>
+    <algorithm type="xs:string">{$qh:ALG_TIME_WINDOW}</algorithm>
   </dob>
+  <dob-from>
+    <!-- Property name used for JSON queries -->
+    <property>PersonBirthDate</property>
+    <separator>-</separator>
+    <!--<dictionary>/dictionaries/birth-date.xml</dictionary>-->
+    <!-- Key values used on the parameter and config maps -->
+    <type>{$qh:RANGE_TYPE_DATE}</type>
+    <operator>{$qh:OPERATOR_GTE}</operator>
+    <param>
+      <key>dob-from</key>
+      <algorithm>dob-from_algorithm</algorithm>
+      <time-range>dob-from_window</time-range>
+      <weight>dob-from_wt</weight>
+      <edit-distance>dob-from_edit_distance</edit-distance>
+      <word-distance>dob-from_word_distance</word-distance>
+      <weight-multiplier>dob-from_mult</weight-multiplier>
+      <similar-limit>dob-from_limit</similar-limit>
+    </param>
+    <!-- Default weights/values -->
+    <weight type="xs:double">24</weight>
+    <token-weight type="xs:double">8</token-weight>
+    <edit-distance type="xs:integer">4</edit-distance>
+    <word-distance type="xs:integer">30</word-distance>
+    <multiplier type="xs:double">0.5</multiplier>
+    <similar-limit type="xs:integer">10</similar-limit>
+    <algorithm type="xs:string">{$qh:ALG_NONE}</algorithm>
+  </dob-from>
+  <dob-to>
+    <!-- Property name used for JSON queries -->
+    <property>PersonBirthDate</property>
+    <separator>-</separator>
+    <!--<dictionary>/dictionaries/birth-date.xml</dictionary>-->
+    <!-- Key values used on the parameter and config maps -->
+    <type>{$qh:RANGE_TYPE_DATE}</type>
+    <operator>{$qh:OPERATOR_LT}</operator>
+    <param>
+      <key>dob-to</key>
+      <algorithm>dob-to_algorithm</algorithm>
+      <time-range>dob-from_window</time-range>
+      <weight>dob-to_wt</weight>
+      <edit-distance>dob-to_edit_distance</edit-distance>
+      <word-distance>dob-to_word_distance</word-distance>
+      <weight-multiplier>dob-to_mult</weight-multiplier>
+      <similar-limit>dob-to_limit</similar-limit>
+    </param>
+    <!-- Default weights/values -->
+    <weight type="xs:double">24</weight>
+    <token-weight type="xs:double">8</token-weight>
+    <edit-distance type="xs:integer">4</edit-distance>
+    <word-distance type="xs:integer">30</word-distance>
+    <multiplier type="xs:double">0.5</multiplier>
+    <similar-limit type="xs:integer">10</similar-limit>
+    <algorithm type="xs:string">{$qh:ALG_NONE}</algorithm>
+  </dob-to>
   <middle>
     <!-- Property name used for JSON queries -->
     <property>PersonMiddleName</property>
@@ -351,6 +407,10 @@ declare function nm:get-query($params as map:map, $config as map:map,  $output a
       fn:trace(" -- config.key:" || $key || "=" || map:get($config, $key), $TRACE_LEVEL_DETAIL),
     fn:trace(" -- output:" || $output, $TRACE_LEVEL_DETAIL)  
   )
+  let $exact-queries := (
+    qh:build-query(map:get($params, $CONFIG/dob-from/param/key), $config, $CONFIG/dob-from, $output),
+    qh:build-query(map:get($params, $CONFIG/dob-to/param/key), $config, $CONFIG/dob-to, $output)
+  )
   let $queries := (
     qh:build-query(map:get($params, $CONFIG/ssn/param/key), $config, $CONFIG/ssn, $output),
     qh:build-query(map:get($params, $CONFIG/dob/param/key), $config, $CONFIG/dob, $output),
@@ -367,7 +427,7 @@ declare function nm:get-query($params as map:map, $config as map:map,  $output a
       $output),
     nm:build-address-query($params, $config, $output)
   )
-  return qh:get-response-object($queries, $output)
+  return qh:get-response-object($exact-queries, $queries, $output)
 };
 
 declare function nm:build-address-query($params as map:map, $config as map:map, $output as xs:string) {

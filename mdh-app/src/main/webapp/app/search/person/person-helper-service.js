@@ -61,8 +61,16 @@
         }
       }
       
-      if(person.dob){
+      if(person.dob) {
         params['rs:dob'] = $filter('date')(person.dob, 'yyyy-MM-dd');
+      }
+      
+      if(person.dobFrom) {
+        params['rs:dob-from'] = $filter('date')(person.dobFrom, 'yyyy-MM-dd');
+      }
+      
+      if(person.dobTo) {
+        params['rs:dob-to'] = $filter('date')(person.dobTo, 'yyyy-MM-dd');
       }
       
       if(person.ssn) {

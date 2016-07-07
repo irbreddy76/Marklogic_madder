@@ -27,7 +27,15 @@
 // Following functions are used by angular datePicker 
 // We may need to move this to a separate file - TBD	
   $scope.open = function($event) {
-    $scope.status.opened = true;
+    $scope.status.openedDoB = true;
+  };
+
+  $scope.openDoBTo = function($event) {
+    $scope.status.openedDoBTo = true;
+  };
+  
+  $scope.openDoBFrom = function($event) {
+    $scope.status.openedDoBFrom = true;
   };
 
   $scope.dateOptions = {
@@ -38,7 +46,9 @@
   $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
   $scope.format = $scope.formats[0];
   $scope.status = {
-    opened: false,
+    openedDoB: false,
+    openedDoBTo: false,
+    openedDoBFrom: false,
     isNameOpen: true,
     isAddressOpen: false,
     isDetailOpen: false

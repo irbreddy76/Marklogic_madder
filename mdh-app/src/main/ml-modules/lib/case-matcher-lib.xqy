@@ -181,7 +181,7 @@ declare function cm:get-query($params as map:map, $config as map:map,  $output a
       $output)    
   )
   return
-    qh:get-response-object($queries, $output)
+    qh:get-response-object((), $queries, $output)
 };
 
 

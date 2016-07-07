@@ -2,16 +2,26 @@ module namespace qh = 'http://marklogic.com/query-helper';
 
 import module namespace dict = 'http://marklogic.com/dictionary' at
   '/lib/dictionary-lib.xqy';
-  
+
+declare variable $qh:OPERATOR_EQUALS as xs:string := "=";
+declare variable $qh:OPERATOR_LT as xs:string := "<";
+declare variable $qh:OPERATOR_LTE as xs:string := "<=";
+declare variable $qh:OPERATOR_GT as xs:string := ">";
+declare variable $qh:OPERATOR_GTE as xs:string := ">=";
 declare variable $qh:OUTPUT_JSON as xs:string := "json";
 declare variable $qh:OUTPUT_XML as xs:string := "xml";
 declare variable $TRACE_LEVEL_TRACE as xs:string := "QUERY-HELPER-TRACE";
 declare variable $TRACE_LEVEL_DETAIL as xs:string := "QUERY-HELPER-DETAIL";
 declare variable $qh:TYPE_NUMBER as xs:string := "number";
 declare variable $qh:TYPE_STRING as xs:string := "string";
+declare variable $qh:RANGE_TYPE_DATE as xs:string := "xs:date";
+declare variable $qh:RANGE_TYPE_DATETIME as xs:string := "xs:dateTime";
+declare variable $qh:RANGE_TYPE_TIME as xs:string := "xs:time";
 declare variable $qh:ALG_TOKEN_MATCH as xs:string := "token-match";
 declare variable $qh:ALG_DICTIONARY as xs:string := "dictionary";
+declare variable $qh:ALG_TIME_WINDOW as xs:string := "time-window";
 declare variable $qh:ALG_NONE as xs:string := "none";
+declare variable $qh:DEFAULT_COLLATION as xs:string := "http://marklogic.com/collation/codepoint";
 
 (: Helper Functions :)
 declare function qh:is-string-empty($string as xs:string*) as xs:boolean { 
@@ -38,6 +48,8 @@ declare function qh:read-map-value($map as map:map, $key as xs:string,
         else if($type = "xs:decimal") then xs:decimal($value)
         else if($type = "xs:string") then xs:string($value)
         else if($type = "xs:boolean") then xs:boolean($value)
+        else if($type = "xs:yearMonthDuration") then xs:yearMonthDuration($value)
+        else if($type = "xs:dayTimeDuration") then xs:dayTimeDuration($value)
         else $value
 };
 
@@ -57,79 +69,129 @@ declare function qh:build-query($term as xs:string*, $config as map:map, $defaul
         if($algorithm = $qh:ALG_TOKEN_MATCH) then
           (: tokenize the term.  each matching part contributes to the score :)
           let $separator := 
-          if(fn:string-length($defaults/separator) > 0) then $defaults/separator 
-          else " "
-        let $parts := 
-          for $part in fn:tokenize($term, $separator)
-          where fn:string-length($part) > 2
-          return $part
-        let $weight := qh:read-map-value($config, $defaults/param/weight, $defaults/token-weight)
-        for $property in $defaults/property
-        let $query := qh:word-q($property, $parts, (), $weight, $output)
-        let $_ := fn:trace(fn:concat(" -- query:",  
-          if($output = $qh:OUTPUT_JSON) then xdmp:to-json-string($query)
-          else xdmp:quote($query)), $TRACE_LEVEL_DETAIL)
-        return $query
-      else if($algorithm = $qh:ALG_DICTIONARY) then
+            if(fn:string-length($defaults/separator) > 0) then $defaults/separator 
+            else " "
+          let $parts := 
+            for $part in fn:tokenize($term, $separator)
+            where fn:string-length($part) > 2
+            return $part
+          let $weight := qh:read-map-value($config, $defaults/param/weight, $defaults/token-weight)
+          for $property in $defaults/property
+          let $query := qh:word-q($property, $parts, (), $weight, $output)
+          let $_ := fn:trace(fn:concat(" -- query:",  
+            if($output = $qh:OUTPUT_JSON) then xdmp:to-json-string($query)
+            else xdmp:quote($query)), $TRACE_LEVEL_DETAIL)
+          return $query
+        else if($algorithm = $qh:ALG_DICTIONARY) then
         (: Get similar terms from a dictionary.  Matches to the primary term are
            assigned the full weight while matches to similar terms are adjusted by a multiplier :)
-        let $similar := 
-          if($type = $qh:TYPE_NUMBER) then 
-            dict:get-similar-numbers($term, $defaults/dictionary, 
-              qh:read-map-value($config, $defaults/param/edit-distance, $defaults/edit-distance),
-              qh:read-map-value($config, $defaults/param/word-distance, $defaults/word-distance),
-              qh:read-map-value($config, $defaults/param/similar-limit, $defaults/similar-limit))
-          else
-            dict:get-similar-words($term, $defaults/dictionary, 
-              qh:read-map-value($config, $defaults/param/word-distance, $defaults/word-distance),
-              qh:read-map-value($config, $defaults/param/similar-limit, $defaults/similar-limit))
-        let $weight := qh:read-map-value($config, $defaults/param/weight, $defaults/weight)
-        for $property in $defaults/property
-        let $query := qh:value-q($property, $term, (), $weight, $output, $type)
-        let $similar-query := 
-          if(fn:empty($similar)) then ()
-          else qh:value-q($property, $similar, (), $weight *
-            qh:read-map-value($config, $defaults/param/weight-multiplier, $defaults/multiplier),
-            $output, $type
+          let $similar := 
+            if($type = $qh:TYPE_NUMBER) then 
+              dict:get-similar-numbers($term, $defaults/dictionary, 
+                qh:read-map-value($config, $defaults/param/edit-distance, $defaults/edit-distance),
+                qh:read-map-value($config, $defaults/param/word-distance, $defaults/word-distance),
+                qh:read-map-value($config, $defaults/param/similar-limit, $defaults/similar-limit))
+            else
+              dict:get-similar-words($term, $defaults/dictionary, 
+                qh:read-map-value($config, $defaults/param/word-distance, $defaults/word-distance),
+                qh:read-map-value($config, $defaults/param/similar-limit, $defaults/similar-limit))
+          let $weight := qh:read-map-value($config, $defaults/param/weight, $defaults/weight)
+          for $property in $defaults/property
+          let $query := qh:value-q($property, $term, (), $weight, $output, $type)
+          let $similar-query := 
+            if(fn:empty($similar)) then ()
+            else qh:value-q($property, $similar, (), $weight *
+              qh:read-map-value($config, $defaults/param/weight-multiplier, $defaults/multiplier),
+              $output, $type
+            )
+          let $_ := (
+            fn:trace(fn:concat(" -- query:", 
+              if($output = $qh:OUTPUT_JSON) then xdmp:to-json-string($query)
+              else xdmp:quote($query)), $TRACE_LEVEL_DETAIL),
+            fn:trace(fn:concat(" -- similar-query:", 
+              if($output = $qh:OUTPUT_JSON) then xdmp:to-json-string($similar-query)
+              else xdmp:quote($similar-query)), $TRACE_LEVEL_DETAIL)
           )
-        let $_ := (
-          fn:trace(fn:concat(" -- query:", 
+          return ($query, $similar-query)
+        else if($algorithm = $qh:ALG_TIME_WINDOW) then
+          let $duration := qh:read-map-value($config, $defaults/param/time-range, $defaults/time-window)
+          let $weight := qh:read-map-value($config, $defaults/param/weight, $defaults/weight)
+          let $date-value := 
+            if($defaults/type = $qh:RANGE_TYPE_DATE) then xs:date($term)
+            else if($defaults/type = $qh:RANGE_TYPE_DATETIME) then xs:dateTime($term)
+            else xs:time($term)
+          let $lower-bound := 
+            qh:range-q($defaults/property, $date-value - $duration, $qh:OPERATOR_GTE, 
+              (), $weight, $output, $type, $defaults/collation)
+          let $upper-bound :=
+            qh:range-q($defaults/property, $date-value + $duration, $qh:OPERATOR_LT, 
+              (), $weight, $output, $type, $defaults/collation)
+          let $query := 
+            if($output = $qh:OUTPUT_JSON) then
+              let $json := json:object()
+              let $and-query := json:object()
+              let $_ := (
+                map:put($and-query, "queries", qh:build-array(($lower-bound, $upper-bound))),
+                map:put($json, "and-query", $and-query)
+              )
+              return $json
+            else cts:and-query(($lower-bound, $upper-bound))
+          let $_ := fn:trace(fn:concat(" -- query:", 
             if($output = $qh:OUTPUT_JSON) then xdmp:to-json-string($query)
-            else xdmp:quote($query)), $TRACE_LEVEL_DETAIL),
-          fn:trace(fn:concat(" -- similar-query:", 
-            if($output = $qh:OUTPUT_JSON) then xdmp:to-json-string($similar-query)
-            else xdmp:quote($similar-query)), $TRACE_LEVEL_DETAIL)
-        )
-        return ($query, $similar-query)
-      else  (: Default search is to just try to match on the term :)
-        let $weight := qh:read-map-value($config, $defaults/param/weight, $defaults/weight)
-        for $property in $defaults/property
-        let $query := qh:value-q($property, $term, (), $weight, $output, $type)
-        let $_ := fn:trace(fn:concat(" -- query:", 
-          if($output = $qh:OUTPUT_JSON) then xdmp:to-json-string($query)
-          else xdmp:quote($query)), $TRACE_LEVEL_DETAIL)
-        return $query
+            else xdmp:quote($query)), $TRACE_LEVEL_DETAIL)
+          return $query
+        else  (: Default search is to just try to match on the term :)
+          let $weight := qh:read-map-value($config, $defaults/param/weight, $defaults/weight)
+          let $operator := $defaults/operator
+          for $property in $defaults/property
+          let $query := 
+            if(fn:empty($operator)) then qh:value-q($property, $term, (), $weight, $output, $type)
+            else 
+              let $value := 
+                if($defaults/type = $qh:RANGE_TYPE_DATE) then xs:date($term)
+                else if($defaults/type = $qh:RANGE_TYPE_DATETIME) then xs:dateTime($term)
+                else xs:string($term)
+              return
+                qh:range-q($defaults/property, $value, $operator, 
+                  (), $weight, $output, $type, $defaults/collation)
+          let $_ := fn:trace(fn:concat(" -- query:", 
+            if($output = $qh:OUTPUT_JSON) then xdmp:to-json-string($query)
+            else xdmp:quote($query)), $TRACE_LEVEL_DETAIL)
+          return $query
 };
 
-declare function qh:get-response-object($queries as item()*, $output as xs:string) {
+declare function qh:get-response-object($exact-queries as item()*, $or-queries as item()*, $output as xs:string) {
   if($output = $qh:OUTPUT_JSON) then 
-    let $json := json:object()
-    let $array :=
-      let $target := json:array()
-      let $_ := 
-        for $query in $queries return json:array-push($target, $query)
-        return $target
-      let $queryobject :=
-      let $object := json:object()
-      let $_ := map:put($object, "queries", $array)
-      return $object
-    let $_ := 
-      if(fn:count($queries) > 0) then
-        map:put($json, "or-query", $queryobject) 
-      else ()
-    return $json
-  else if(fn:count($queries) > 0) then cts:or-query($queries)
-  else ()
+    let $or-query := 
+      if(fn:empty($or-queries)) then ()
+      else
+        let $root := json:object()
+        let $children := 
+          let $node := json:object()
+          let $_ := map:put($node, "queries", qh:build-array($or-queries))
+          return $node
+       let $_ := map:put($root, "or-query", $children)
+       return $root
+    let $and-query :=
+      if(fn:empty($exact-queries)) then ($or-query, json:object())[1]
+      else if(fn:count(($exact-queries, $or-query)) = 1) then ($exact-queries, $or-query)
+      else 
+        let $root := json:object()
+        let $children :=
+          let $node := json:object()
+          let $_ := map:put($node, "queries", ($exact-queries, $or-query))
+          return $node
+        let $_ := map:put($root, "and-query", $children)
+        return $root
+    return $and-query
+  else if(fn:empty(($exact-queries, $or-queries))) then ()
+  else
+    let $or-query := 
+      if(fn:empty($or-queries)) then ()
+      else cts:or-query($or-queries)
+    return
+      if(fn:empty($exact-queries)) then $or-query
+      else cts:and-query(($exact-queries, $or-query))
 };
 
 (: 
@@ -168,7 +230,7 @@ declare function qh:value-q($name as xs:string, $term as xs:string*, $options as
     else cts:json-property-value-query($name, $term, $options, $weight div 8)
 };
 
-declare function qh:build-array($items as xs:string*) {
+declare function qh:build-array($items as item()*) {
   let $array := json:array()
   let $_ := 
     for $item in $items
@@ -185,8 +247,15 @@ declare function qh:build-array($items as xs:string*) {
  : @params options - any search options for this term
  : @params weight - weight to assign matches for these terms
  :)
-declare function qh:range-q($name as xs:string, $term as xs:anyAtomicType*, $operator as xs:string, 
-  $options as xs:string*, $weight as xs:double) as cts:query? { 
+declare function qh:range-q($name as xs:string, $term as xs:anyAtomicType, $operator as xs:string, 
+  $options as xs:string*, $weight as xs:double, $output as xs:string, $type as xs:string, 
+  $collation as xs:string?) {
+    let $operator-text := 
+      if($operator = '>=') then "GE"
+      else if($operator = '<=') then "LE"
+      else if($operator = '>') then "GT"
+      else if($operator = '<') then "LT"
+      else "EQ"
     let $score-option-found := false()
     let $consolidated-options := (
       for $option in $options
@@ -197,7 +266,25 @@ declare function qh:range-q($name as xs:string, $term as xs:anyAtomicType*, $ope
       if(not($score-option-found)) then "score-function=linear" else ()
     )
     return
-      cts:json-property-range-query($name, $operator, $term, $consolidated-options, $weight div 8)
+      if($output = $qh:OUTPUT_JSON) then
+        let $json := json:object()
+        let $range-query := json:object()
+        let $_ := (
+          if($type = "xs:string") then
+            map:put($range-query, "collation", ($collation, $qh:DEFAULT_COLLATION)[1])
+          else (),
+          map:put($range-query, "type", $type),
+          map:put($range-query, "json-property", $name),
+          map:put($range-query, "value", $term),
+          if(fn:empty($options)) then ()
+          else map:put($range-query, "range-option", qh:build-array($options)),
+          map:put($range-query, "range-operator", $operator-text),
+          (:map:put($range-query, "weight", $weight div 8),:)
+          map:put($json, "range-query", $range-query)       
+        )
+      return $json 
+      else 
+        cts:json-property-range-query($name, $operator, $term, $consolidated-options, $weight div 8)
 };
 
 (: 

@@ -64,7 +64,7 @@
         <div class="col-sm-3">
           <div class="input-group">
             <input type="text" class="form-control" datepicker-popup ng-model="person.dob" 
-              is-open="status.opened" min-date="minDate" max-date="'2020-06-22'" 
+              is-open="status.openedDoB" min-date="minDate" max-date="'2020-06-22'" 
               datepicker-options="dateOptions" date-disabled="disabled(date, mode)" 
               ng-required="true" close-text="Close" />
             <span class="input-group-btn">
@@ -78,6 +78,40 @@
           <label>SSN:</label>
           <input type="text" class="form-control" ng-model="person.ssn" 
             placeholder="SSN..." autocomplete="off"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-2">
+          <label>DoB From:</label>
+        </div>
+        <div class="col-sm-3">
+          <div class="input-group">
+            <input type="text" class="form-control" datepicker-popup ng-model="person.dobFrom" 
+              is-open="status.openedDoBFrom" min-date="minDate" max-date="'2020-06-22'" 
+              datepicker-options="dateOptions" date-disabled="disabled(date, mode)" 
+              ng-required="true" close-text="Close" />
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-default" ng-click="openDoBFrom($event)">
+                <i class="glyphicon glyphicon-calendar"></i>
+              </button>
+            </span>
+          </div>                
+        </div>
+        <div class="col-sm-2">
+          <label>DoB To:</label>
+        </div>
+        <div class="col-sm-3">
+          <div class="input-group">
+            <input type="text" class="form-control" datepicker-popup ng-model="person.dobTo" 
+              is-open="status.openedDoBTo" min-date="minDate" max-date="'2020-06-22'" 
+              datepicker-options="dateOptions" date-disabled="disabled(date, mode)" 
+              ng-required="true" close-text="Close" />
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-default" ng-click="openDoBTo($event)">
+                <i class="glyphicon glyphicon-calendar"></i>
+              </button>
+            </span>
+          </div>                
         </div>
       </div>
     </accordion-group>
