@@ -22,7 +22,7 @@ function createHeaders(id, content, options) {
       header.ParticipationIds.push({AdoptionPlanningId: identifier.ParticipationKey});
       header.CaseType = 'Adoption Planning';
     } else if(identifier.ParticipationType ==  'AU') {
-      header.ParticipationIds.push({AdoptionPlanningId: identifier.ParticipationKey});
+      header.ParticipationIds.push({AUId: identifier.ParticipationKey});
       header.CaseType = 'AU';
     }	
 	
