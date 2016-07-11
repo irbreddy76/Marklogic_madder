@@ -34,7 +34,19 @@
       active-facets="ctrl.mlSearch.activeFacets" show-more="ctrl.mlSearch.showMoreFacets(facet, facetName)"
       negate="ctrl.toggleNegatedFacet(facet,value)"></ml-facets>
   </div>
-  <div class="col-md-9">
+  <div class="col-md-9" ng-show="ctrl.isSearchPending()">
+    <div id="floatingCirclesG">
+      <div class="f_circleG" id="frotateG_01"></div>
+      <div class="f_circleG" id="frotateG_02"></div>
+      <div class="f_circleG" id="frotateG_03"></div>
+      <div class="f_circleG" id="frotateG_04"></div>
+      <div class="f_circleG" id="frotateG_05"></div>
+      <div class="f_circleG" id="frotateG_06"></div>
+      <div class="f_circleG" id="frotateG_07"></div>
+      <div class="f_circleG" id="frotateG_08"></div>
+    </div>
+  </div>
+  <div class="col-md-9" ng-hide="ctrl.isSearchPending()">
     <h4 ng-if="ctrl.response.total === 0">No results to show</h4>
   <!--
     <ml-esri-search-map options="ctrl.mapOptions" features-list="ctrl.response.results" 

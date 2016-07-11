@@ -16,7 +16,19 @@
 <hr></hr>
 <div>
   <h3>Participants:</h3>
-  <div class="search row">
+  <div ng-show="ctrl.isSearchPending()">
+    <div id="floatingCirclesG" ng-show="ctrl.isSearchPending()">
+      <div class="f_circleG" id="frotateG_01"></div>
+      <div class="f_circleG" id="frotateG_02"></div>
+      <div class="f_circleG" id="frotateG_03"></div>
+      <div class="f_circleG" id="frotateG_04"></div>
+      <div class="f_circleG" id="frotateG_05"></div>
+      <div class="f_circleG" id="frotateG_06"></div>
+      <div class="f_circleG" id="frotateG_07"></div>
+      <div class="f_circleG" id="frotateG_08"></div>
+    </div>
+  </div>
+  <div class="search row" ng-hide="ctrl.isSearchPending()">
     <div class="col-md-12">
       <h4 ng-if="ctrl.response.total === 0">No results to show</h4>
       <br/>
@@ -30,6 +42,7 @@
               </pagination>
             </div>
           </div>
+          <!--
           <div class="col-sm-2">
             <p><b>Results per page:</b></p>
           </div>
@@ -37,7 +50,7 @@
             <form>
               <input ng-model="ctrl.pageLength" type="text" class="form-control" />
             </form>
-          </div>
+          </div> -->
         </div>
         <ml-metrics search="ctrl.response" ></ml-metrics>
         <search-results template="app/search/results/search-results-table.html" results="ctrl.response.results"

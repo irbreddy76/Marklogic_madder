@@ -148,6 +148,7 @@
       "scalar-type": "date",
       "namespace-uri": "",
       "localname": "CloseDate",
+      "collation": "",
       "range-value-positions": false,
       "invalid-values": "reject"
     },
