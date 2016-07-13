@@ -48,6 +48,8 @@ function createHeaders(id, content, options) {
         header.ParticipationIdentifiers.push( { serviceCaseId: identifier.ParticipationKey } );
       } else if(identifier.ParticipationType == 'Adoption Planning') {
         header.ParticipationIdentifiers.push( { adoptionPlanningId: identifier.ParticipationKey } );
+      } else if(identifier.ParticipationType == 'AU') {
+        header.ParticipationIdentifiers.push( { auId: identifier.ParticipationKey } );       
       };
     }
   }
