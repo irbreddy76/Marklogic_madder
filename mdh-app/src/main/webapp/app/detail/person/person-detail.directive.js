@@ -16,8 +16,8 @@
     };
   }
 
-  PersonDetailCtrl.$inject = ['$scope'];
-  function PersonDetailCtrl($scope) {
+  PersonDetailCtrl.$inject = ['$scope', '$location'];
+  function PersonDetailCtrl($scope, $location) {
     var ctrl = this;
     
     $scope.status = {

@@ -18,11 +18,25 @@
         <dd>{{person.content.Person.PersonBirthDate | date: 'MM-dd-yyyy'}}</dd>
         <dt>Social Security Number</dt>
         <dd>{{person.content.Person.PersonSSNIdentification[0].IdentificationID}}</dd>
-        <dt ng-if="person.content.Person.PersonDigitalImage.length > 0">Depiction(s)</dt>
+        <dt ng-if="person.content.Person.images.length > 0">Depiction(s)</dt>
         <dd>
-          <div ng-repeat="img in person.content.Person.PersonDigitalImage">
-            <img src="{{img.src}}" alt="{{img.alt}}"/>
-          </div>
+          <table border="1">
+            <tr>
+              <th>&nbsp;</th>
+              <th>Filename</th>
+              <th>Load Date</th>
+              <th>&nbsp;</th>
+            </tr>
+            <tr ng-repeat="img in person.content.Person.images | orderBy: '-metadata.loadDate'">
+              <td>
+                <img src="{{ '/v1/documents?uri=' + img.thumbnailImage.filepath }}" ng-if="img.thumbnailImage"/>
+                <img src="{{ '/v1/documents?uri=' + img.masterImage.filepath }}" ng-if="!img.thumbnailImage && img.masterImage"/>
+              </td>
+              <td>{{img.metadata.filename}}</td>
+              <td>{{img.metadata.loadDate | date: 'MM-dd-yyyy'}}</td>
+              <td><a ui-sref="root.view({uri: img.metadata.metadata})">View</a></td>
+            </tr>
+          </table>
         </dd>
       </dl>
       <hr ng-if="!$last"></hr>

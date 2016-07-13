@@ -3,8 +3,8 @@
   angular.module('app.detail')
   .controller('DetailCtrl', DetailCtrl);
 
-  DetailCtrl.$inject = ['doc', '$stateParams'];
-  function DetailCtrl(doc, $stateParams) {
+  DetailCtrl.$inject = ['doc', '$stateParams', '$location'];
+  function DetailCtrl(doc, $stateParams, $location) {
     var ctrl = this;
 
     var uri = $stateParams.uri;
@@ -36,7 +36,7 @@
       ctrl.xml = 'Error occured determining document type.';
       ctrl.json = {'Error' : 'Error occured determining document type.'};
     }
-
+    
     angular.extend(ctrl, {
       doc : doc.data,
       uri : uri

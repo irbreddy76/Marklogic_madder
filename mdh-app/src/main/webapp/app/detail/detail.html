@@ -1,6 +1,7 @@
 <div class="row detail">
   <person-detail person="ctrl.doc" ng-if="ctrl.doc.headers.RecordType == 'PersonParticipation'"></person-detail>
   <case-detail case="ctrl.doc" ng-if="ctrl.doc.headers.RecordType == 'Case'"></case-detail>
+  <img src="{{ '/v1/documents?uri=' + ctrl.doc.content.imageUri" }} ng-if="ctrl.doc.headers.RecordType == 'PersonImage'"/>
   <div class="col-sm-8">
     <tabset type="pills">
       <tab active="true">
