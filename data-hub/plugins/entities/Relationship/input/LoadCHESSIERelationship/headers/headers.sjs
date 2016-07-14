@@ -9,17 +9,14 @@
  */
 function createHeaders(id, content, options) {
   var header = {
-    relationshipParticipationIds: [],
-	//relationshipParticipationTypes: []
+    participationIds: [],
+    centralpersonIds: []
   };
   
   for(var i = 0; i < content.Relationships.length; i++) {
-	var relationshipIdentifier = content.Relationships[i];
-	for(var j=0; j < relationshipIdentifier.ParticipationIdentifier.length; j++) {
-		var identifier = relationshipIdentifier.ParticipationIdentifier[j];
-		header.relationshipParticipationIds.push({participationId: identifier.ParticipationKey});
-		//header.relationshipParticipationTypes.push({relationshipParticipationType: identifier.ParticipationType});
-	}
+	var identifier = content.Relationships[i];
+	header.participationIds.push({participationId: identifier.ParticipationIdentifier.ParticipationKey});
+	header.centralpersonIds.push({centralpersonId: identifier.CentralPerson});
   }
   return header;
 }
