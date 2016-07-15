@@ -13,22 +13,19 @@ function createHeaders(id, content, options) {
     ParticipationIds: [],
   };
  
-  for(var i = 0; i < content.Relationships.length; i++) {
-	var relationshipIdentifier = content.Relationships[i];
-	for(var j=0; j < relationshipIdentifier.ParticipationIdentifier.length; j++) {
-		var identifier = relationshipIdentifier.ParticipationIdentifier[i];
-		if(identifier.ParticipationType == 'Service Case') {
-		  header.ParticipationIds.push({ServiceCaseId: identifier.ParticipationKey});
+	for(var i = 0; i < content.Relationships.length; i++) {
+		var identifier = content.Relationships[i];
+		if(identifier.ParticipationIdentifier.ParticipationType == 'Service Case') {
+		  header.ParticipationIds.push({ServiceCaseId: identifier.ParticipationIdentifier.ParticipationKey});
 		  header.CaseType = 'Service Case';
-		} else if(identifier.ParticipationType ==  'Adoption Planning') {
-		  header.ParticipationIds.push({AdoptionPlanningId: identifier.ParticipationKey});
+		} else if(identifier.ParticipationIdentifier.ParticipationType ==  'Adoption Planning') {
+		  header.ParticipationIds.push({AdoptionPlanningId: identifier.ParticipationIdentifier.ParticipationKey});
 		  header.CaseType = 'Adoption Planning';
-		} else if(identifier.ParticipationType ==  'AU') {
-		  header.ParticipationIds.push({AUId: identifier.ParticipationKey});
+		} else if(identifier.ParticipationIdentifier.ParticipationType ==  'AU') {
+		  header.ParticipationIds.push({AUId: identifier.ParticipationIdentifier.ParticipationKey});
 		  header.CaseType = 'AU';
 		}	
 	}
-  } 
 
   return header;
 }
