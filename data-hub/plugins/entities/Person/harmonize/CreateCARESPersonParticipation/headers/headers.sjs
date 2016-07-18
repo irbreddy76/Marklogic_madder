@@ -58,7 +58,7 @@ function createHeaders(id, content, options) {
     var address = content.Person.Addresses[i];
     var entry = {
       AddressType: address.AddressType,
-      StateDate: address.StartDate,
+      StartDate: address.StartDate,
       CloseDate: address.CloseDate,
       LocationStreet: address.StreetNumberText + " " + address.StreetName,
       LocationCityName: address.CityName,
