@@ -14,26 +14,17 @@ function createTriples(id, content, headers, options) {
   
   for(var i = 0; i < content.Relationships.length; i++) {
 	var identifier = content.Relationships[i];
-  var subjects = [];
-  var relationships = [];
-	var members = [];
+  var distinctMembers = [];
 
 	var caseId = identifier.ParticipationIdentifier.ParticipationKey;
 	var centralMember = identifier.CentralPerson;
-	var member;
-	for (var j=0; j < identifier.Relations.length; j++) {
-		var relationIdentifier = identifier.Relations[j];
-    subjects.push(relationIdentifier.RelationSubject);
-    relationships.push(getRelationshipProperty(relationIdentifier.RelationRole));
-		members.push(relationIdentifier.RelationTarget);
-	};
-    triples = getTriples(caseId, centralMember, subjects, relationships, members)
-  }
-  
+  distinctMembers = getDistinctMembers(identifier.Relations)   
+  triples = getTriples(caseId, centralMember, identifier.Relations, distinctMembers);
   return triples;  
-}
+  }
+};
 
-function getTriples(caseId, centralMember, subjects, relationships, members)
+function getTriples(caseId, centralMember, relationships, members)
 {
     var triples = {};
     var prefixes = {
@@ -41,6 +32,7 @@ function getTriples(caseId, centralMember, subjects, relationships, members)
       "mdr": "http://www.dhr.state.md.us/ontology/personCaseRelationships#"
     };
     var fac = sem.rdfBuilder(prefixes);
+    var namedGraphIRIs = [];
     var serviceCase = {
       subject: sem.iri("http://www.dhr.state.md.us/ServiceCase/" + caseId), 
       rdfType: sem.iri("http://www.dhr.state.md.us/ontology/personCaseRelationships#Case"),
@@ -48,7 +40,6 @@ function getTriples(caseId, centralMember, subjects, relationships, members)
     };
     var caseRelationships = {
       subject: sem.iri("http://www.dhr.state.md.us/CaseRelationship/" + caseId),
-      self: sem.iri("http://www.dhr.state.md.us/CaseRelationship/" + centralMember),
       rdfType: sem.iri("http://www.dhr.state.md.us/ontology/personCaseRelationships#CaseRelationship"),
       centralMember: sem.iri("http://www.dhr.state.md.us/Person/" + centralMember)
     };
@@ -56,37 +47,74 @@ function getTriples(caseId, centralMember, subjects, relationships, members)
       xdmp.apply(fac, serviceCase.subject, "rdf:type", serviceCase.rdfType),
       xdmp.apply(fac, serviceCase.subject, "mdr:caseRelationship", serviceCase.caseRelationship)
     ];
+    namedGraphIRIs.push(serviceCase.subject),
+    namedGraphIRIs.push(fn.replace(serviceCase.subject, "\\d+", ""))
     var caseRelationshipsTriples = [
       xdmp.apply(fac, caseRelationships.subject, "rdf:type", caseRelationships.rdfType),
-      xdmp.apply(fac, caseRelationships.subject, "mdr:centralMember", caseRelationships.centralMember),
-      xdmp.apply(fac, caseRelationships.self, "mdr:self", caseRelationships.centralMember)
-    ]
+      xdmp.apply(fac, caseRelationships.subject, "mdr:centralMember", caseRelationships.centralMember)
+    ];
+    namedGraphIRIs.push(caseRelationships.subject);
+    namedGraphIRIs.push(fn.replace(caseRelationships.subject, "\\d+", ""));
+    var personTriples = [];
     for (var i = 0, len = members.length; i < len; i++) {
       caseRelationshipsTriples.push(
-        xdmp.apply(fac, 
-                   sem.iri("http://www.dhr.state.md.us/CaseRelationship/" + subjects[i]), 
-                   "mdr:" + relationships[i], 
-                   sem.iri("http://www.dhr.state.md.us/Person/" + members[i]))
+        xdmp.apply(fac, caseRelationships.subject, "mdr:relationshipMember", sem.iri("http://www.dhr.state.md.us/Person/" + members[i]))
+      );
+      namedGraphIRIs.push("http://www.dhr.state.md.us/Person/" + members[i]);
+      namedGraphIRIs.push("http://www.dhr.state.md.us/Person/");
+      personTriples.push(
+        xdmp.apply(fac, sem.iri("http://www.dhr.state.md.us/Person/" + members[i]), "rdf:type", sem.iri("http://www.dhr.state.md.us/ontology/personCaseRelationships#Person"))
+      );
+    }
+    for (var i = 0, len = relationships.length; i < len; i++) {
+      var subjIRI = sem.iri("http://www.dhr.state.md.us/Person/" + relationships[i].RelationSubject);
+      var predCURIE = "mdr:" + getPropertyFromLabel(relationships[i].RelationRole);
+      var objIRI = sem.iri("http://www.dhr.state.md.us/Person/" + relationships[i].RelationTarget);
+      personTriples.push(
+        xdmp.apply(fac, subjIRI, predCURIE, objIRI)
       );
     }
     triples['serviceCaseTriples'] = serviceCaseTriples;
     triples['caseRelationshipsTriples'] = caseRelationshipsTriples;
-  	return triples;
+    triples['personTriples'] = personTriples;
+    triples['namedGraphIRIs'] = fn.distinctValues(xdmp.arrayValues(namedGraphIRIs));
+    return triples;
 };
 
-function getRelationshipProperty(relationship)
+function getPropertyFromLabel(label) 
 {
-	var propertyLabel = rdf.langString(relationship, "en");
-	var store = sem.store([], cts.collectionQuery("Ontology"));
-	var bindings = {"propertyLabel": propertyLabel};
-	var query = "\
-  		PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \
-  		PREFIX dct: <http://purl.org/dc/terms/> \
-  	SELECT ?property WHERE {?s dct:description ?propertyLabel; rdfs:label ?property .} \
-	";
-	var sparql = sem.sparql(query, bindings, [], store);
-	return sparql.next().value.property;
-}
+  var propertyLabel = rdf.langString(label, "en")
+  var store = sem.store([], cts.collectionQuery("Ontology"));
+  
+  var bindings = {"propertyLabel": propertyLabel};
+  var query = "\
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
+    PREFIX owl: <http://www.w3.org/2002/07/owl#> \
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \
+    PREFIX dct: <http://purl.org/dc/terms/> \
+    SELECT ?property WHERE {?s rdf:type owl:ObjectProperty; dct:description ?propertyLabel; rdfs:label ?property .}";
+  var sparql = sem.sparql(query, bindings, [], store);
+  return sparql.next().value.property;
+};
+
+function getDistinctMembers(relations)
+{
+  var distinctMembers = [];
+  var memberExists = [];
+  for (var j=0; j < relations.length; j++) {
+    if (!memberExists[relations[j].RelationSubject])
+    {
+      distinctMembers.push(relations[j].RelationSubject);
+      memberExists[relations[j].RelationSubject] = true
+    }
+    if (!memberExists[relations[j].RelationTarget])
+    {
+      distinctMembers.push(relations[j].RelationTarget);
+      memberExists[relations[j].RelationTarget] = true
+    }       
+  };
+  return distinctMembers;
+};
 
 
 module.exports = {
