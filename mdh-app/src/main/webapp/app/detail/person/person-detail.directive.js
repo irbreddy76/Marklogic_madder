@@ -31,7 +31,37 @@
     
     // Relationship Graph Configuration
     ctrl.graphOptions = {
-    		
+        nodes : {
+          shape: "dot",
+          size: 5
+        },
+        physics: {
+            barnesHut: {
+              gravitationalConstant: -3500,
+              centralGravity: 0.15,
+              springLength: 225,
+              springConstant: 0.01,
+              damping: 0.12,
+              avoidOverlap: 0.25
+            },
+            maxVelocity: 22,
+            minVelocity: 0.2,
+            timestep: 0.44
+          },
+          edges: {
+                arrows: {
+                    to: {enabled: true, scaleFactor: 0.5}
+                },
+                width: 1,
+                selfReferenceSize: 20,
+                physics: true,
+                dashes: true,
+                smooth: {
+                  enabled: true,
+                  type: "dynamic",
+                  roundness: 0.5
+                }
+        }
     };
     
     $scope.status = {
