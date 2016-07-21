@@ -9,7 +9,7 @@
  */
 function createHeaders(id, content, options) {
   var header = {
-    RecordType: 'Person',
+    RecordType: 'ABAWD',
     SystemIdentifiers: [],
     Addresses: []
   };
