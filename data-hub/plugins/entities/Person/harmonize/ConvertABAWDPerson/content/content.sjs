@@ -7,8 +7,13 @@
  * @return - your content
  */
 function createContent(id, options) {
-  var doc = cts.doc(id);
-  var root = doc.root;
+
+  var docs = cts.search(cts.andQuery([
+    cts.collectionQuery(['LoadABAWDPerson']),
+    cts.jsonPropertyValueQuery('CLIENT_ID', id)
+  ])).toArray();
+
+  var root = docs[0].root;
 
   // for xml we need to use xpath
   if (root && xdmp.nodeKind(root) === 'element') {
@@ -18,7 +23,7 @@ function createContent(id, options) {
   else if (root && root.content) {
 
     //Identifiers
-    var systemIdentifiers = [];
+    var systemIdentifiers = new Array();
     systemIdentifiers.push({"SourceSystem": "LDSS_ID","SourceKey": root.content.LDSS_ID});
     systemIdentifiers.push({"SourceSystem": "DO","SourceKey": root.content.DO_NUM});
     systemIdentifiers.push({"SourceSystem": "CLIENTID","SourceKey": root.content.CLIENT_ID});
@@ -44,17 +49,40 @@ function createContent(id, options) {
             "PostalCode":root.content.COL8.toString().substr(0,5),
             "PostalExtensionCode":root.content.COL8.toString().substr(5)});
 
+    //Income
+    var income = [];
+    for (var i in docs) {
+      var doc = docs[i].root;
+
+      income.push({"IncomeTypeCode": doc.content.Income_Type_Code,
+          "IncomeFrequencyCode": doc.content.Income_Frequency_Code,
+          "IncomeWorkHoursNumber": doc.content.Work_Hours_Number,
+          "IncomeAmount": doc.content.Income_Amount,
+          "IncomeDate": doc.content.Benefit_Status_Date
+      });
+    }
+
+    //Unearned Income
+    var ueIncome = [];
+    for (var i in docs) {
+      var doc = docs[i].root;
+
+      ueIncome.push({"IncomeTypeCode": doc.content.UI_type_Code,
+            "IncomeFrequencyCode": doc.content.UI_Frequency_Code,
+            "IncomeAmount": doc.content.UI_Amount,
+            "IncomeDate": doc.content.Benefit_Status_Date
+      });
+    }
+
     //content
     return {
       SystemIdentifiers: systemIdentifiers,
-
       PersonName: [{
           "PersonNameType":"Primary",
           "PersonGivenName": root.content.FIRST_NAME,
           "PersonSurName": root.content.LAST_NAME,
           "PersonFullName":" "
         }],
-
       PersonSSNIdentification: [{"IdentificationId":root.content.SSN}],
       PersonBirthDate: root.content.DOB,
       Addresses: addresses,
@@ -66,21 +94,10 @@ function createContent(id, options) {
       Disability: [{
             "DisabilityTypeCode": root.content.Disability_Type_Code,
             "DisabilityStartDate": root.content.Disability_Start_Date,
-            "DisabilityEndDate": root.content.Disability_End_Date,
+            "DisabilityEndDate": root.content.Disability_End_Date
           }],
-      Income: [ {
-            "IncomeTypeCode": root.content.Income_Type_Code,
-            "IncomeFrequencyCode": root.content.Income_Frequency_Code,
-            "IncomeWorkHoursNumber": root.content.Work_Hours_Number,
-            "IncomeAmount": root.content.Income_Amount,
-            "IncomeDate": root.content.Benefit_Status_Date
-          }],
-      UnEarnedIncome: [{
-            "IncomeTypeCode": root.content.UI_type_Code,
-            "IncomeFrequencyCode": root.content.UI_Frequency_Code,
-            "IncomeAmount": root.content.UI_Amount,
-            "IncomeDate": root.content.Benefit_Status_Date
-          }]
+      Income: income,
+      UnEarnedIncome: ueIncome
     };
 
   }
