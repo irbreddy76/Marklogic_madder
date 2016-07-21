@@ -6,27 +6,30 @@ import module namespace nm = "http://marklogic.com/name-matcher" at
 declare variable $TRACE_LEVEL_TRACE as xs:string := "FIND-SIMILAR-TRACE";
 declare variable $TRACE_LEVEL_DETAIL as xs:string := "FIND-SIMILAR-DETAIL";
 declare variable $DEFAULT_LIMIT as xs:int := 10;
+declare variable $DEFAULT_SCORE as xs:double := 24;
 
-declare function s:find-similar($record as map:map, $uri as xs:string?, $limit as xs:string?) {
+declare function s:find-similar($record as map:map, $uri as xs:string?, $limit as xs:string?, $score as xs:string?) {
   let $header := map:get($record, "headers")
   let $recordType := map:get($header, "RecordType")
   let $max := 
     if(fn:empty($limit) or fn:string-length($limit) = 0) then $DEFAULT_LIMIT
     else xs:int($limit)
+  let $min-score :=
+    if(fn:empty($score) or fn:string-length($score) = 0) then $DEFAULT_SCORE
+    else xs:double($score)
   let $_ := (
     fn:trace("find-similar -- CALLED", $TRACE_LEVEL_TRACE),
     fn:trace(" -- RecordType = " || $recordType, $TRACE_LEVEL_DETAIL)
   )
   return 
     if($recordType = "PersonParticipation") then
-      s:similar-personparticipation($header, map:get($record, "content"), $uri, $max)
+      s:similar-personparticipation($header, map:get($record, "content"), $uri, $max, $min-score)
     else json:object()
 };
 
 declare function s:similar-personparticipation($header as map:map, $content as map:map, $uri as xs:string?,
-  $limit as xs:int) {
+  $limit as xs:int, $score as xs:double) {
   let $_ := fn:trace("similar-personparticipation -- CALLED", $TRACE_LEVEL_TRACE)
-  let $score := map:get($params, "score")
   let $ssn := ()
   let $dob := ()
   let $firstNames := ()
@@ -56,7 +59,7 @@ declare function s:similar-personparticipation($header as map:map, $content as m
     s:add-parameter(fn:distinct-values($dob), "dob", $params),
     s:add-parameter(fn:distinct-values($firstNames), "first", $params),
     s:add-parameter(fn:distinct-values($lastNames), "last", $params),
-    map:put($params, "score", if(fn:empty($score)) then 24 else $score)
+    map:put($params, "score", $score)
   )
   let $query := nm:get-query($params, map:map(), "xml")
   let $collection := "PersonParticipation"

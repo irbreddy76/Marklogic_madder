@@ -5,13 +5,15 @@
   angular.module('app.search')
     .controller('SearchCtrl', SearchCtrl);
 
-  SearchCtrl.$inject = ['$scope', '$location', 'userService', 'MLSearchFactory', 'personHelper', 'caseHelper', 'MLRest'];
+  SearchCtrl.$inject = ['$scope', '$location', 'userService', 'MLSearchFactory', 
+                        'personHelper', 'caseHelper', 'abawdHelper', 'MLRest'];
 
   // inherit from MLSearchController
   var superCtrl = MLSearchController.prototype;
   SearchCtrl.prototype = Object.create(superCtrl);
 
-  function SearchCtrl($scope, $location, userService, searchFactory, personHelper, caseHelper, MLRest) {
+  function SearchCtrl($scope, $location, userService, searchFactory, 
+		  personHelper, caseHelper, abawdHelper, MLRest) {
     var ctrl = this;
     ctrl.runMapSearch = false;
 	
@@ -21,6 +23,7 @@
 
     superCtrl.constructor.call(ctrl, $scope, $location, mlSearch);
 
+    ctrl.report = abawdHelper.getReport(); //Object used to persist any user provided search params
     ctrl.case = caseHelper.getCase();
     ctrl.person = personHelper.getPerson();
     ctrl.mode = 'basic';
@@ -40,6 +43,17 @@
     // Re-run search based off current mode
     ctrl.setMode = function(mode) {
       ctrl.mode = mode;
+      switch(ctrl.mode) {
+        case 'case':
+          this.mlSearch.options.queryOptions = 'case';
+          break;
+        case 'abawd':
+          this.mlSearch.options.queryOptions = 'abawd';
+          break;
+        default:
+          this.mlSearch.options.queryOptions = 'all';
+          break;
+      }
       $scope.sort = {
         field: 'ws',
         order: 'd'
@@ -92,6 +106,9 @@
         case 'case':
           ctrl.doCaseSearch(ctrl.case);
           break;
+        // Additional handling for ABAWD report/search here
+        // case 'abawd':
+        //  break;
         default:
           if ( arguments.length ) {
 				this.qtext = qtext;
@@ -157,6 +174,8 @@
           ctrl.case = {};
           caseHelper.clearCase();
           break;
+        //case 'abawd':
+        // break;
         default:
           this.qtext = {};
           break;

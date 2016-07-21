@@ -16,6 +16,10 @@
         <case-search case="ctrl.case" search="ctrl.newSearch(qtext)"
           suggest="ctrl.suggest(value, field)" clear-text="ctrl.clearText()"></case-search>
       </tab>
+      <tab heading="ABAWD Report" select="ctrl.setMode('abawd')">
+        <abawd-report case="ctrl.report" search="ctrl.newSearch(qtext)"
+          suggest="ctrl.suggest(value, field)" clear-text="ctrl.clearText()"></abawd-report>
+      </tab>
     </tabset>
   </div>
 </div>

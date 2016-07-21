@@ -16,7 +16,7 @@ declare function get(
     let $uri := map:get($params, "uri")
     let $results := 
       if(fn:empty($uri) or fn:not(fn:doc-available($uri))) then json:object()
-      else s:find-similar(xdmp:from-json(fn:doc($uri)), $uri, map:get($params, "limit"))
+      else s:find-similar(xdmp:from-json(fn:doc($uri)), $uri, map:get($params, "limit"), map:get($params, "score"))
     return xdmp:to-json($results)
   } catch($e) {
     map:put($context, "output-types", "text/plain"),
@@ -47,7 +47,7 @@ declare function post(
     if(fn:count($input) = 1) then 
       let $target := map:get($params, "target")
       let $record := xdmp:from-json($input[1])
-      let $result := s:find-similar($record, map:get($params, "uri"), map:get($params, "limit"))
+      let $result := s:find-similar($record, map:get($params, "uri"), map:get($params, "limit"), map:get($params, "score"))
       return xdmp:to-json($result)
     else xdmp:to-json(json:object())
   } catch($e) {

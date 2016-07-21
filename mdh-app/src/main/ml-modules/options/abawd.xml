@@ -2,16 +2,9 @@
   <search-option>unfiltered</search-option>
   <page-length>10</page-length>
   <additional-query>
-    <cts:and-query xmlns:cts="http://marklogic.com/cts">
-      <cts:collection-query>
-        <cts:uri>PersonParticipation</cts:uri>
-      </cts:collection-query>
-      <cts:not-query>
-        <cts:collection-query>
-          <cts:uri>deleted</cts:uri>
-        </cts:collection-query>
-      </cts:not-query>
-    </cts:and-query>
+    <cts:collection-query xmlns:cts="http://marklogic.com/cts">
+      <cts:uri>Person</cts:uri>
+    </cts:collection-query>
   </additional-query>
   <term apply="term">
     <empty apply="all-results" />
