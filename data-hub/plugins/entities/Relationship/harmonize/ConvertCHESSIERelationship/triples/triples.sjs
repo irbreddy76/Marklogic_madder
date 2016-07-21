@@ -63,8 +63,9 @@ function getTriples(caseId, centralMember, relationships, members)
       namedGraphIRIs.push("http://www.dhr.state.md.us/Person/" + members[i]);
       namedGraphIRIs.push("http://www.dhr.state.md.us/Person/");
       personTriples.push(
-        xdmp.apply(fac, sem.iri("http://www.dhr.state.md.us/Person/" + members[i]), "rdf:type", sem.iri("http://www.dhr.state.md.us/ontology/personCaseRelationships#Person"))
-      );
+        xdmp.apply(fac, sem.iri("http://www.dhr.state.md.us/Person/" + members[i]), "rdf:type", sem.iri("http://www.dhr.state.md.us/ontology/personCaseRelationships#Person")),
+        xdmp.apply(fac, sem.iri("http://www.dhr.state.md.us/Person/" + members[i]), "mdr:inCase", caseRelationships.subject)
+      );      
     }
     for (var i = 0, len = relationships.length; i < len; i++) {
       var subjIRI = sem.iri("http://www.dhr.state.md.us/Person/" + relationships[i].RelationSubject);
