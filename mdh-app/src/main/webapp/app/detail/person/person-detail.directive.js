@@ -61,7 +61,7 @@
           ctrl.otherNames = ctrl.otherNames.concat($filter('filter')(currentRecord.Person.PersonName, {PersonNameType: '!Primary'}, true));    		
     	} else {
           ctrl.otherNames = ctrl.otherNames.concat(currentRecord.Person.PersonName);
-          ctrl.persons = ctrl.persons.push(currentRecord.Person);
+          ctrl.persons.push(currentRecord.Person);
     	}
     	ctrl.images = ctrl.images.concat(currentRecord.Person.images);
     	ctrl.participations = ctrl.participations.concat(currentRecord.Participations);

@@ -13,8 +13,8 @@ declare function pm:merge($primary-uri as xs:string, $secondary-uri as xs:string
   )  
   let $merged-doc := json:object()
   let $permissions := pm:get-permissions($primary-uri, $secondary-uri)
-  let $collections := fn:distinct-values(xdmp:document-get-collections($primary-uri),
-    xdmp:document-get-collections($secondary-uri))
+  let $collections := fn:distinct-values((xdmp:document-get-collections($primary-uri),
+    xdmp:document-get-collections($secondary-uri)))
   let $primary-doc := xdmp:from-json(fn:doc($primary-uri))
   let $primary-header := map:get($primary-doc, "headers")
   let $secondary-doc := xdmp:from-json(fn:doc($secondary-uri))
@@ -42,8 +42,8 @@ declare function pm:merge($primary-uri as xs:string, $secondary-uri as xs:string
   )
   let $uri := "/personParticipation/merged/" || xdmp:hash64(xdmp:to-json-string($merged-doc)) || ".json"
   return (
-    xdmp:document-add-collections("deleted", $primary-uri),
-    xdmp:document-add-collections("deleted", $secondary-uri),
+    xdmp:document-add-collections($primary-uri, "deleted"),
+    xdmp:document-add-collections($secondary-uri, "deleted"),
     xdmp:document-insert($uri, xdmp:to-json($merged-doc), $permissions/*,
       $collections),
     $uri
@@ -68,7 +68,7 @@ declare function pm:build-log($primary-uri as xs:string, $primary-header as map:
     map:put($log, "mergedBy", xdmp:get-current-user()),
     map:put($log, "mergedDocs", json:array())    
   )
-  return xdmp:invoke("/lib/merge-log.xqy" (xs:QName("merge-log"), $log, 
+  return xdmp:invoke("/lib/merge-log.xqy", (xs:QName("merge-log"), $log, 
     xs:QName("permissions"), $permissions), 
     <options xmlns="xdmp:eval">
       <database>{xdmp:database("merge-database")}</database>
@@ -115,16 +115,16 @@ declare function pm:merge-headers($primary-header as map:map, $secondary-header 
          $options
        )
      ),
-     map:put($header, "PrimaryPersonName", 
+     map:put($header, "PersonPrimaryName", 
        pm:merge-property(
-         map:get($primary-header, "PrimaryPersonName"),
-         map:get($secondary-header, "PrimaryPersonName"),
+         map:get($primary-header, "PersonPrimaryName"),
+         map:get($secondary-header, "PersonPrimaryName"),
          $options
        )
      ),
      map:put($header, "SSNIdentificationId", 
        pm:merge-value(
-         pm:read-value($primary-header, "SSNIdenficationId"),
+         pm:read-value($primary-header, "SSNIdentificationId"),
          pm:read-value($secondary-header, "SSNIdentificationId"),
          $options
        )
@@ -158,16 +158,17 @@ declare function pm:merge-array($primary, $secondary, $options as item()?) {
 declare function pm:merge-property($primary as map:map, $secondary as map:map, $options as item()?) {
   let $json := json:object()
   let $_ := 
-    for $key in fn:distinct-values(map:keys($primary), map:keys($secondary))
+    for $key in fn:distinct-values((map:keys($primary), map:keys($secondary)))
     return map:put($json, $key, (pm:read-value($primary, $key), pm:read-value($secondary, $key))[1])
   return $json
 }; 
 
-declare function pm:merge-value($primary as xs:string?, $secondary as xs:string?, $options as item()?) {
+declare function pm:merge-value($primary as xs:anyAtomicType?, $secondary as xs:anyAtomicType?, $options as item()?) {
   ($primary, $secondary)[1]
 };
 
 declare function pm:read-value($json as map:map, $property as xs:string) {
-  let $value := fn:normalize-space(map:get($json, $property))
-  return if(fn:string-length($value) > 0) then $value else () 
+  let $value := map:get($json, $property)
+  return
+    if(fn:string-length(fn:normalize-space(xs:string($value))) > 0) then $value else ()
 };

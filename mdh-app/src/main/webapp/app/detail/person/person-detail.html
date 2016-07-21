@@ -143,7 +143,8 @@
     </div> 
   </accordion-group>
   <accordion-group heading="Similar" is-open="status.isSimilarOpen">
-    <table border="1">
+    <p ng-hide="ctrl.suggestions.length > 0">No Similar Records Found</p>
+    <table border="1" ng-show="ctrl.suggestions.length > 0">
       <tr>
         <th>First Name</th>
         <th>Middle</th>

@@ -3,21 +3,38 @@
   angular.module('person.compare')
     .controller('ComparisonCtrl', ComparisonCtrl);
 
-  ComparisonCtrl.$inject = ['originalDoc', 'candidateDoc', '$scope', '$location', 'MLRest'];
-  function ComparisonCtrl(originalDoc, candidateDoc, $scope, $location, mlRest) {
+  ComparisonCtrl.$inject = ['originalDoc', 'candidateDoc', '$scope', '$location', '$state',
+                            'MLRest'];
+  function ComparisonCtrl(originalDoc, candidateDoc, $scope, $location, $state, mlRest) {
     var ctrl = this;
     
-    ctrl.originalDoc = originalDoc;
-    ctrl.candidateDoc = candidateDoc;
+    ctrl.errMessage = null;
+    ctrl.merging = false;
+    
+    ctrl.originalDoc = originalDoc.document;
+    ctrl.candidateDoc = candidateDoc.document;
     
     ctrl.merge = function() {
+      ctrl.merging = true;
       mlRest.extension('merge', {
         method: 'PUT',
         params: {
-          'rs:master': ctrl.master,
-          'rs:uri': ctrl.candidate
+          'rs:primary': originalDoc.uri,
+          'rs:secondary': candidateDoc.uri
         }
-      })
+      }).then (function(response) {
+        var results = response.data;
+        ctrl.merging = false;
+        if(response.data.error) {
+          ctrl.errMessage = response.data.error;
+        } else if(response.data.uri) {
+          $state.go('root.view', {uri: response.data.uri});
+        }
+      });
+    };
+    
+    ctrl.cancel = function() {
+      $state.go('root.view', {uri: originalDoc.uri})
     };
   }
 }());

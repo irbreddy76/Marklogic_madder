@@ -101,13 +101,13 @@
           originalDoc: function(MLRest, $stateParams) {
             var uri = $stateParams.master;
             return MLRest.getDocument(uri, { format: 'json' }).then(function(response) {
-              return response.data;
+              return { document: response.data, uri: uri};
             });
           },
           candidateDoc: function(MLRest, $stateParams) {
             var uri = $stateParams.candidate;
             return MLRest.getDocument(uri, { format: 'json' }).then(function(response) {
-              return response.data;
+              return { document: response.data, uri: uri};
             });
           }
         }
