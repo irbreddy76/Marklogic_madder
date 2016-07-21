@@ -4,6 +4,7 @@
   angular.module('app.detail', [
     'app.search',
     'ui.router',
-    'person.compare'
+    'person.compare',
+    'ngVis'
   ]);
 }());

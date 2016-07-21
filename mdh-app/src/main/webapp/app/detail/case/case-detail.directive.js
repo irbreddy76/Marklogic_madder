@@ -28,7 +28,24 @@
     
     superCtrl.constructor.call(ctrl, $scope, $location, mlSearch);
     
+    ctrl.relationships = [];
+    // Relationship Graph Configuration
+    ctrl.graphOptions = {
+    		
+    };
+    
     ctrl.init = function () {
+    	
+    	/* Call Relationship Endpoint for Relationship data
+        MLRest.extension('relationships', {
+          method: 'GET',
+          params: {
+          }
+        }).then(function(response) {
+          ctrl.relationships = response.data
+        });       
+        */
+    	
       if($scope.case && $scope.case.headers.ParticipationIds[0].ServiceCaseId) {
         mlSearch.addAdditionalQuery(
           {

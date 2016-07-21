@@ -21,12 +21,18 @@
   function PersonDetailCtrl($scope, $location, $filter, mlRest) {
     var ctrl = this;
     
+    ctrl.relationships = [];
     ctrl.suggestions = [];
     ctrl.persons = [];
     ctrl.participations = [];
     ctrl.otherNames = [];
     ctrl.images = [];
     ctrl.isLoading = false;
+    
+    // Relationship Graph Configuration
+    ctrl.graphOptions = {
+    		
+    };
     
     $scope.status = {
       isPersonOpen: true,
@@ -37,7 +43,8 @@
       isAddressOpen: false,
       isParticipationOpen: false,
       isProgramOpen: false,
-      isSimilarOpen: false
+      isSimilarOpen: false,
+      isRelationsOpen: false
     };
     
     ctrl.processCandidates = function(response) {
@@ -54,6 +61,16 @@
     	  'rs:limit': 10
     	}
       }).then(ctrl.processCandidates.bind(this));
+      
+      /* Call Relationship Endpoint for Relationship data
+       mlRest.extension('relationships', {
+         method: 'GET',
+         params: {
+         }
+       }).then(function(response) {
+         ctrl.relationships = response.data
+       });       
+       */
       
       for(var i = 0; i < $scope.person.content.records.length; i++) {
     	var currentRecord = $scope.person.content.records[i];
