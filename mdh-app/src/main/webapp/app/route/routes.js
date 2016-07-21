@@ -88,6 +88,30 @@
           }
         }
       })
+      .state('root.compare', {
+        url: '/compare',
+        params: {
+          master: null,
+          candidate: null
+        },
+        templateUrl: 'app/detail/person/compare.html',
+        controller: 'ComparisonCtrl',
+        controllerAs: 'ctrl',
+        resolve: {
+          originalDoc: function(MLRest, $stateParams) {
+            var uri = $stateParams.master;
+            return MLRest.getDocument(uri, { format: 'json' }).then(function(response) {
+              return response.data;
+            });
+          },
+          candidateDoc: function(MLRest, $stateParams) {
+            var uri = $stateParams.candidate;
+            return MLRest.getDocument(uri, { format: 'json' }).then(function(response) {
+              return response.data;
+            });
+          }
+        }
+      })
       .state('root.profile', {
         url: '/profile',
         templateUrl: 'app/user/profile.html',

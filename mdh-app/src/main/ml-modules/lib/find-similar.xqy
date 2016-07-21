@@ -26,27 +26,38 @@ declare function s:find-similar($record as map:map, $uri as xs:string?, $limit a
 declare function s:similar-personparticipation($header as map:map, $content as map:map, $uri as xs:string?,
   $limit as xs:int) {
   let $_ := fn:trace("similar-personparticipation -- CALLED", $TRACE_LEVEL_TRACE)
-  let $person := map:get($content, "Person")
-  let $ssn := fn:string(map:get($header, "SSNIdentificationId"))
-  let $dob := map:get($person, "PersonBirthDate")
-  let $names := <body>{json:array-values(map:get($person, "PersonName"))}</body>
-  let $firstNames := fn:distinct-values(s:get-names($names/json:object/json:entry[./@key = "PersonGivenName"]/json:value))
-  let $lastNames := fn:distinct-values(s:get-names($names/json:object/json:entry[./@key = "PersonSurName"]/json:value))
+  let $score := map:get($params, "score")
+  let $ssn := ()
+  let $dob := ()
+  let $firstNames := ()
+  let $lastNames := ()
+  let $_ := 
+    for $record in json:array-values(map:get($content, "records"))
+    let $person := map:get($record, "Person")
+    return (
+      let $date := map:get($person, "PersonBirthDate")
+      return if(fn:empty($date)) then () else xdmp:set($dob, ($dob, xs:string($date))),
+      for $id in json:array-values(map:get($person, "PersonSSNIdentification"))
+      let $number := map:get($id, "IdentificationID")
+      return if(fn:empty($number)) then () else xdmp:set($ssn, ($ssn, xs:string($number))),
+      let $names := <body>{json:array-values(map:get($person, "PersonName"))}</body>
+      return (
+        xdmp:set($firstNames, ($firstNames, 
+          fn:distinct-values(s:get-names($names/json:object/json:entry[./@key = "PersonGivenName"]/json:value)))
+        ),
+        xdmp:set($lastNames, ($lastNames, 
+          fn:distinct-values(s:get-names($names/json:object/json:entry[./@key = "PersonSurName"]/json:value)))
+        )
+      )
+    )
   let $params := map:map()
   let $_ := ( 
-    s:add-parameter($ssn, "ssn", $params),
-    s:add-parameter($dob, "dob", $params),
-    s:add-parameter($firstNames, "first", $params),
-    s:add-parameter($lastNames, "last", $params)
-  ) (:
-  return
-    if(fn:empty(map:keys($params))) then 
-      let $_ := fn:trace("similar-personparticipation -- No parameters found", $TRACE_LEVEL_TRACE)
-      return json:object()
-    else 
-      let $_ := map:put($params, "target", "personparticipation")
-      return nm:algorithm-new($params, map:map())
-    :)
+    s:add-parameter(fn:distinct-values($ssn), "ssn", $params),
+    s:add-parameter(fn:distinct-values($dob), "dob", $params),
+    s:add-parameter(fn:distinct-values($firstNames), "first", $params),
+    s:add-parameter(fn:distinct-values($lastNames), "last", $params),
+    map:put($params, "score", if(fn:empty($score)) then 24 else $score)
+  )
   let $query := nm:get-query($params, map:map(), "xml")
   let $collection := "PersonParticipation"
   let $results :=  
@@ -60,7 +71,10 @@ declare function s:similar-personparticipation($header as map:map, $content as m
   let $_ :=
     for $candidate in $results
     let $candidate-entry := json:object()
-    let $_ := map:put($candidate-entry, "candidate", $candidate)
+    let $_ := (
+      map:put($candidate-entry, "candidate", $candidate),
+      map:put($candidate-entry, "uri", fn:document-uri($candidate))
+    )
     return json:array-push($array, $candidate-entry)
   let $json := json:object()
   let $_ := (

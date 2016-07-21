@@ -471,6 +471,7 @@ declare function nm:algorithm-new($params as map:map, $config as map:map) {
     let $score := qh:score($candidate)
     let $_ := (
       map:put($candidate-entry, "candidate", $candidate),
+      map:put($candidate-entry, "uri", fn:document-uri($candidate)),
       map:put($candidate-entry, "score", $score)
     )
     where $score >= qh:read-map-value($params, $CONFIG/config/min-score/key, $CONFIG/config/min-score/value)

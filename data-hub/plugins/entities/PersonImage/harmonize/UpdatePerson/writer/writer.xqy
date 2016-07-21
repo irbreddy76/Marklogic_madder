@@ -29,8 +29,11 @@ declare function plugin:write(
   )))
   let $json := xdmp:from-json($record)
   let $content := map:get($json, "content")
+  let $entry := ()
   let $person := 
-    if("Person" = map:keys($content)) then map:get($content, "Person")
+    if("records" = map:keys($content)) then 
+       let $_ := xdmp:set($entry, json:array-values(map:get($content, "records"))[1])
+       return map:get($entry, "Person")
     else $content
   let $images := 
     if("images" = map:keys($person)) then map:get($person, "images")
@@ -38,8 +41,12 @@ declare function plugin:write(
   let $_ := for $image in $new-images return json:array-push($images, $image)
   let $_ := map:put($person, "images", $images)
   let $_ := 
-    if("Person" = map:keys($content)) then map:put($content, "Person", $person)
-    else ()
+    if(fn:empty($entry)) then ()
+    else 
+      let $_ := map:put($entry, "Person", $person)
+      let $entries := fn:subsequence(
+        json:array-values(map:get($content, "records")), 2)
+      return map:put($content, "records", json:to-array(($entry, $entries)))
   let $_ := map:put($json, "content", $content)
   let $uri := fn:document-uri($record)
   return xdmp:document-insert($uri, xdmp:to-json($json),

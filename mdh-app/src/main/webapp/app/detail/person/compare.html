@@ -1,0 +1,14 @@
+<div class="row">
+  <div class="col-md-6">
+    <compare-person person="ctrl.originalDoc" uri="ctrl.master"></compare-person>
+  </div>
+  <div class="col-md-6">
+    <compare-person person="ctrl.candidateDoc" uri="ctrl.candidate"></compare-person>
+  </div>
+</div>
+<div>
+  <button type="button" class="btn btn-default" 
+    ng-click="ctrl.merge()">Merge</button>
+  <button type="button" class="btn btn-default" 
+    ng-click="ctrl.cancel()">Cancel</button>  
+</div>

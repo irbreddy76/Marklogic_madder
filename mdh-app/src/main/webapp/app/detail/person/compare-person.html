@@ -1,0 +1,203 @@
+<accordion close-others="false">
+  <accordion-group heading="Person Details" is-open="status.isPersonOpen">
+    <accordion close-others="false">
+      <accordion-group heading="Primary Name" is-open="status.isPrimaryOpen">
+        <dl class="dl-horizontal">
+          <dt>Person Given Name</dt>
+          <dd>{{person.headers.PersonPrimaryName.PersonGivenName}}</dd>
+          <dt>Person Middle Name</dt>
+          <dd>{{person.headers.PersonPrimaryName.PersonMiddleName}}</dd>
+          <dt>Person Family Name</dt>
+          <dd>{{person.headers.PersonPrimaryName.PersonSurName}}</dd>
+        </dl>
+      </accordion-group>
+      <accordion-group heading="Alternate Names" is-open="status.isAltNamesOpen">
+        <p ng-if="ctrl.otherNames.list.length == 0">No Alternate Names</p>
+        <div ng-if="ctrl.otherNames.list.length > 0">
+          <div class="row">
+            <div class="col-sm-4">
+              <button type="button" class="btn btn-default" 
+                ng-click="ctrl.prevItem(ctrl.otherNames)">&lt;</button>
+            </div>
+            <div class="col-sm-4">
+              {{ctrl.otherNames.index + 1}} of {{ctrl.otherNames.list.length}}
+            </div>
+            <div class="col-sm-4">
+              <button type="button" class="btn btn-default" 
+                ng-click="ctrl.nextItem(ctrl.otherNames)">&gt;</button>
+            </div>
+          </div>
+          <div>
+            <dl class="dl-horizontal">
+              <dt>Name Type</dt>
+              <dd>{{ctrl.otherNames.selected.PersonNameType}}</dd>
+              <dt>Person Given Name</dt>
+              <dd>{{ctrl.otherNames.selected.PersonGivenName}}</dd>
+              <dt>Person Middle Name</dt>
+              <dd>{{ctrl.otherNames.selected.PersonMiddleName}}</dd>
+              <dt>Person Family Name</dt>
+              <dd>{{ctrl.otherNames.selected.PersonSurName}}</dd>
+            </dl>
+          </div>
+        </div>
+      </accordion-group>
+      <accordion-group heading="Demographics" is-open="status.isDemographicsOpen">
+        <dl class="dl-horizontal">
+          <dt>Gender</dt>
+          <dd>{{person.content.records[0].Person.PersonSexCode}}</dd>
+          <dt>Race</dt>
+          <dd>{{person.content.records[0].Person.PersonRaceCode}}</dd>
+          <dt>Date of Birth</dt>
+          <dd>{{person.content.records[0].Person.PersonBirthDate | date: 'MM-dd-yyyy'}}</dd>
+          <dt>Social Security Number</dt>
+          <dd>{{person.content.records[0].Person.PersonSSNIdentification[0].IdentificationID}}</dd>
+          <dt ng-if="ctrl.images.length > 0">Depiction(s)</dt>
+          <dd>
+            <carousel no-wrap="false">
+              <slide ng-repeat="slide in ctrl.images" active="slide.active">
+                <img src="{{ '/v1/documents?uri=' + slide.thumbnailImage.filepath }}" 
+                  ng-show="slide.thumbnailImage" style="margin:auto;"/>
+                <img src="{{ '/v1/documents?uri=' + slide.masterImage.filepath }}" 
+                  ng-show="!slide.thumbnailImage && slide.masterImage" style="margin:auto;"/>
+                <div class="carousel-caption">
+                  <h4>Slide {{$index}}</h4>
+                </div>
+              </slide>
+            </carousel>
+          </dd>
+        </dl>
+      </accordion-group>
+      <accordion-group heading="Alternate Demographics" is-open="isAltDemoOpen">
+        <p ng-if="ctrl.persons.list.length == 0">No Alternate Demographics</p>
+        <div ng-if="ctrl.persons.list.length > 0">
+          <div class="row">
+            <div class="col-sm-4">
+              <button type="button" class="btn btn-default" 
+                ng-click="ctrl.prevItem(ctrl.persons)">&lt;</button>
+            </div>
+            <div class="col-sm-4">
+              {{ctrl.persons.index + 1}} of {{ctrl.persons.list.length}}
+            </div>
+            <div class="col-sm-4">
+              <button type="button" class="btn btn-default" 
+                ng-click="ctrl.nextItem(ctrl.persons)">&gt;</button>
+            </div>
+          </div>
+          <div>
+            <dl class="dl-horizontal">
+              <dt>Gender</dt>
+              <dd>{{ctrl.persons.selected.PersonSexCode}}</dd>
+              <dt>Race</dt>
+              <dd>{{ctrl.persons.selected.PersonRaceCode}}</dd>
+              <dt>Date of Birth</dt>
+              <dd>{{ctrl.persons.selected.PersonBirthDate | date: 'MM-dd-yyyy'}}</dd>
+              <dt>Social Security Number</dt>
+              <dd>{{ctrl.persons.selected.PersonSSNIdentification[0].IdentificationID}}</dd>
+            </dl>
+          </div>
+        </div>
+      </accordion-group>
+    </accordion>
+  </accordion-group>
+  <accordion-group heading="Addresses" is-open="status.isAddressOpen">
+    <p ng-if="ctrl.addresses.list.length == 0">No Addresses</p>
+    <div ng-if="ctrl.addresses.list.length > 0">
+      <div class="row">
+        <div class="col-sm-4">
+          <button type="button" class="btn btn-default" 
+            ng-click="ctrl.prevItem(ctrl.addresses)">&lt;</button>
+        </div>
+        <div class="col-sm-4">
+          {{ctrl.addresses.index + 1}} of {{ctrl.addresses.list.length}}
+        </div>
+        <div class="col-sm-4">
+          <button type="button" class="btn btn-default" 
+            ng-click="ctrl.nextItem(ctrl.addresses)">&gt;</button>
+        </div>
+      </div>
+      <div>
+        <dl class="dl-horizontal">
+          <dt>Address Type</dt>
+          <dd>{{ctrl.addresses.selected.AddressType}}</dd>
+          <dt>Start Date</dt>
+          <dd>{{ctrl.addresses.selected.StartDate | date: 'MM-dd-yyyy'}}</dd>
+          <dt>Close Date</dt>
+          <dd>{{ctrl.addresses.selected.CloseDate | date: 'MM-dd-yyyy'}}</dd>
+          <dt>Street</dt>
+          <dd>{{ctrl.addresses.selected.LocationStreet}}</dd>   
+          <dt>City</dt>
+          <dd>{{ctrl.addresses.selected.LocationCityName}}</dd> 
+          <dt>County</dt>
+          <dd>{{ctrl.addresses.selected.LocationCounty}}</dd>
+          <dt>State</dt>
+          <dd>{{ctrl.addresses.selected.LocationStateName}}</dd>
+          <dt>Postal Code</dt>
+          <dd>{{ctrl.addresses.selected.PostalCode}}</dd>
+          <dt>Postal Code Extension</dt>
+          <dd>{{ctrl.addresses.selected.PostalCodeExtension}}</dd>
+        </dl>
+      </div>
+    </div>
+  </accordion-group>
+  <accordion-group heading="Participation Detail" is-open="status.isParticipationOpen">
+    <p ng-if="ctrl.participations.list.length == 0">No Cases</p>
+    <div ng-if="ctrl.participations.list.length > 0">
+      <div class="row">
+        <div class="col-sm-4">
+          <button type="button" class="btn btn-default" 
+            ng-click="ctrl.prevItem(ctrl.participations)">&lt;</button>
+        </div>
+        <div class="col-sm-4">
+          {{ctrl.participations.index + 1}} of {{ctrl.participations.list.length}}
+        </div>
+        <div class="col-sm-4">
+          <button type="button" class="btn btn-default" 
+            ng-click="ctrl.nextItem(ctrl.participations)">&gt;</button>
+        </div>
+      </div>
+      <div>
+        <dl class="dl-horizontal">
+          <dt>Participation Type</dt>
+          <dd>{{ctrl.participations.selected.ParticipationType}}</dd>
+          <dt>Participation Program</dt>
+          <dd>{{ctrl.participations.selected.ParticipationProgramName}}</dd>
+          <dt>Open Date</dt>
+          <dd>{{ctrl.participations.selected.OpenDate | date: 'MM-dd-yyyy'}}</dd>
+          <dt>Closed Date</dt>
+          <dd>{{ctrl.participations.selected.CloseDate | date: 'MM-dd-yyyy'}}</dd>   
+          <dt>Closed Code</dt>
+          <dd>{{ctrl.participations.selected.CloseCode}}</dd>
+        </dl>
+      </div>
+      <accordion>
+        <accordion-group heading="Programs" is-open="stats.isProgramOpen">
+          <div ng-repeat="program in ctrl.participations.selected.PersonRoles">
+            <dl class="dl-horizontal">
+              <dt>Program</dt>
+              <dd>{{program.Program}}</dd>
+              <dt>Participation Type</dt>
+              <dd>{{program.ProgramParticipationType}}</dd>
+              <dt>Participation Detail</dt>
+              <dd>{{program.ProgramDetailParticipation}}</dd>
+              <dt>Start Date</dt>
+              <dd>{{program.StartDate | date: 'MM-dd-yyyy'}}</dd>
+              <dt>End Date</dt>
+              <dd>{{program.EndDate | date: 'MM-dd-yyyy'}}</dd>
+              <dt>Close Date</dt>
+              <dd>{{program.CloseDate | date: 'MM-dd-yyyy'}}</dd>   
+              <dt>Closed Code</dt>
+              <dd>{{program.CloseCode}}</dd>
+              <dt>Jurisdiction</dt>
+              <dd>{{program.Jurisdiction}}</dd>
+              <dt>Office Code</dt>
+              <dd>{{program.OfficeCode}}</dd>
+              <dt>Office Name</dt>
+              <dd>{{program.OfficeName}}</dd>
+            </dl>
+            <hr ng-if="!$last"></hr>
+          </div>
+        </accordion-group>
+      </accordion>     
+    </div>
+  </accordion-group>
+</accordion>

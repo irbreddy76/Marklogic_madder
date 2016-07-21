@@ -3,6 +3,7 @@
 
   angular.module('app.detail', [
     'app.search',
-    'ui.router'
+    'ui.router',
+    'person.compare'
   ]);
 }());

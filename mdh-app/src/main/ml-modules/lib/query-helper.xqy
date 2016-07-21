@@ -50,6 +50,7 @@ declare function qh:read-map-value($map as map:map, $key as xs:string,
         else if($type = "xs:boolean") then xs:boolean($value)
         else if($type = "xs:yearMonthDuration") then xs:yearMonthDuration($value)
         else if($type = "xs:dayTimeDuration") then xs:dayTimeDuration($value)
+        else if($type = "xs:integer") then xs:integer($value)
         else $value
 };
 

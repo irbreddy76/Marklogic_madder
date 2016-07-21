@@ -70,7 +70,7 @@ declare function s:buildPersonParticipation($header as map:map, $content as map:
   let $personId := (map:get($ids, "cisId"), map:get($ids,"chessieId"))[1]
   let $name := map:get($header, "PersonPrimaryName")
   let $cases := map:get($header, "ParticipationIdentifiers")
-  let $person := map:get($content, "Person")
+  let $person := map:get(json:array-values(map:get($content, "records"))[1], "Person")
   let $_ := (
     map:put($json, "recordType", "PersonParticipation"),
     map:put($json, "personId", $personId),

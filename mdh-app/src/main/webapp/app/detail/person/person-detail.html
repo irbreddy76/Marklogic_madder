@@ -1,46 +1,75 @@
 <accordion close-others="false">
-  <accordion-group heading="Person Detail" is-open="status.isPersonOpen">
-    <div ng-repeat="name in person.content.Person.PersonName">
-      <dl class="dl-horizontal">
-        <dt>Name Type</dt>
-        <dd>{{name.PersonNameType}}</dd>
-        <dt>Person Given Name</dt>
-        <dd>{{name.PersonGivenName}}</dd>
-        <dt ng-if="name.PersonMiddleName">Person Middle Name</dt>
-        <dd>{{name.PersonMiddleName}}</dd>
-        <dt>Person Family Name</dt>
-        <dd>{{name.PersonSurName}}</dd>
-        <dt>Gender</dt>
-        <dd>{{person.content.Person.PersonSexCode}}</dd>
-        <dt>Race</dt>
-        <dd>{{person.content.Person.PersonRaceCode}}</dd>
-        <dt>Date of Birth</dt>
-        <dd>{{person.content.Person.PersonBirthDate | date: 'MM-dd-yyyy'}}</dd>
-        <dt>Social Security Number</dt>
-        <dd>{{person.content.Person.PersonSSNIdentification[0].IdentificationID}}</dd>
-        <dt ng-if="person.content.Person.images.length > 0">Depiction(s)</dt>
-        <dd>
-          <table border="1">
-            <tr>
-              <th>&nbsp;</th>
-              <th>Filename</th>
-              <th>Load Date</th>
-              <th>&nbsp;</th>
-            </tr>
-            <tr ng-repeat="img in person.content.Person.images | orderBy: '-metadata.loadDate'">
-              <td>
-                <img src="{{ '/v1/documents?uri=' + img.thumbnailImage.filepath }}" ng-if="img.thumbnailImage"/>
-                <img src="{{ '/v1/documents?uri=' + img.masterImage.filepath }}" ng-if="!img.thumbnailImage && img.masterImage"/>
-              </td>
-              <td>{{img.metadata.filename}}</td>
-              <td>{{img.metadata.loadDate | date: 'MM-dd-yyyy'}}</td>
-              <td><a ui-sref="root.view({uri: img.metadata.metadata})">View</a></td>
-            </tr>
-          </table>
-        </dd>
-      </dl>
-      <hr ng-if="!$last"></hr>
-    </div>
+  <accordion-group heading="Person Details" is-open="status.isPersonOpen">
+    <accordion close-others="false">
+      <accordion-group heading="Primary Name" is-open="status.isPrimaryOpen">
+        <dl class="dl-horizontal">
+          <dt>Person Given Name</dt>
+          <dd>{{person.headers.PersonPrimaryName.PersonGivenName}}</dd>
+          <dt ng-if="person.headers.PersonPrimaryName.PersonMiddleName">Person Middle Name</dt>
+          <dd ng-if="person.headers.PersonPrimaryName.PersonMiddleName">{{person.headers.PersonPrimaryName.PersonMiddleName}}</dd>
+          <dt>Person Family Name</dt>
+          <dd>{{person.headers.PersonPrimaryName.PersonSurName}}</dd>
+        </dl>
+      </accordion-group>
+      <accordion-group heading="Alternate Names" is-open="status.isAltNamesOpen"
+        ng-if="ctrl.otherNames.length > 0">
+        <div ng-repeat="name in ctrl.otherNames">
+          <dl class="dl-horizontal">
+            <dt>Name Type</dt>
+            <dd>{{name.PersonNameType}}</dd>
+            <dt>Person Given Name</dt>
+            <dd>{{name.PersonGivenName}}</dd>
+            <dt ng-if="name.PersonMiddleName">Person Middle Name</dt>
+            <dd ng-if="name.PersonMiddleName">{{name.PersonMiddleName}}</dd>
+            <dt>Person Family Name</dt>
+            <dd>{{name.PersonSurName}}</dd>
+          </dl>
+          <hr ng-if="!$last"></hr>
+        </div>
+      </accordion-group>
+      <accordion-group heading="Demographics" is-open="status.isDemographicsOpen">
+        <dl class="dl-horizontal">
+          <dt>Gender</dt>
+          <dd>{{person.content.records[0].Person.PersonSexCode}}</dd>
+          <dt>Race</dt>
+          <dd>{{person.content.records[0].Person.PersonRaceCode}}</dd>
+          <dt>Date of Birth</dt>
+          <dd>{{person.content.records[0].Person.PersonBirthDate | date: 'MM-dd-yyyy'}}</dd>
+          <dt>Social Security Number</dt>
+          <dd>{{person.content.records[0].Person.PersonSSNIdentification[0].IdentificationID}}</dd>
+          <dt ng-if="ctrl.images.length > 0">Depiction(s)</dt>
+          <dd>
+            <table border="0">
+              <tr ng-repeat="img in ctrl.images | orderBy: '-metadata.loadDate'">
+                <td>
+                  <a ui-sref="root.view({uri: img.metadata.metadata})">
+                    <img src="{{ '/v1/documents?uri=' + img.thumbnailImage.filepath }}" 
+                      ng-if="img.thumbnailImage"/>
+                    <img src="{{ '/v1/documents?uri=' + img.masterImage.filepath }}" 
+                      ng-if="!img.thumbnailImage && img.masterImage"/>
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </dd>
+        </dl>
+      </accordion-group>
+      <accordion-group heading="Alternate Demographics" is-open="isAltDemoOpen"
+        ng-if="ctrl.persons.length > 0">
+        <div ng-repeat="record in ctrl.persons">
+          <dl class="dl-horizontal">
+            <dt>Gender</dt>
+            <dd>{{record.PersonSexCode}}</dd>
+            <dt>Race</dt>
+            <dd>{{record.PersonRaceCode}}</dd>
+            <dt>Date of Birth</dt>
+            <dd>{{record.PersonBirthDate | date: 'MM-dd-yyyy'}}</dd>
+            <dt>Social Security Number</dt>
+            <dd>{{record.PersonSSNIdentification[0].IdentificationID}}</dd>
+          </dl>
+        </div>
+      </accordion-group>
+    </accordion>
   </accordion-group>
   <accordion-group heading="Addresses" is-open="status.isAddressOpen">
     <div ng-repeat="address in person.headers.Addresses">
@@ -68,7 +97,7 @@
     </div>
   </accordion-group>
   <accordion-group heading="Participation Detail" is-open="status.isParticipationOpen">
-    <div ng-repeat="name in person.content.Participations">
+    <div ng-repeat="name in ctrl.participations">
       <dl class="dl-horizontal">
         <dt>Participation Type</dt>
         <dd>{{name.ParticipationType}}</dd>
@@ -112,5 +141,27 @@
       </accordion>     
       <hr ng-if="!$last"></hr>
     </div> 
+  </accordion-group>
+  <accordion-group heading="Similar" is-open="status.isSimilarOpen">
+    <table border="1">
+      <tr>
+        <th>First Name</th>
+        <th>Middle</th>
+        <th>Last Name</th>
+        <th>Gender</th>
+        <th>DoB</th>
+        <th>SSN</th>
+        <th>&nbsp;</th>
+      </tr>
+      <tr ng-repeat="person in ctrl.suggestions">
+        <td>{{person.candidate.headers.PersonPrimaryName.PersonGivenName}}</td>
+        <td>{{person.candidate.headers.PersonPrimaryName.PersonMiddleName}}</td>
+        <td>{{person.candidate.headers.PersonPrimaryName.PersonSurName}}</td>
+        <td>{{person.candidate.content.records[0].Person.PersonSexCode}}</td>
+        <td>{{person.candidate.content.records[0].Person.PersonBirthDate | date: 'MM-dd-yyyy'}}</td>
+        <td>{{person.candidate.headers.SSNIdentificationId}}</td>
+        <td><a ui-sref="root.compare({master: uri, candidate: person.uri})">Compare</a></td>
+      </tr>
+    </table>
   </accordion-group>
 </accordion>
