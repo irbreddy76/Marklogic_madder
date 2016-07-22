@@ -159,6 +159,37 @@
       "collation": "http://marklogic.com/collation/codepoint",
       "range-value-positions": false,
       "invalid-values": "reject"
+    },
+    {
+      "scalar-type": "string",
+      "namespace-uri": "",
+      "localname": "LdssID",
+      "collation": "http://marklogic.com/collation/codepoint",
+      "range-value-positions": false,
+      "invalid-values": "reject"
+    },
+    {
+      "scalar-type": "string",
+      "namespace-uri": "",
+      "localname": "DONum",
+      "collation": "http://marklogic.com/collation/codepoint",
+      "range-value-positions": false,
+      "invalid-values": "reject"
+    },
+    {
+      "scalar-type": "string",
+      "namespace-uri": "",
+      "localname": "AUNum",
+      "collation": "http://marklogic.com/collation/codepoint",
+      "range-value-positions": false,
+      "invalid-values": "reject"
+    },
+    {
+      "scalar-type": "date",
+      "namespace-uri": "",
+      "localname": "PersonBirthDate",
+      "range-value-positions": false,
+      "invalid-values": "reject"
     }
   ],
   "schema-database": "%%SCHEMAS_DATABASE%%",

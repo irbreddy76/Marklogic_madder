@@ -2,9 +2,19 @@
   <search-option>unfiltered</search-option>
   <page-length>10</page-length>
   <additional-query>
-    <cts:collection-query xmlns:cts="http://marklogic.com/cts">
-      <cts:uri>Person</cts:uri>
-    </cts:collection-query>
+    <cts:and-query xmlns:cts="http://marklogic.com/cts">
+      <cts:json-property-range-query operator="&lt;">
+        <cts:property>PersonBirthDate</cts:property>
+        <cts:value xsi:type="xs:date" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">1998-07-22-04:00</cts:value>
+      </cts:json-property-range-query>
+      <cts:json-property-range-query operator="&gt;">
+        <cts:property>PersonBirthDate</cts:property>
+        <cts:value xsi:type="xs:date" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">1966-07-22-04:00</cts:value>
+      </cts:json-property-range-query>
+      <cts:collection-query xmlns:cts="http://marklogic.com/cts">
+        <cts:uri>ABAWD</cts:uri>
+      </cts:collection-query>
+    </cts:and-query>
   </additional-query>
   <term apply="term">
     <empty apply="all-results" />
@@ -14,24 +24,26 @@
 <!--  <constraint name="collection">
     <collection prefix=""/>
   </constraint>
-   --> 
-    <constraint name="CaseType">
+   -->
+    <constraint name="LDSS">
       <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
-        <element ns="" name="CaseType"/>
+        <element ns="" name="LdssID"/>
         <facet-option>frequency-order</facet-option>
         <facet-option>descending</facet-option>
+        <facet-option>limit=5</facet-option>
       </range>
     </constraint>
-    <constraint name="Gender">
+    <constraint name="DO">
       <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
-        <element ns="" name="PersonSexCode"/>
+        <element ns="" name="DONum"/>
         <facet-option>frequency-order</facet-option>
         <facet-option>descending</facet-option>
+        <facet-option>limit=5</facet-option>
       </range>
     </constraint>
-    <constraint name="Race">
+    <constraint name="AUNum">
       <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
-        <element ns="" name="PersonRaceCode"/>
+        <element ns="" name="AUNum"/>
         <facet-option>frequency-order</facet-option>
         <facet-option>descending</facet-option>
         <facet-option>limit=5</facet-option>
@@ -45,44 +57,6 @@
         <facet-option>limit=5</facet-option>
       </range>
     </constraint>
-    <constraint name="County">
-      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
-        <element ns="" name="LocationCounty"/>
-        <facet-option>frequency-order</facet-option>
-        <facet-option>descending</facet-option>
-        <facet-option>limit=5</facet-option>
-      </range>
-    </constraint>
-  <constraint name="Status">
-      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
-        <element ns="" name="status"/>
-        <facet-option>frequency-order</facet-option>
-        <facet-option>descending</facet-option>
-      </range>
-    </constraint> 
-  <constraint name="Jurisdiction">
-      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
-        <element ns="" name="Jurisdiction"/>
-        <facet-option>frequency-order</facet-option>
-        <facet-option>descending</facet-option>
-        <facet-option>limit=5</facet-option>
-      </range>
-    </constraint>
-  <constraint name="Program">
-      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
-        <element ns="" name="ProgramDetailParticipation"/>
-        <facet-option>frequency-order</facet-option>
-        <facet-option>descending</facet-option>
-        <facet-option>limit=5</facet-option>
-      </range>
-    </constraint> 
-  <constraint name="SourceSystem">
-      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
-        <element ns="" name="SourceSystem"/>
-        <facet-option>frequency-order</facet-option>
-        <facet-option>descending</facet-option>
-      </range>
-    </constraint>   
   <default-suggestion-source>
     <word-lexicon collation="http://marklogic.com/collation/"></word-lexicon>
   </default-suggestion-source>
@@ -156,7 +130,7 @@
   <transform-results apply="buildSummary" ns="http://marklogic.com/md-dhr/search-extensions"
       at="/lib/search-extensions.xqy">
   </transform-results>
-  <!-- 
+  <!--
   <transform-results apply="snippet">
     <preferred-elements>
       <element ns="" name="body" />
@@ -256,5 +230,5 @@
       </range>
       <values-option>descending</values-option>
       <values-option>frequency-order</values-option>
-  </values>   
+  </values>
 </options>
