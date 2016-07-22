@@ -317,7 +317,7 @@ declare variable $CONFIG :=
     <param>
       <key>zipext</key>
       <algorithm>zipext_algorithm</algorithm>
-      <weight>ziextp_wt</weight>
+      <weight>zipext_wt</weight>
       <edit-distance>zipext_edit_distance</edit-distance>
       <word-distance>zipext_word_distance</word-distance>
       <weight-multiplier>zipext_mult</weight-multiplier>

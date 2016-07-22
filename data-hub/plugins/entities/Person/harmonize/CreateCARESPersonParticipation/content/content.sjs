@@ -31,7 +31,7 @@ function createContent(id, options) {
     }
 
     // Participation documents associated with this person's
-    // CHESSIE ID
+    // CARES ID
     var participations = cts.search(cts.andQuery([
       cts.collectionQuery('CARESParticipation'),
       cts.jsonPropertyValueQuery('cisId', cisId)
@@ -109,19 +109,21 @@ function createContent(id, options) {
     }
 
     return { 
-      Person: {
-        SystemIdentifiers: root.content.SystemIdentifiers,
-        PersonName: root.content.PersonName,
-        PersonSexCode: root.content.PersonSexCode,
-        PersonRaceCode: root.content.PersonRaceCode,
-        PersonDigitalImage: root.content.PersonalDigitalImage,
-        PersonSSNIdentification: root.content.PersonSSNIdentification,
-        PersonBirthDate: root.content.PersonBirthDate,
-        Addresses: addresses
-      },
-      Participations: participations
-    } 
-      
+      records: [
+      {
+        Person: {
+          SystemIdentifiers: root.content.SystemIdentifiers,
+          PersonName: root.content.PersonName,
+          PersonSexCode: root.content.PersonSexCode,
+          PersonRaceCode: root.content.PersonRaceCode,
+          PersonDigitalImage: root.content.PersonalDigitalImage,
+          PersonSSNIdentification: root.content.PersonSSNIdentification,
+          PersonBirthDate: root.content.PersonBirthDate,
+          Addresses: addresses
+        },
+        Participations: participations
+      }]
+    }; 
   }
   // for everything else
   else {
