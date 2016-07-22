@@ -145,15 +145,16 @@ declare function rel:getPersonRelationship($personId as xs:string, $format as xs
       document{sem:rdf-serialize($data, $format)}
     else if ($format eq "triplexml") then
       document{sem:rdf-serialize($data, "triplexml")}
-    else if ($format eq "json-viz") then
-      let $triples := sem:rdf-serialize($data, "triplexml")
-      let $nodes := rel:get-viz-nodes($triples)
-      let $edges := rel:get-viz-edges($triples)
-      return
-        xdmp:to-json(object-node{
-          "nodes": array-node{$nodes},
-          "edges": array-node{$edges}
-        })
+  else if ($format eq "json-viz") then
+    let $include-rdf-type := fn:false()
+    let $triples := sem:rdf-serialize($data, "triplexml")
+    let $nodes := rel:get-viz-nodes($triples)
+    let $edges := rel:get-viz-edges($triples)
+    return
+      xdmp:to-json(object-node{
+        "nodes": array-node{for $obj in $nodes where $obj/id[. ne "6"][. ne "7"] return $obj},
+        "edges": array-node{for $obj in $edges where $obj/label[fn:not(fn:matches(., "(relationshipMember|knows|member|type)"))] return $obj}
+      })
     else
       xdmp:to-json(sem:rdf-serialize($data, "rdfjson"))
 };
