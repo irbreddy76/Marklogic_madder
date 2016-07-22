@@ -14,13 +14,15 @@ declare function get(
     map:put($context, "output-types", "application/json"),
     xdmp:set-response-code(200, "Ok"),
     let $target := map:get($params, "target")
-    let $caseId := map:get($params, "caseId")
+    let $Id := map:get($params, "id")
     let $format := map:get($params, "format")
     let $results := 
-      if(fn:empty($target) or fn:empty($caseId)) then json:object()
-      else if ($format = "json") then rel:getCaseRelationship($caseId)
-      else rel:getCaseRelationshipRDF($caseId)
-    return xdmp:to-json($results)    
+      if ($target = "person") then rel:getPersonRelationship($Id, $format)
+      else if ($target = "case") then rel:getCaseRelationshipRDF($Id)
+      else if ($format = "json" and $target = "case") then rel:getCaseRelationship($Id)
+      else json:object()
+    (: return xdmp:to-json($results)    :)
+    return $results
   } catch($e) {
     map:put($context, "output-types", "text/plain"),
     xdmp:set-response-code(500, "Error"),
@@ -48,13 +50,15 @@ declare function post(
     map:put($context, "output-types", "application/json"),
     xdmp:set-response-code(200, "Ok"),
     let $target := map:get($params, "target")
-    let $caseId := map:get($params, "caseId")
+    let $Id := map:get($params, "id")
     let $format := map:get($params, "format")
     let $results := 
-      if(fn:empty($target) or fn:empty($caseId)) then json:object()
-      else if ($format = "json") then rel:getCaseRelationship($caseId)
-      else rel:getCaseRelationshipRDF($caseId)
-    return xdmp:to-json($results)    
+      if ($target = "person") then rel:getPersonRelationship($Id, $format)
+      else if ($target = "case") then rel:getCaseRelationshipRDF($Id)
+      else if ($format = "json" and $target = "case") then rel:getCaseRelationship($Id)
+      else json:object()
+    (: return xdmp:to-json($results)    :)
+    return $results
   } catch($e) {
     map:put($context, "output-types", "text/plain"),
     xdmp:set-response-code(500, "Error"),

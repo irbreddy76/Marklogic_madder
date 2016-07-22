@@ -21,12 +21,48 @@
   function PersonDetailCtrl($scope, $location, $filter, mlRest) {
     var ctrl = this;
     
+    ctrl.relationships = [];
     ctrl.suggestions = [];
     ctrl.persons = [];
     ctrl.participations = [];
     ctrl.otherNames = [];
     ctrl.images = [];
     ctrl.isLoading = false;
+    
+    // Relationship Graph Configuration
+    ctrl.graphOptions = {
+        nodes : {
+          shape: "dot",
+          size: 5
+        },
+        physics: {
+            barnesHut: {
+              gravitationalConstant: -3500,
+              centralGravity: 0.15,
+              springLength: 225,
+              springConstant: 0.01,
+              damping: 0.12,
+              avoidOverlap: 0.25
+            },
+            maxVelocity: 22,
+            minVelocity: 0.2,
+            timestep: 0.44
+          },
+          edges: {
+                arrows: {
+                    to: {enabled: true, scaleFactor: 0.5}
+                },
+                width: 1,
+                selfReferenceSize: 20,
+                physics: true,
+                dashes: true,
+                smooth: {
+                  enabled: true,
+                  type: "dynamic",
+                  roundness: 0.5
+                }
+        }
+    };
     
     $scope.status = {
       isPersonOpen: true,
@@ -37,7 +73,8 @@
       isAddressOpen: false,
       isParticipationOpen: false,
       isProgramOpen: false,
-      isSimilarOpen: false
+      isSimilarOpen: false,
+      isRelationsOpen: false
     };
     
     ctrl.processCandidates = function(response) {
@@ -55,13 +92,23 @@
     	}
       }).then(ctrl.processCandidates.bind(this));
       
+      /* Call Relationship Endpoint for Relationship data
+       mlRest.extension('relationships', {
+         method: 'GET',
+         params: {
+         }
+       }).then(function(response) {
+         ctrl.relationships = response.data
+       });       
+       */
+      
       for(var i = 0; i < $scope.person.content.records.length; i++) {
     	var currentRecord = $scope.person.content.records[i];
     	if(i === 0) {
           ctrl.otherNames = ctrl.otherNames.concat($filter('filter')(currentRecord.Person.PersonName, {PersonNameType: '!Primary'}, true));    		
     	} else {
           ctrl.otherNames = ctrl.otherNames.concat(currentRecord.Person.PersonName);
-          ctrl.persons = ctrl.persons.push(currentRecord.Person);
+          ctrl.persons.push(currentRecord.Person);
     	}
     	ctrl.images = ctrl.images.concat(currentRecord.Person.images);
     	ctrl.participations = ctrl.participations.concat(currentRecord.Participations);

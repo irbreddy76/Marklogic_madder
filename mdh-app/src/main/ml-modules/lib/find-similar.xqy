@@ -2,11 +2,13 @@ module namespace s = "http://marklogic.com/search/similar";
 
 import module namespace nm = "http://marklogic.com/name-matcher" at
   "/lib/name-matcher-lib.xqy";
-
+import module namespace qh = 'http://marklogic.com/query-helper' at
+  '/lib/query-helper.xqy';
+  
 declare variable $TRACE_LEVEL_TRACE as xs:string := "FIND-SIMILAR-TRACE";
 declare variable $TRACE_LEVEL_DETAIL as xs:string := "FIND-SIMILAR-DETAIL";
 declare variable $DEFAULT_LIMIT as xs:int := 10;
-declare variable $DEFAULT_SCORE as xs:double := 24;
+declare variable $DEFAULT_SCORE as xs:double := 36;
 
 declare function s:find-similar($record as map:map, $uri as xs:string?, $limit as xs:string?, $score as xs:string?) {
   let $header := map:get($record, "headers")
@@ -59,6 +61,7 @@ declare function s:similar-personparticipation($header as map:map, $content as m
     s:add-parameter(fn:distinct-values($dob), "dob", $params),
     s:add-parameter(fn:distinct-values($firstNames), "first", $params),
     s:add-parameter(fn:distinct-values($lastNames), "last", $params),
+    map:put($params, "limit", $limit),
     map:put($params, "score", $score)
   )
   let $query := nm:get-query($params, map:map(), "xml")
@@ -67,6 +70,7 @@ declare function s:similar-personparticipation($header as map:map, $content as m
     if(fn:empty($query)) then ()
     else 
       cts:search(fn:doc(), cts:and-query(($query, $collection,
+        cts:not-query(cts:collection-query("deleted")),
         if(fn:string-length($uri) > 0) then cts:not-query(cts:document-query($uri)) else ())), 
         ("score-simple","unfiltered"))[1 to $limit] 
   let $_ := fn:trace(fn:concat(" -- Candidates found:", fn:string(cts:remainder($results[1]))), $TRACE_LEVEL_TRACE)
@@ -74,17 +78,20 @@ declare function s:similar-personparticipation($header as map:map, $content as m
   let $_ :=
     for $candidate in $results
     let $candidate-entry := json:object()
+    let $candidate-score := qh:score($candidate)
     let $_ := (
       map:put($candidate-entry, "candidate", $candidate),
-      map:put($candidate-entry, "uri", fn:document-uri($candidate))
+      map:put($candidate-entry, "uri", fn:document-uri($candidate)),
+      map:put($candidate-entry, "score", $candidate-score)
     )
+    where $candidate-score >= $score
     return json:array-push($array, $candidate-entry)
   let $json := json:object()
   let $_ := (
     map:put($json, "results", $array),
     map:put($json, "count", json:array-size($array))
   )       
-  return $json 
+  return $json
 };
 
 declare function s:add-parameter($param as xs:string*, $param-name as xs:string, $param-map as map:map) {

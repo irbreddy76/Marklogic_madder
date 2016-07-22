@@ -38,19 +38,20 @@
           <dt>Social Security Number</dt>
           <dd>{{person.content.records[0].Person.PersonSSNIdentification[0].IdentificationID}}</dd>
           <dt ng-if="ctrl.images.length > 0">Depiction(s)</dt>
-          <dd>
-            <table border="0">
-              <tr ng-repeat="img in ctrl.images | orderBy: '-metadata.loadDate'">
-                <td>
-                  <a ui-sref="root.view({uri: img.metadata.metadata})">
-                    <img src="{{ '/v1/documents?uri=' + img.thumbnailImage.filepath }}" 
-                      ng-if="img.thumbnailImage"/>
-                    <img src="{{ '/v1/documents?uri=' + img.masterImage.filepath }}" 
-                      ng-if="!img.thumbnailImage && img.masterImage"/>
-                  </a>
-                </td>
-              </tr>
-            </table>
+          <dd ng-if="ctrl.images.length > 0">
+            <carousel no-wrap="false">
+              <slide ng-repeat="slide in ctrl.images | orderBy: '-metadata.loadDate'" 
+                active="slide.active">
+                <img src="{{ '/v1/documents?uri=' + slide.thumbnailImage.filepath }}" 
+                  ng-show="slide.thumbnailImage" style="margin:auto;"/>
+                <img src="{{ '/v1/documents?uri=' + slide.masterImage.filepath }}" 
+                  ng-show="!slide.thumbnailImage && slide.masterImage" style="margin:auto;"/>
+                <div class="carousel-caption">
+                  <h4>Slide {{$index}}</h4>
+                  <p>{{slide.metadata.loadDate | date: 'MM-dd-yyyy HH:mm:ss'}} <a ui-sref="root.view({uri: slide.metadata.metadata})"><span class="glyphicon glyphicon-info-sign"></span> </a></p>
+                </div>
+              </slide>
+            </carousel>
           </dd>
         </dl>
       </accordion-group>
@@ -96,6 +97,13 @@
       <hr ng-if="!$last"></hr>
     </div>
   </accordion-group>
+  <!-- Display Persion Relationships.  Remove Comments to enable
+  <accordion-group heading="Relationships" is-open="status.isRelationsOpen">
+     <p ng-if="ctrl.relationships.length == 0">No Relationships Found.</p>
+     <vis-network data="ctrl.relationships" options="ctrl.graphOptions"
+       ng-if="ctrl.relationships.length > 0"></vis-network>
+  </accordion-group>
+   -->
   <accordion-group heading="Participation Detail" is-open="status.isParticipationOpen">
     <div ng-repeat="name in ctrl.participations">
       <dl class="dl-horizontal">
@@ -143,7 +151,8 @@
     </div> 
   </accordion-group>
   <accordion-group heading="Similar" is-open="status.isSimilarOpen">
-    <table border="1">
+    <p ng-hide="ctrl.suggestions.length > 0">No Similar Records Found</p>
+    <table border="1" ng-show="ctrl.suggestions.length > 0">
       <tr>
         <th>First Name</th>
         <th>Middle</th>

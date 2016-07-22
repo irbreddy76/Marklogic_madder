@@ -14,6 +14,14 @@
   </dl>
 </div>
 <hr></hr>
+<!--  Relationships.  Uncomment to enable
+<div>
+  <p ng-if="ctrl.relationships.length == 0">No Relationships Found.</p>
+  <vis-network data="ctrl.relationships" options="ctrl.graphOptions"
+     ng-if="ctrl.relationships.length > 0"></vis-network>
+</div>
+<hr></hr>
+ -->
 <div>
   <h3>Participants:</h3>
   <div ng-show="ctrl.isSearchPending()">

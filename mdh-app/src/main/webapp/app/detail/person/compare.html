@@ -1,14 +1,30 @@
-<div class="row">
-  <div class="col-md-6">
-    <compare-person person="ctrl.originalDoc" uri="ctrl.master"></compare-person>
-  </div>
-  <div class="col-md-6">
-    <compare-person person="ctrl.candidateDoc" uri="ctrl.candidate"></compare-person>
-  </div>
+<div ng-show="ctrl.merging">
+  <b>Merging Records</b>
+  <div id="floatingCirclesG">
+      <div class="f_circleG" id="frotateG_01"></div>
+      <div class="f_circleG" id="frotateG_02"></div>
+      <div class="f_circleG" id="frotateG_03"></div>
+      <div class="f_circleG" id="frotateG_04"></div>
+      <div class="f_circleG" id="frotateG_05"></div>
+      <div class="f_circleG" id="frotateG_06"></div>
+      <div class="f_circleG" id="frotateG_07"></div>
+      <div class="f_circleG" id="frotateG_08"></div>
+    </div>
 </div>
-<div>
-  <button type="button" class="btn btn-default" 
-    ng-click="ctrl.merge()">Merge</button>
-  <button type="button" class="btn btn-default" 
-    ng-click="ctrl.cancel()">Cancel</button>  
+<div ng-hide="ctrl.merging">
+  <b ng-show="ctrl.errMessage">{{ctrl.errMessage}}</b>
+  <div class="row">
+    <div class="col-md-6">
+      <compare-person person="ctrl.originalDoc" uri="ctrl.master"></compare-person>
+    </div>
+    <div class="col-md-6">
+      <compare-person person="ctrl.candidateDoc" uri="ctrl.candidate"></compare-person>
+    </div>
+  </div>
+  <div>
+    <button type="button" class="btn btn-default" 
+      ng-click="ctrl.merge()">Merge</button>
+    <button type="button" class="btn btn-default" 
+      ng-click="ctrl.cancel()">Cancel</button>  
+  </div>
 </div>

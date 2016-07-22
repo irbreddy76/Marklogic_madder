@@ -19,7 +19,8 @@
     "ng-json-explorer": "8c2a0f9104",
     "vkbeautify-wrapper": "*",
     "ml-esir-maps-ng": "ml-esri-maps-ng#^0.0.1",
-    "angularjs-datepicker": "~2.1.4"
+    "angularjs-datepicker": "~2.1.4",
+    "angular-visjs": "^4.0.2"
   },
   "overrides": {
     "angular-highlightjs": {

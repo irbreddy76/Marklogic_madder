@@ -317,7 +317,7 @@ declare variable $CONFIG :=
     <param>
       <key>zipext</key>
       <algorithm>zipext_algorithm</algorithm>
-      <weight>ziextp_wt</weight>
+      <weight>zipext_wt</weight>
       <edit-distance>zipext_edit_distance</edit-distance>
       <word-distance>zipext_word_distance</word-distance>
       <weight-multiplier>zipext_mult</weight-multiplier>
@@ -460,7 +460,7 @@ declare function nm:algorithm-new($params as map:map, $config as map:map) {
     else if($target = "personparticipation") then cts:collection-query("PersonParticipation")
     else cts:collection-query(("Person", "PersonParticipation"))
   let $candidates := 
-      cts:search(fn:doc(), cts:and-query(($query, $collection)), 
+      cts:search(fn:doc(), cts:and-query(($query, $collection, cts:not-query(cts:collection-query("deleted")))), 
         ("score-simple","unfiltered", nm:get-sort-options($params)))[1 to 
           qh:read-map-value($params, $CONFIG/config/result-limit/key, $CONFIG/config/result-limit/value)]
   let $_ := fn:trace(fn:concat(" -- Candidates found:", fn:string(cts:remainder($candidates[1]))), $TRACE_LEVEL_TRACE)
