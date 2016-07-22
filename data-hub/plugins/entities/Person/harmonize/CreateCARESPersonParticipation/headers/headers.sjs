@@ -16,7 +16,7 @@ function createHeaders(id, content, options) {
   };
  
   var i, j;
-  var person = content.Person;
+  var person = content.records[0].Person;
   for(i = 0; i < person.SystemIdentifiers.length; i++) {
     var identifier = person.SystemIdentifiers[i];
     if(identifier.SourceSystem == 'MDCHESSIE') {
@@ -40,8 +40,8 @@ function createHeaders(id, content, options) {
 
   header.SSNIdentificationId = person.PersonSSNIdentification[0].IdentificationID;
  
-  for(i = 0; i < content.Participations.length; i++) {
-    var participation = content.Participations[i];
+  for(i = 0; i < content.records[0].Participations.length; i++) {
+    var participation = content.records[0].Participations[i];
     for(j = 0; j < participation.ParticipationIdentifiers.length; j++) {
       var identifier = participation.ParticipationIdentifiers[j];
       if(identifier.ParticipationType == 'Service Case') {
@@ -54,8 +54,8 @@ function createHeaders(id, content, options) {
     }
   }
 
-  for(i = 0; i < content.Person.Addresses.length; i++) {
-    var address = content.Person.Addresses[i];
+  for(i = 0; i < content.records[0].Person.Addresses.length; i++) {
+    var address = content.records[0].Person.Addresses[i];
     var entry = {
       AddressType: address.AddressType,
       StartDate: address.StartDate,
