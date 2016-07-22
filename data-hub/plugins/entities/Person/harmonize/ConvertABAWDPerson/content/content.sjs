@@ -74,6 +74,9 @@ function createContent(id, options) {
       });
     }
 
+    var datePattern = /(\d{4})(\d{2})(\d{2})/;
+    var birthDate = root.content.DOB.toString().replace(datePattern,'$1-$2-$3');
+
     //content
     return {
       SystemIdentifiers: systemIdentifiers,
@@ -84,7 +87,7 @@ function createContent(id, options) {
           "PersonFullName":" "
         }],
       PersonSSNIdentification: [{"IdentificationId":root.content.SSN}],
-      PersonBirthDate: root.content.DOB,
+      PersonBirthDate: birthDate,
       Addresses: addresses,
       PersonHOHCode: root.content.HOH_REL_CODE,
       PersonLanguageCode: root.content.PRIMARY_LANGUAGE_CODE,
