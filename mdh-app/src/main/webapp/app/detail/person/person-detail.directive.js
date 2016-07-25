@@ -40,8 +40,8 @@
               gravitationalConstant: -3500,
               centralGravity: 0.15,
               springLength: 225,
-              springConstant: 0.01 /*,
-              damping: 0.12,
+              springConstant: 0.01, 
+              damping: 0.12/*,
               avoidOverlap: 0.25 */
             },
             maxVelocity: 22,
