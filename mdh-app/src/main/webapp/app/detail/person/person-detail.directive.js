@@ -21,7 +21,7 @@
   function PersonDetailCtrl($scope, $location, $filter, mlRest) {
     var ctrl = this;
     
-    ctrl.relationships = [];
+    ctrl.relationships = null;
     ctrl.suggestions = [];
     ctrl.persons = [];
     ctrl.participations = [];
@@ -40,8 +40,8 @@
               gravitationalConstant: -3500,
               centralGravity: 0.15,
               springLength: 225,
-              springConstant: 0.01 /*,
-              damping: 0.12,
+              springConstant: 0.01, 
+              damping: 0.12/*,
               avoidOverlap: 0.25 */
             },
             maxVelocity: 22,
@@ -92,15 +92,29 @@
     	}
       }).then(ctrl.processCandidates.bind(this));
       
-      /* Call Relationship Endpoint for Relationship data
-       mlRest.extension('relationships', {
+      /* Call Relationship Endpoint for Relationship data */
+      /*
+      var chessieId;
+      for(var i = 0; i < $scope.person.headers.SystemIdentifiers.length; i++) {
+          var currentIdentifier = $scope.person.headers.SystemIdentifiers[i];
+          if(currentIdentifier.chessieId) {
+                // chessieId.push(currentIdentifier.chessieId)
+          }
+      }
+      */
+       mlRest.extension('relationship', {
          method: 'GET',
          params: {
+          'rs:uri': $scope.uri,
+          'rs:target' : 'person',
+          'rs:format' : 'json-viz',
+          /* 'rs:id' : 1006187 */
+          'rs:id' : $scope.person.headers.SystemIdentifiers[0].chessieId
+          //'rs:id' : 'chessieId'
          }
        }).then(function(response) {
-         ctrl.relationships = response.data
-       });       
-       */
+         ctrl.relationships = response.data;
+       }); 
       
       for(var i = 0; i < $scope.person.content.records.length; i++) {
     	var currentRecord = $scope.person.content.records[i];

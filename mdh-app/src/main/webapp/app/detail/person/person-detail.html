@@ -97,13 +97,12 @@
       <hr ng-if="!$last"></hr>
     </div>
   </accordion-group>
-  <!-- Display Persion Relationships.  Remove Comments to enable
+  <!-- Display Persion Relationships.  Remove Comments to enable -->
   <accordion-group heading="Relationships" is-open="status.isRelationsOpen">
-     <p ng-if="ctrl.relationships.length == 0">No Relationships Found.</p>
+     <p ng-if="!ctrl.relationships">No Relationships Found.</p>
      <vis-network data="ctrl.relationships" options="ctrl.graphOptions"
-       ng-if="ctrl.relationships.length > 0"></vis-network>
+       ng-if="ctrl.relationships"></vis-network>
   </accordion-group>
-   -->
   <accordion-group heading="Participation Detail" is-open="status.isParticipationOpen">
     <div ng-repeat="name in ctrl.participations">
       <dl class="dl-horizontal">
