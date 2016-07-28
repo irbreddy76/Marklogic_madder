@@ -17,7 +17,7 @@ buildscript {
 plugins {
 	id "java"
 	id "eclipse"
-  id "com.marklogic.ml-gradle" version "2.2.0-RC1"
+    id "com.marklogic.ml-gradle" version "2.2.0-RC1"
 
 	// For managing environment-sensitive properties - see https://github.com/stevesaliman/gradle-properties-plugin
 	// id 'net.saliman.properties' version '1.4.5'
@@ -34,6 +34,13 @@ repositories {
   // Needed for mlcp and its Hadoop dependencies
   maven {url "http://developer.marklogic.com/maven2/"}
   maven {url "http://repository.cloudera.com/artifactory/cloudera-repos/" }
+}
+
+configurations {
+	// This configuration captures the dependencies for running mlcp (Content Pump). This is only needed if you want
+	// to run mlcp via Gradle tasks. If you do, using com.marklogic.gradle.task.MlcpTask is a useful starting point, as
+	// shown below.
+	mlcp
 }
 
 dependencies {
@@ -67,6 +74,136 @@ dependencies {
 
   // Needed for writing JUnit tests with ml-junit
   testCompile "com.marklogic:ml-junit:2.5"
+  
+  mlcp "com.marklogic:mlcp:8.0-5"
+  //mlcp "com.marklogic:mlcp-Hadoop2:1.3-2"
+  //mlcp "com.marklogic:marklogic-mapreduce2:2.1.3"
+
+	/**
+	 * If you need to import delimited text, be sure to include this dependency as well.
+	 */
+	mlcp "org.apache.commons:commons-csv:1.2"
+
+	/**
+	 * mlcp uses Log4j for logging, and if Log4j can't find a configuration file, it will complain and you'll
+	 * get none of mlcp's usually-useful logging. It is recommended then that your Gradle configuration for
+	 * mlcp include a directory or some other resource that provides a log4j.properties file.
+	 */
+	mlcp files("lib")
+}
+
+ext {
+    // mlAppConfig is an instance of com.marklogic.appdeployer.AppConfig
+    mlAppConfig {
+        modulesDatabaseName = mlModulesDbName
+        triggersDatabaseName = mlTriggersDbName
+        schemasDatabaseName = mlSchemasDbName
+        
+        // Example of adding custom tokens; these will then be replaced in any JSON/XML config files
+        customTokens.put("%%FINAL_DB_NAME%%", mlFinalDbName)
+        customTokens.put("%%FINAL_FOREST%%", mlFinalForestName)
+        customTokens.put("%%FINAL_SERVER_NAME%%", mlFinalAppserverName)
+        customTokens.put("%%FINAL_SERVER_PORT%%", mlFinalPort)
+        customTokens.put("%%STAGING_DB_NAME%%", mlStagingDbName)
+        customTokens.put("%%STAGING_FOREST%%", mlStagingForestName)
+        customTokens.put("%%STAGING_SERVER_NAME%%", mlStagingAppserverName)
+        customTokens.put("%%STAGING_SERVER_PORT%%", mlStagingPort)
+        customTokens.put("%%TRACE_DB_NAME%%", mlTraceDbName)
+        customTokens.put("%%TRACE_FOREST%%", mlTraceForestName)
+        customTokens.put("%%TRACE_SERVER_NAME%%", mlTraceAppserverName)
+        customTokens.put("%%TRACE_SERVER_PORT%%", mlTracePort)
+        customTokens.put("%%AUDIT_DATABASE%%", mlAuditDbName)
+        customTokens.put("%%AUDIT_FOREST%%", mlAuditForestName)
+        customTokens.put("%%MODULES_DB_NAME%%", mlModulesDbName)
+        customTokens.put("%%MODULES_FOREST%%", mlModulesForestName)
+        customTokens.put("%%GROUP%%", mlGroupName)
+        customTokens.put("%%FOREST_DIR%%", mlForestPath)
+    }
+}
+
+// Pulled from Data Hub Setup.  
+ext {
+    // don't create the REST Api. We will do it manually
+    mlAppDeployer.commands.remove(mlAppDeployer.getCommand("DeployRestApiServersCommand"))
+    mlAppDeployer.commands.remove(mlAppDeployer.getCommand("UpdateRestApiServersCommand"))
+
+    // remove the original deploy content database command
+    // as we do not need it.
+    def deployDbCmd = mlAppDeployer.getCommand("DeployContentDatabasesCommand")
+    mlAppDeployer.commands.remove(deployDbCmd)
+    def deploySchemasDbCmd = mlAppDeployer.getCommand("DeploySchemasDatabaseCommand")
+
+    // install the staging database
+    def stagingDbCommand = new com.marklogic.appdeployer.command.databases.DeployDatabaseCommand("staging-database.json")
+    stagingDbCommand.setForestsPerHost(Integer.parseInt(mlStagingForestsPerHost));
+    stagingDbCommand.setForestFilename("data-forest.json");
+    mlAppDeployer.commands.add(stagingDbCommand)
+    mlDatabaseCommands.add(stagingDbCommand)
+
+    // install the final database
+    def finalDbCommand = new com.marklogic.appdeployer.command.databases.DeployDatabaseCommand("final-database.json")
+    finalDbCommand.setForestsPerHost(Integer.parseInt(mlFinalForestsPerHost));
+    finalDbCommand.setForestFilename("data-forest.json");
+    mlAppDeployer.commands.add(finalDbCommand)
+    mlDatabaseCommands.add(finalDbCommand)
+
+    // install the trace database
+    def traceDbCommand = new com.marklogic.appdeployer.command.databases.DeployDatabaseCommand("trace-database.json")
+    traceDbCommand.setForestsPerHost(Integer.parseInt(mlTraceForestsPerHost));
+    traceDbCommand.setForestFilename("data-forest.json");
+    mlAppDeployer.commands.add(traceDbCommand)
+    mlDatabaseCommands.add(traceDbCommand)
+
+    // install the modules database
+    def modulesDbCommand = new com.marklogic.appdeployer.command.databases.DeployDatabaseCommand("modules-database.json")
+    modulesDbCommand.setForestFilename("data-forest.json");
+    mlAppDeployer.commands.add(modulesDbCommand)
+    mlDatabaseCommands.add(modulesDbCommand)
+    
+    // install the modules database
+    def auditDbCommand = new com.marklogic.appdeployer.command.databases.DeployDatabaseCommand("audit-database.json")
+    auditDbCommand.setForestsPerHost(Integer.parseInt(mlAuditForestsPerHost));
+    auditDbCommand.setForestFilename("data-forest.json");
+    mlAppDeployer.commands.add(auditDbCommand)
+    mlDatabaseCommands.add(auditDbCommand)
+
+    // temp workaround for ml-gradle issue #78
+    // https://github.com/rjrudin/ml-gradle/issues/78
+    def lmc = mlAppDeployer.getCommand("LoadModulesCommand")
+    lmc.setModulesLoader(new com.marklogic.client.modulesloader.impl.DefaultModulesLoader(mlAppConfig.newXccAssetLoader()))
+}
+
+ext {
+    myForestNamesAndReplicasCounts = [ "Security": 1, "Schemas": 1, "Meters": 1, "App-Services": 1]
+}
+
+/*
+ * The mlConfigureForestReplicas task exposes an instance of ConfigureForestReplicasCommand as the "command" attribute.
+ * This allows us to easily modify the forestNamesAndReplicaCounts map, where each key is the name of a primary forest,
+ * and the value of each key is the number of replicas to create on each host in the cluster (except the host that the
+ * primary forest resides on).
+ *
+ * Note that this is usually most useful for supporting failover for MarkLogic apps such as Admin and App-Services. For
+ * failover for your own forests, you can use this approach, but you may also wish to create forest config files under
+ * src/main/ml-config/forests.
+ */
+mlConfigureForestReplicas.command.forestNamesAndReplicaCounts = myForestNamesAndReplicasCounts
+
+/*
+ * mlDeleteForestReplicas can then use the same map as mlConfigureForestReplicas, as it will delete replicas for all of
+ * the forests identified by the keys in the map. This task could be called before mlUndeploy, for example, to first
+ * delete all of the forest replicas, thus allowing the primary forests to be deleted safely.
+ */
+mlDeleteForestReplicas.command.forestNamesAndReplicaCounts = myForestNamesAndReplicasCounts
+
+task importDictionaries(type: com.marklogic.gradle.task.MlcpTask) {
+	classpath = configurations.mlcp
+	command = "IMPORT"
+	database = mlFinalDbName
+	input_file_path = "data/dictionaries"
+	output_collections = "dictionaries"
+	output_permissions = "rest-reader,read,rest-writer,update"
+	output_uri_replace = ".*/data,''"
 }
 
 // Tell Spring Boot, when run by Gradle, to watch the resources directory

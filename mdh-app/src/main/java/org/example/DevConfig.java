@@ -27,17 +27,17 @@ public class DevConfig {
     @Value("${mlRestPort}")
     protected Integer mlRestPort;
 
-    @Value("${mlRestAdminUsername}")
+    @Value("${mlRestAppUsername}")
     protected String mlRestAdminUsername;
 
-    @Value("${mlRestAdminPassword}")
+    @Value("${mlRestAppPassword}")
     protected String mlRestAdminPassword;
 
     @Bean
     public DatabaseClientConfig contentDatabaseClientConfig() {
         DatabaseClientConfig config = new DatabaseClientConfig(mlHost, mlRestPort, mlRestAdminUsername,
                 mlRestAdminPassword);
-        config.setDatabase(mlAppName + "-content");
+        config.setDatabase(mlAppName + "-FINAL");
         return config;
     }
 
@@ -50,7 +50,7 @@ public class DevConfig {
     public DatabaseClientManager modulesDatabaseClientManager() {
         DatabaseClientConfig config = new DatabaseClientConfig(mlHost, mlRestPort, mlRestAdminUsername,
                 mlRestAdminPassword);
-        config.setDatabase(mlAppName + "-modules");
+        config.setDatabase(mlAppName + "-MODULES");
         return new DatabaseClientManager(config);
     }
 
