@@ -68,10 +68,11 @@ declare function pm:build-log($primary-uri as xs:string, $primary-header as map:
     map:put($log, "mergedBy", xdmp:get-current-user()),
     map:put($log, "mergedDocs", json:array())    
   )
+  let $mergeDb := fn:replace(xdmp:database-name(xdmp:database()), "FINAL", "AUDIT")
   return xdmp:invoke("/lib/merge-log.xqy", (xs:QName("merge-log"), $log, 
     xs:QName("permissions"), $permissions), 
     <options xmlns="xdmp:eval">
-      <database>{xdmp:database("merge-database")}</database>
+      <database>{xdmp:database($mergeDb)}</database>
     </options>
   )
 };

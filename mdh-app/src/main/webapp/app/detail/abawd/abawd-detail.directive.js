@@ -25,7 +25,7 @@
     ctrl.isLoading = false;
    
     ctrl.params = [
-      { name: 'abawdDetermination', value: '' }
+      { label: 'ABAWD Status', name: 'abawdStatus', value: '' }
     ];
  
     $scope.status = {

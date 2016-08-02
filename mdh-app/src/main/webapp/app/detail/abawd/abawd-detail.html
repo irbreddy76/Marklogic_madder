@@ -46,7 +46,7 @@
     </div>
   </accordion-group>
   <accordion-group heading="Disability Detail" is-open="status.isDisabilityOpen">
-    <table>
+    <table class="table table-bordered table-striped">
       <tr>
         <th>Disability Code</th>
         <th>Start Date</th>
@@ -65,7 +65,7 @@
   <accordion-group heading="Income Detail" is-open="status.isIncomeOpen">
     <accordion>
       <accordion-group heading="Earned Income" is-open="status.isEarnedOpen">
-        <table>
+        <table class="table table-bordered table-striped">
           <tr>
             <th>Income Type</th>
             <th>Frequency</th>
@@ -86,7 +86,7 @@
         </table>
       </accordion-group>
       <accordion-group heading="Unearned Income" is-open="status.isUnearnedOpen">
-        <table>
+        <table class="table table-bordered table-striped">
           <tr>
             <th>Income Type</th>
             <th>Frequency</th>
@@ -110,7 +110,7 @@
     <add-annotation button-style="'button'" 
        title="'Make ABAWD Determination'" source-url="uri" params="ctrl.params" 
        template="/app/annotation/add-annotation-button.html"></add-annotation>
-    <table>
+    <table class="table table-bordered table-striped">
       <tr>
         <th>User</th>
         <th>Date</th>

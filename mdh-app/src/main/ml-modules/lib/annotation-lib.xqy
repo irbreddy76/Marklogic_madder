@@ -63,6 +63,8 @@ declare function an:annotateDocument($uri as xs:string, $params as map:map) {
         map:put($content, "annotation", $annotation),
         map:put($doc, "content", $content)
       )
+      let $_ := xdmp:document-insert($uri, xdmp:to-json($doc),
+        xdmp:document-get-permissions($uri), xdmp:document-get-collections($uri))
       return $annotation
     ) else (
       let $json := json:object()

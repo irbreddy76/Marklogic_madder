@@ -4,7 +4,7 @@
 <div class="modal-body">
   <form class="form-horizontal">
     <div class="form-group" ng-repeat="param in params.properties">
-      <label class="control-label">{{param.name}}:</label>
+      <label class="control-label">{{param.label || param.name}}:</label>
       <!-- In the future, display a field depending on param type -->
       <input ng-model="param.value" type="text" class="form-control" 
         autocomplete="off"></input>
