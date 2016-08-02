@@ -1,0 +1,35 @@
+<div class="modal-header">
+  <h3 class="modal-title">Annotation History</h3>
+</div>
+<div class="modal-body">
+  <div class="repeatable-element" ng-repeat="annotation in annotations">
+    <div class="panel">
+      <div class="panel-heading">
+        <div class="row">
+          <div class="col-sm-2">User:</div>
+          <div class="col-sm-4">{{annotation.headers.annotationUser}}</div>
+          <div class="col-sm-2">Date:</div>
+          <div class="col-sm-4">{{annotation.headers.annotationDateTime}}</div>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="row" ng-repeat="property in annotation.content.properties">
+          <div class="col-sm-4">{{property.name}}</div>
+          <div class="col-sm-8">{{property.value}}</div>
+        </div>
+        <div class="row">
+          <div class="col-sm-2">Comments:</div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">{{annotation.content.comments}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div ng-if="isAnnotationsEmpty">
+    No annotations to display.
+  </div>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+</div>

@@ -1,0 +1,131 @@
+<accordion close-others="false">
+  <accordion-group heading="Person Detail" is-open="status.isPersonOpen">
+    <div>
+      <dl class="dl-horizontal">
+        <dt>Person Given Name</dt>
+        <dd>{{person.headers.PersonPrimaryName.PersonGivenName}}</dd>
+        <dt ng-if="name.PersonMiddleName">Person Middle Name</dt>
+        <dt>Person Family Name</dt>
+        <dd>{{person.headers.PersonPrimaryName.PersonSurName}}</dd>
+        <dt>Date of Birth</dt>
+        <dd>{{person.content.PersonBirthDate | date: 'MM-dd-yyyy'}}</dd>
+        <dt>Social Security Number</dt>
+        <dd>{{person.headers.PersonSSNIdentification}}</dd>
+        <dt>Pregnancy Due Date</dt>
+        <dd>{{person.content.PregnancyDueDate | date: 'MM-dd-yyyy'}}</dd>
+        <dt>HoHCode</dt>
+        <dd>{{person.content.PersonHOHCode}}</dd>
+        <dt>Language</dt>
+        <dd>{{person.content.PersonLanguageCode}}</dd>
+        <dt>Living Arrangement</dt>
+        <dd>{{person.content.PersonLivingArrangementTypeCode}}</dd>
+        <dt>Immigration Status</dt>
+        <dd>{{person.content.ImmigrationStatusCode}}</dd>
+      </dl>
+    </div>
+  </accordion-group>
+  <accordion-group heading="Addresses" is-open="status.isAddressOpen">
+    <div ng-repeat="address in person.headers.Addresses">
+      <dl class="dl-horizontal">
+        <dt>Address Type</dt>
+        <dd>{{address.AddressType}}</dd>
+        <dt>Street 1</dt>
+        <dd>{{address.StreetNumberText}} {{address.StreetName}}</dd>
+        <dt>Street 2</dt>
+        <dd>{{address.AdditionalStreetName}}</dd>   
+        <dt>City</dt>
+        <dd>{{address.CityName}}</dd> 
+        <dt>State</dt>
+        <dd>{{address.StateName}}</dd>
+        <dt>Postal Code</dt>
+        <dd>{{address.PostalCode}}</dd>
+        <dt>Postal Code Extension</dt>
+        <dd>{{address.PostalCodeExtension}}</dd>
+      </dl>
+      <hr ng-if="!$last"></hr>
+    </div>
+  </accordion-group>
+  <accordion-group heading="Disability Detail" is-open="status.isDisabilityOpen">
+    <table>
+      <tr>
+        <th>Disability Code</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+      </tr>
+      <tr ng-repeat="disability in person.content.Disability">
+        <td>{{disability.DisabilityTypeCode}}</td>
+        <td>{{disability.DisabilityStartDate | date: 'MM-dd-yyyy'}}</td>
+        <td>{{disability.DisabilityEndDate | date: 'MM-dd-yyyy'}}</td>
+      </tr>
+      <tr ng-if="person.content.Disability.length == 0">
+        <td colspan="3">No reported disabilities</td>
+      </tr>
+    </table>
+  </accordion-group>
+  <accordion-group heading="Income Detail" is-open="status.isIncomeOpen">
+    <accordion>
+      <accordion-group heading="Earned Income" is-open="status.isEarnedOpen">
+        <table>
+          <tr>
+            <th>Income Type</th>
+            <th>Frequency</th>
+            <th>Hours Worked</th>
+            <th>Amount</th>
+            <th>Date</th>
+          </tr>
+          <tr ng-repeat="income in person.content.Income">
+            <td>{{income.IncomeTypeCode}}</td>
+            <td>{{income.IncomeFrequencyCode}}</td>
+            <td>{{income.IncomeWorkHoursNumber}}</td>
+            <td>{{income.IncomeAmount}}</td>
+            <td>{{income.IncomeDate}}</td>
+          </tr>
+          <tr ng-if="person.content.Income.length == 0">
+            <td colspan="5">No earned income reported</td>
+          </tr>
+        </table>
+      </accordion-group>
+      <accordion-group heading="Unearned Income" is-open="status.isUnearnedOpen">
+        <table>
+          <tr>
+            <th>Income Type</th>
+            <th>Frequency</th>
+            <th>Amount</th>
+            <th>Date</th>
+          </tr>
+          <tr ng-repeat="income in person.content.UnEarnedIncome">
+            <td>{{income.IncomeTypeCode}}</td>
+            <td>{{income.IncomeFrequencyCode}}</td>
+            <td>{{income.IncomeAmount}}</td>
+            <td>{{income.IncomeDate}}</td>
+          </tr>
+          <tr ng-if="person.content.UnEarnedIncome.length == 0">
+            <td colspan="4">No earned income reported</td>
+          </tr>
+        </table>
+      </accordion-group>
+    </accordion>
+  </accordion-group>
+  <accordion-group heading="Previous Determinations" is-open="status.isDeterminationOpen">
+    <add-annotation button-style="'button'" 
+       title="'Make ABAWD Determination'" source-url="uri"
+       params="ctrl.params"></add-annotation>
+    <table>
+      <tr>
+        <th>User</th>
+        <th>Date</th>
+        <th>Determination</th>
+        <th>Comments</th>
+      </tr>
+      <tr ng-repeat="determination in ctrl.determinations">
+        <td>{{determination.headers.annotationUser}}</td>
+        <td>{{determination.headers.annotationDateTime | date: 'MM-dd-yyyy'}}</td>
+        <td>{{determination.headers.properties[0].abawdDetermination}}</td>
+        <td>{{determination.content.comments}}</td>
+      </tr>
+      <tr ng-if="ctrl.determinations.length == 0">
+        <td colspan="4">No previous determinations on record</td>
+      </tr>
+    </table>
+  </accordion-group>
+</accordion>

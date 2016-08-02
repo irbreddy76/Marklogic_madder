@@ -23,7 +23,7 @@ declare function plugin:write(
       map:get(xdmp:from-json($envelope), "content"), "images")
   )
   for $record in cts:search(fn:doc(), cts:and-query((
-    cts:collection-query(("Person", "PersonParticipation")),
+    cts:collection-query(("Person", "MasterPerson")),
     cts:collection-query("CHESSIE"),
     cts:json-property-value-query("chessieId", ($id, xs:int($id)))
   )))
@@ -36,10 +36,10 @@ declare function plugin:write(
        return map:get($entry, "Person")
     else $content
   let $images := 
-    if("images" = map:keys($person)) then map:get($person, "images")
+    if("PersonDigitalImage" = map:keys($person)) then map:get($person, "PersonDigitalImage")
     else json:array()
   let $_ := for $image in $new-images return json:array-push($images, $image)
-  let $_ := map:put($person, "images", $images)
+  let $_ := map:put($person, "PersonDigitalImage", $images)
   let $_ := 
     if(fn:empty($entry)) then ()
     else 

@@ -85,8 +85,8 @@
           ctrl.otherNames.list = ctrl.otherNames.list.concat(currentRecord.Person.PersonName);
           ctrl.persons.list = ctrl.persons.list.push(currentRecord.Person);
     	}
-    	ctrl.images = ctrl.images.concat(currentRecord.Person.images);
-    	ctrl.participations.list = ctrl.participations.list.concat(currentRecord.Participations);
+    	ctrl.images = ctrl.images.concat(currentRecord.Person.PersonDigitalImage);
+    	ctrl.participations.list = ctrl.participations.list.concat(currentRecord.ProgramParticipations);
       }
       
       ctrl.addresses.list = $scope.person.headers.Addresses;

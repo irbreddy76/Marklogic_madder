@@ -81,7 +81,7 @@ function createContent(id, options) {
         OpenDate: detail.OpenDate,
         CloseDate: detail.CloseDate,
         CloseCode: detail.CloseCode,
-        PersonRoles: []
+        Participations: []
       };
 
       // Now grab all participation entries that match the
@@ -90,7 +90,7 @@ function createContent(id, options) {
       for(j = 0; j < participationById.length; j++) {
         var role = participationById[j];
         if(role.key.toString() == key.toString()) {
-          partDetail.PersonRoles.push(role.entry);
+          partDetail.Participations.push(role.entry);
         }
       }
       participations.push(partDetail);
@@ -121,7 +121,7 @@ function createContent(id, options) {
           PersonBirthDate: root.content.PersonBirthDate,
           Addresses: addresses
         },
-        Participations: participations
+        ProgramParticipations: participations
       }]
     };       
   }

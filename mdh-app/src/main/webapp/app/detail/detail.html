@@ -1,6 +1,7 @@
 <div class="row detail">
-  <person-detail person="ctrl.doc" uri="ctrl.uri" ng-if="ctrl.doc.headers.RecordType == 'PersonParticipation'"></person-detail>
+  <person-detail person="ctrl.doc" uri="ctrl.uri" ng-if="ctrl.doc.headers.RecordType == 'MasterPerson'"></person-detail>
   <case-detail case="ctrl.doc" ng-if="ctrl.doc.headers.RecordType == 'Case'"></case-detail>
+  <abawd-detail person="ctrl.doc" uri="ctrl.uri" ng-if="ctrl.doc.headers.RecordType == 'Person'"></abawd-detail>
   <div ng-if="ctrl.doc.headers.RecordType == 'PersonImage'">
     <img src="{{ '/v1/documents?uri=' + ctrl.doc.content.imageUri }}"/>
   </div>
