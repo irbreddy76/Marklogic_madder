@@ -17,7 +17,8 @@ buildscript {
 plugins {
 	id "java"
 	id "eclipse"
-    id "com.marklogic.ml-gradle" version "2.2.0-RC1"
+    //id "com.marklogic.ml-gradle" version "2.2.0-RC1"
+	id "com.marklogic.ml-gradle" version "2.3.0"
 
 	// For managing environment-sensitive properties - see https://github.com/stevesaliman/gradle-properties-plugin
 	// id 'net.saliman.properties' version '1.4.5'
@@ -119,6 +120,10 @@ ext {
         customTokens.put("%%GROUP%%", mlGroupName)
         customTokens.put("%%FOREST_DIR%%", mlForestPath)
     }
+}
+// Override the default database for deploying views
+ext {
+    mlAppDeployer.getCommand("DeployViewSchemasCommand").databaseIdOrName = mlFinalDbName
 }
 
 // Pulled from Data Hub Setup.  
