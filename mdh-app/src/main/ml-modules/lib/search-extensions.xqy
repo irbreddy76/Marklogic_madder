@@ -14,7 +14,7 @@ declare function s:buildSummary(
   let $type := map:get($header, "RecordType")
   let $summary :=
     if($type = "Case") then s:buildCase($header, $content)
-    else if($type = "PersonParticipation") then s:buildPersonParticipation($header, $content)
+    else if($type = "MasterPerson") then s:buildPersonParticipation($header, $content)
     else if($type = "Person") then s:buildPerson($header, $content)
     else if($type = "ABAWD") then s:buildABAWD($header, $content)
     else ()
@@ -97,7 +97,7 @@ declare function s:buildPersonParticipation($header as map:map, $content as map:
   let $cases := map:get($header, "ParticipationIdentifiers")
   let $person := map:get(json:array-values(map:get($content, "records"))[1], "Person")
   let $_ := (
-    map:put($json, "recordType", "PersonParticipation"),
+    map:put($json, "recordType", "MasterPerson"),
     map:put($json, "personId", $personId),
     map:put($json, "firstName", map:get($name, "PersonGivenName")),
     map:put($json, "middleName", map:get($name, "PersonMiddleName")),
