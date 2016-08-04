@@ -1,0 +1,267 @@
+<options xmlns="http://marklogic.com/appservices/search">
+  <search-option>unfiltered</search-option>
+  <page-length>10</page-length>
+  <additional-query>
+    <cts:and-query xmlns:cts="http://marklogic.com/cts">
+      <cts:collection-query>
+        <cts:uri>PersonParticipation</cts:uri>
+      </cts:collection-query>
+      <cts:not-query>
+        <cts:collection-query>
+          <cts:uri>deleted</cts:uri>
+        </cts:collection-query>
+      </cts:not-query>
+    </cts:and-query>
+  </additional-query>
+  <term apply="term">
+    <empty apply="all-results" />
+    <term-option>punctuation-insensitive</term-option>
+    <term-option>stemmed</term-option>
+  </term>
+<!--  <constraint name="collection">
+    <collection prefix=""/>
+  </constraint>
+   --> 
+    <constraint name="CaseType">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="CaseType"/>
+        <facet-option>frequency-order</facet-option>
+        <facet-option>descending</facet-option>
+      </range>
+    </constraint>
+    <constraint name="Gender">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="PersonSexCode"/>
+        <facet-option>frequency-order</facet-option>
+        <facet-option>descending</facet-option>
+      </range>
+    </constraint>
+    <constraint name="Race">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="PersonRaceCode"/>
+        <facet-option>frequency-order</facet-option>
+        <facet-option>descending</facet-option>
+        <facet-option>limit=5</facet-option>
+      </range>
+    </constraint>
+  <constraint name="City">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="LocationCityName"/>
+        <facet-option>frequency-order</facet-option>
+        <facet-option>descending</facet-option>
+        <facet-option>limit=5</facet-option>
+      </range>
+    </constraint>
+    <constraint name="County">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="LocationCounty"/>
+        <facet-option>frequency-order</facet-option>
+        <facet-option>descending</facet-option>
+        <facet-option>limit=5</facet-option>
+      </range>
+    </constraint>
+  <constraint name="Status">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="status"/>
+        <facet-option>frequency-order</facet-option>
+        <facet-option>descending</facet-option>
+      </range>
+    </constraint> 
+  <constraint name="Jurisdiction">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="Jurisdiction"/>
+        <facet-option>frequency-order</facet-option>
+        <facet-option>descending</facet-option>
+        <facet-option>limit=5</facet-option>
+      </range>
+    </constraint>
+  <constraint name="Program">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="ProgramDetailParticipation"/>
+        <facet-option>frequency-order</facet-option>
+        <facet-option>descending</facet-option>
+        <facet-option>limit=5</facet-option>
+      </range>
+    </constraint> 
+  <constraint name="SourceSystem">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="SourceSystem"/>
+        <facet-option>frequency-order</facet-option>
+        <facet-option>descending</facet-option>
+      </range>
+    </constraint>   
+  <default-suggestion-source>
+    <word-lexicon collation="http://marklogic.com/collation/"></word-lexicon>
+  </default-suggestion-source>
+  <grammar>
+    <quotation>"</quotation>
+    <implicit>
+      <cts:and-query strength="20" xmlns:cts="http://marklogic.com/cts" />
+    </implicit>
+    <starter strength="30" apply="grouping" delimiter=")">(</starter>
+    <starter strength="40" apply="prefix" element="cts:not-query">-</starter>
+    <joiner strength="10" apply="infix" element="cts:or-query" tokenize="word">OR</joiner>
+    <joiner strength="20" apply="infix" element="cts:and-query" tokenize="word">AND</joiner>
+    <joiner strength="30" apply="infix" element="cts:near-query" tokenize="word">NEAR</joiner>
+    <joiner strength="30" apply="near2" consume="2" element="cts:near-query">NEAR/</joiner>
+    <joiner strength="50" apply="constraint">:</joiner>
+    <joiner strength="50" apply="constraint" compare="LT" tokenize="word">LT</joiner>
+    <joiner strength="50" apply="constraint" compare="LE" tokenize="word">LE</joiner>
+    <joiner strength="50" apply="constraint" compare="GT" tokenize="word">GT</joiner>
+    <joiner strength="50" apply="constraint" compare="GE" tokenize="word">GE</joiner>
+    <joiner strength="50" apply="constraint" compare="NE" tokenize="word">NE</joiner>
+  </grammar>
+  <sort-order direction="descending">
+    <score />
+  </sort-order>
+  <operator name="sort">
+    <state name="bdd">
+      <sort-order direction="descending" type="xs:date">
+        <json-property>PersonBirthDate</json-property>
+      </sort-order>
+    </state>
+    <state name="bda">
+      <sort-order direction="ascending" type="xs:date">
+        <json-property>PersonBirthDate</json-property>
+      </sort-order>
+    </state>
+    <state name="wsd">
+      <sort-order direction="descending">
+        <score/>
+      </sort-order>
+    </state>
+    <state name="wsa">
+      <sort-order direction="ascending">
+        <score/>
+      </sort-order>
+    </state>
+    <state name="fnd">
+      <sort-order direction="descending" type="xs:string"
+        collation="http://marklogic.com/collation/codepoint">
+        <json-property>PersonGivenName</json-property>
+      </sort-order>
+    </state>
+    <state name="fna">
+      <sort-order direction="ascending" type="xs:string"
+        collation="http://marklogic.com/collation/codepoint">
+        <json-property>PersonGivenName</json-property>
+      </sort-order>
+    </state>
+    <state name="lnd">
+      <sort-order direction="descending" type="xs:string"
+        collation="http://marklogic.com/collation/codepoint">
+        <json-property>PersonSurName</json-property>
+      </sort-order>
+    </state>
+    <state name="lna">
+      <sort-order direction="ascending" type="xs:string"
+        collation="http://marklogic.com/collation/codepoint">
+        <json-property>PersonSurName</json-property>
+      </sort-order>
+    </state>
+  </operator>
+  <transform-results apply="buildSummary" ns="http://marklogic.com/md-dhr/search-extensions"
+      at="/lib/search-extensions.xqy">
+  </transform-results>
+  <!-- 
+  <transform-results apply="snippet">
+    <preferred-elements>
+      <element ns="" name="body" />
+    </preferred-elements>
+    <max-matches>1</max-matches>
+    <max-snippet-chars>150</max-snippet-chars>
+    <per-match-tokens>20</per-match-tokens>
+  </transform-results>
+  -->
+  <return-query>1</return-query>
+  <operator name="results">
+    <state name="compact">
+      <transform-results apply="buildSummary" ns="http://marklogic.com/md-dhr/search-extensions"
+        at="/lib/search-extensions.xqy">
+      </transform-results>
+    </state>
+    <state name="detailed">
+      <transform-results apply="buildSummary" ns="http://marklogic.com/md-dhr/search-extensions"
+        at="/lib/search-extensions.xqy">
+      </transform-results>
+    </state>
+  </operator>
+  <!--
+	<constraint name="geo-point">
+		<custom facet="true">
+			<parse apply="parse-structured" ns="http://marklogic.com/appservices/viz/geo" at="/ext/constraint/geo.xqy" />
+			<start-facet apply="start" ns="http://marklogic.com/appservices/viz/geo" at="/ext/constraint/geo.xqy" />
+			<finish-facet apply="finish" ns="http://marklogic.com/appservices/viz/geo" at="/ext/constraint/geo.xqy" />
+		</custom>
+		<annotation>
+			<geo-elem>
+				<heatmap n="90" e="180" s="-90" w="-180" latdivs="6" londivs="6" />
+				<element ns="" name="geo-point" />
+			</geo-elem>
+		</annotation>
+	</constraint>
+	-->
+  <values name="CaseType" style="default">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="CaseType"/>
+      </range>
+      <values-option>descending</values-option>
+      <values-option>frequency-order</values-option>
+  </values>
+  <values name="Gender" style="default">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="PersonSexCode"/>
+      </range>
+      <values-option>descending</values-option>
+      <values-option>frequency-order</values-option>
+  </values>
+  <values name="Race" style="default">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="PersonRaceCode"/>
+      </range>
+      <values-option>descending</values-option>
+      <values-option>frequency-order</values-option>
+  </values>
+  <values name="City" style="default">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="LocationCityName"/>
+      </range>
+      <values-option>descending</values-option>
+      <values-option>frequency-order</values-option>
+  </values>
+  <values name="County" style="default">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="LocationCounty"/>
+      </range>
+      <values-option>descending</values-option>
+      <values-option>frequency-order</values-option>
+  </values>
+  <values name="Status" style="default">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="status"/>
+      </range>
+      <values-option>descending</values-option>
+      <values-option>frequency-order</values-option>
+  </values>
+  <values name="Jurisdiction" style="default">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="Jurisdiction"/>
+      </range>
+      <values-option>descending</values-option>
+      <values-option>frequency-order</values-option>
+  </values>
+  <values name="Program" style="default">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="ProgramDetailParticipation"/>
+      </range>
+      <values-option>descending</values-option>
+      <values-option>frequency-order</values-option>
+  </values>
+  <values name="SourceSystem" style="default">
+      <range type="xs:string" collation="http://marklogic.com/collation/codepoint">
+        <element ns="" name="SourceSystem"/>
+      </range>
+      <values-option>descending</values-option>
+      <values-option>frequency-order</values-option>
+  </values>   
+</options>

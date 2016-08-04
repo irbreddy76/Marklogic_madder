@@ -8,12 +8,12 @@
  * @return - nothing
  */
 function write(id, envelope, options) {
-  var uri = '/personParticipation/CARES/' + fn.generateId(envelope) + '.json';
+  var uri = '/person/CARES/master-' + fn.generateId(envelope) + '.json';
 
   xdmp.documentInsert(uri, envelope, 
     [xdmp.permission('rest-reader', 'read'),
      xdmp.permission('rest-writer', 'update')],
-    ['CARES', 'PersonParticipation', 'Sample']);
+    ['CARES', 'MasterPerson', 'Sample']);
 }
 
 module.exports = {

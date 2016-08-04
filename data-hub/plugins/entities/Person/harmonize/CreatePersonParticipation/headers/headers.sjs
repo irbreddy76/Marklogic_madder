@@ -9,7 +9,7 @@
  */
 function createHeaders(id, content, options) {
   var header = {
-    RecordType: 'PersonParticipation',
+    RecordType: 'MasterPerson',
     SystemIdentifiers: [],
     ParticipationIdentifiers: [],
     Addresses: []
@@ -40,8 +40,8 @@ function createHeaders(id, content, options) {
 
   header.SSNIdentificationId = person.PersonSSNIdentification[0].IdentificationID;
  
-  for(i = 0; i < content.records[0].Participations.length; i++) {
-    var participation = content.records[0].Participations[i];
+  for(i = 0; i < content.records[0].ProgramParticipations.length; i++) {
+    var participation = content.records[0].ProgramParticipations[i];
     for(j = 0; j < participation.ParticipationIdentifiers.length; j++) {
       var identifier = participation.ParticipationIdentifiers[j];
       if(identifier.ParticipationType == 'Service Case') {

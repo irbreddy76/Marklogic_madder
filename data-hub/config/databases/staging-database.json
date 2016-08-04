@@ -1,5 +1,5 @@
 {
-  "database-name": "%%STAGING_DB_NAME%%",
+  "database-name": "%%mlStagingDbName%%",
   "range-element-index": [
     {
       "scalar-type": "dateTime",
@@ -53,7 +53,7 @@
       "scalar-type": "string",
       "namespace-uri": "",
       "localname": "CLIENT_ID",
-      "collation": "",
+      "collation": "http://marklogic.com/collation/codepoint",
       "range-value-positions": false,
       "invalid-values": "reject"
     }
