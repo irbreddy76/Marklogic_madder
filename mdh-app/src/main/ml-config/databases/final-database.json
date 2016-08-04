@@ -183,7 +183,79 @@
       "collation": "http://marklogic.com/collation/codepoint",
       "range-value-positions": false,
       "invalid-values": "reject"
-    }
+    },
+    {
+      "scalar-type": "string",
+      "namespace-uri": "",
+      "localname": "IncomeTypeCode",
+      "collation": "http://marklogic.com/collation/codepoint",
+      "range-value-positions": false,
+      "invalid-values": "reject"
+    },	
+    {
+      "scalar-type": "string",
+      "namespace-uri": "",
+      "localname": "IncomeFrequencyCode",
+      "collation": "http://marklogic.com/collation/codepoint",
+      "range-value-positions": false,
+      "invalid-values": "reject"
+    },	
+    {
+      "scalar-type": "string",
+      "namespace-uri": "",
+      "localname": "IncomeWorkHoursNumber",
+      "collation": "http://marklogic.com/collation/codepoint",
+      "range-value-positions": false,
+      "invalid-values": "reject"
+    },	
+    {
+      "scalar-type": "string",
+      "namespace-uri": "",
+      "localname": "IncomeAmount",
+      "collation": "http://marklogic.com/collation/codepoint",
+      "range-value-positions": false,
+      "invalid-values": "reject"
+    },	
+    {
+      "scalar-type": "string",
+      "namespace-uri": "",
+      "localname": "IncomeDate",
+      "collation": "http://marklogic.com/collation/codepoint",
+      "range-value-positions": false,
+      "invalid-values": "reject"
+    },	
+    {
+      "scalar-type": "string",
+      "namespace-uri": "",
+      "localname": "PersonHOHCode",
+      "collation": "http://marklogic.com/collation/codepoint",
+      "range-value-positions": false,
+      "invalid-values": "reject"
+    },	
+    {
+      "scalar-type": "string",
+      "namespace-uri": "",
+      "localname": "PregnancyDueDate",
+      "collation": "http://marklogic.com/collation/codepoint",
+      "range-value-positions": false,
+      "invalid-values": "reject"
+    },	
+    {
+      "scalar-type": "string",
+      "namespace-uri": "",
+      "localname": "DisabilityTypeCode",
+      "collation": "http://marklogic.com/collation/codepoint",
+      "range-value-positions": false,
+      "invalid-values": "reject"
+    },	
+    {
+      "scalar-type": "string",
+      "namespace-uri": "",
+      "localname": "PersonSSNIdentification",
+      "collation": "http://marklogic.com/collation/codepoint",
+      "range-value-positions": false,
+      "invalid-values": "reject"
+    }	
   ],
   "schema-database": "%%SCHEMAS_DATABASE%%",
   "triggers-database": "%%TRIGGERS_DATABASE%%",
