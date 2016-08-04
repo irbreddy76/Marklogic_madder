@@ -27,10 +27,10 @@ public class DevConfig {
     @Value("${mlRestPort}")
     protected Integer mlRestPort;
 
-    @Value("${mlRestAppUsername}")
+    @Value("${mlRestAdminUsername}")
     protected String mlRestAdminUsername;
 
-    @Value("${mlRestAppPassword}")
+    @Value("${mlRestAdminPassword}")
     protected String mlRestAdminPassword;
 
     @Bean

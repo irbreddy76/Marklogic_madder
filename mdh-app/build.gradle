@@ -1,223 +1,147 @@
 buildscript {
-  // Load MarkLogic properties from the Spring Boot properties file to avoid duplication
-  Properties props = new Properties()
-  props.load(new FileInputStream("src/main/resources/application.properties"))
-  props.each { prop ->
-    // Don't set the property if it's already been set, e.g. via -P on the command line
-    if (prop.key.startsWith("ml") && !project.hasProperty(prop.key)) {
-      project.ext.set(prop.key, prop.value)
+    // Load MarkLogic properties from the Spring Boot properties file to avoid duplication
+    Properties props = new Properties()
+    props.load(new FileInputStream("src/main/resources/application.properties"))
+    props.each { prop ->
+        // Don't set the property if it's already been set, e.g. via -P on the command line
+        if (prop.key.startsWith("ml") && !project.hasProperty(prop.key)) {
+            project.ext.set(prop.key, prop.value)
+        }
     }
-  }
 
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.3.RELEASE")
-	}
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.5.RELEASE")
+    }
 }
 
 plugins {
-	id "java"
-	id "eclipse"
-    //id "com.marklogic.ml-gradle" version "2.2.0-RC1"
-	id "com.marklogic.ml-gradle" version "2.3.0"
+    id "java"
+    id "eclipse"
+    id "com.marklogic.ml-gradle" version "2.2.0"
 
-	// For managing environment-sensitive properties - see https://github.com/stevesaliman/gradle-properties-plugin
-	// id 'net.saliman.properties' version '1.4.5'
+    // For managing environment-sensitive properties - see https://github.com/stevesaliman/gradle-properties-plugin
+    // id 'net.saliman.properties' version '1.4.5'
 }
 
 apply plugin: 'spring-boot'
+apply plugin: 'war'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 repositories {
-  jcenter()
+    jcenter()
 
-  // Needed for mlcp and its Hadoop dependencies
-  maven {url "http://developer.marklogic.com/maven2/"}
-  maven {url "http://repository.cloudera.com/artifactory/cloudera-repos/" }
+    // Needed for mlcp and its Hadoop dependencies
+    maven { url "http://developer.marklogic.com/maven2/" }
+    maven { url "http://repository.cloudera.com/artifactory/cloudera-repos/" }
+    maven {url "http://repo.spring.io/libs-snapshot" }
 }
 
 configurations {
-	// This configuration captures the dependencies for running mlcp (Content Pump). This is only needed if you want
-	// to run mlcp via Gradle tasks. If you do, using com.marklogic.gradle.task.MlcpTask is a useful starting point, as
-	// shown below.
-	mlcp
+    // Exclude log4j so that only logback is used for logging
+    compile.exclude module:'log4j'
+    compile.exclude module:'slf4j-log4j12'
+
+    corb
+
+    // Allows for downloading mlcp dependencies instead of downloading all of mlcp and setting it up yourself
+    mlcp
 }
 
 dependencies {
-  // Main Boot library for running a webapp
-  compile("org.springframework.boot:spring-boot-starter-web")
+    // Main Boot library for running a webapp
+    compile("org.springframework.boot:spring-boot-starter-web")
 
-  // Adds Spring Security integration
-  compile("org.springframework.boot:spring-boot-starter-security")
+    // Adds Spring Security integration
+    compile("org.springframework.boot:spring-boot-starter-security")
 
-  // Adds Thymeleaf integration; Thymeleaf is used for the main HTML templates
-  compile("org.springframework.boot:spring-boot-starter-thymeleaf")
+    // Adds Thymeleaf integration; Thymeleaf is used for the main HTML templates
+    compile("org.springframework.boot:spring-boot-starter-thymeleaf")
 
-  // Optional Boot library - see https://docs.spring.io/spring-boot/docs/current/reference/html/using-boot-devtools.html
-  compile("org.springframework.boot:spring-boot-devtools")
+    // Optional Boot library - see https://docs.spring.io/spring-boot/docs/current/reference/html/using-boot-devtools.html
+    compile("org.springframework.boot:spring-boot-devtools")
 
-  // Provides integration points between Boot and MarkLogic
-  compile "com.marklogic:marklogic-spring-web:0.1.2"
+    // Provides integration points between Boot and MarkLogic
+    compile "com.marklogic:marklogic-spring-web:0.1.2"
 
-  // Needed for loading modules into MarkLogic
-  compile "com.marklogic:ml-javaclient-util:2.9.0-RC1"
+    // Needed for loading modules into MarkLogic
+    compile "com.marklogic:ml-javaclient-util:2.9.0"
 
-  // Needed for the Upload feature using mlcp
-  compile "com.marklogic:mlcp-util:0.2.0"
-  runtime "commons-fileupload:commons-fileupload:1.3.1"
+    // Needed for the Upload feature using mlcp
+    compile "com.marklogic:mlcp-util:0.2.0"
+    runtime "commons-fileupload:commons-fileupload:1.3.1"
 
-  // Needed for the SQL migration tool
-  compile "com.marklogic:marklogic-spring-batch:0.1.0"
-  // Samples of including JDBC drivers - uncomment or add your own as needed
-  runtime "mysql:mysql-connector-java:5.1.6"
-  //runtime "postgresql:postgresql:9.2-1002.jdbc4"
+    // Needed for writing JUnit tests with ml-junit
+    testCompile "com.marklogic:ml-junit:2.6.0"
 
-  // Needed for writing JUnit tests with ml-junit
-  testCompile "com.marklogic:ml-junit:2.5"
-  
-  mlcp "com.marklogic:mlcp:8.0-5"
-  //mlcp "com.marklogic:mlcp-Hadoop2:1.3-2"
-  //mlcp "com.marklogic:marklogic-mapreduce2:2.1.3"
+    // For Gradle tasks that run corb jobs
+    corb "com.marklogic:marklogic-corb:2.3.1"
 
-	/**
-	 * If you need to import delimited text, be sure to include this dependency as well.
-	 */
-	mlcp "org.apache.commons:commons-csv:1.2"
+    // The mlcp directory contains a log4j config file, which mlcp needs for logging
+    mlcp "com.marklogic:mlcp:8.0-5"
+    mlcp files("mlcp")
 
-	/**
-	 * mlcp uses Log4j for logging, and if Log4j can't find a configuration file, it will complain and you'll
-	 * get none of mlcp's usually-useful logging. It is recommended then that your Gradle configuration for
-	 * mlcp include a directory or some other resource that provides a log4j.properties file.
-	 */
-	mlcp files("lib")
-}
-
-ext {
-    // mlAppConfig is an instance of com.marklogic.appdeployer.AppConfig
-    mlAppConfig {
-        modulesDatabaseName = mlModulesDbName
-        triggersDatabaseName = mlTriggersDbName
-        schemasDatabaseName = mlSchemasDbName
-        
-        // Example of adding custom tokens; these will then be replaced in any JSON/XML config files
-        customTokens.put("%%FINAL_DB_NAME%%", mlFinalDbName)
-        customTokens.put("%%FINAL_FOREST%%", mlFinalForestName)
-        customTokens.put("%%FINAL_SERVER_NAME%%", mlFinalAppserverName)
-        customTokens.put("%%FINAL_SERVER_PORT%%", mlFinalPort)
-        customTokens.put("%%STAGING_DB_NAME%%", mlStagingDbName)
-        customTokens.put("%%STAGING_FOREST%%", mlStagingForestName)
-        customTokens.put("%%STAGING_SERVER_NAME%%", mlStagingAppserverName)
-        customTokens.put("%%STAGING_SERVER_PORT%%", mlStagingPort)
-        customTokens.put("%%TRACE_DB_NAME%%", mlTraceDbName)
-        customTokens.put("%%TRACE_FOREST%%", mlTraceForestName)
-        customTokens.put("%%TRACE_SERVER_NAME%%", mlTraceAppserverName)
-        customTokens.put("%%TRACE_SERVER_PORT%%", mlTracePort)
-        customTokens.put("%%AUDIT_DATABASE%%", mlAuditDbName)
-        customTokens.put("%%AUDIT_FOREST%%", mlAuditForestName)
-        customTokens.put("%%MODULES_DB_NAME%%", mlModulesDbName)
-        customTokens.put("%%MODULES_FOREST%%", mlModulesForestName)
-        customTokens.put("%%GROUP%%", mlGroupName)
-        customTokens.put("%%FOREST_DIR%%", mlForestPath)
-    }
-}
-// Override the default database for deploying views
-ext {
-    mlAppDeployer.getCommand("DeployViewSchemasCommand").databaseIdOrName = mlFinalDbName
-}
-
-// Pulled from Data Hub Setup.  
-ext {
-    // don't create the REST Api. We will do it manually
-    mlAppDeployer.commands.remove(mlAppDeployer.getCommand("DeployRestApiServersCommand"))
-    mlAppDeployer.commands.remove(mlAppDeployer.getCommand("UpdateRestApiServersCommand"))
-
-    // remove the original deploy content database command
-    // as we do not need it.
-    def deployDbCmd = mlAppDeployer.getCommand("DeployContentDatabasesCommand")
-    mlAppDeployer.commands.remove(deployDbCmd)
-    def deploySchemasDbCmd = mlAppDeployer.getCommand("DeploySchemasDatabaseCommand")
-
-    // install the staging database
-    def stagingDbCommand = new com.marklogic.appdeployer.command.databases.DeployDatabaseCommand("staging-database.json")
-    stagingDbCommand.setForestsPerHost(Integer.parseInt(mlStagingForestsPerHost));
-    stagingDbCommand.setForestFilename("data-forest.json");
-    mlAppDeployer.commands.add(stagingDbCommand)
-    mlDatabaseCommands.add(stagingDbCommand)
-
-    // install the final database
-    def finalDbCommand = new com.marklogic.appdeployer.command.databases.DeployDatabaseCommand("final-database.json")
-    finalDbCommand.setForestsPerHost(Integer.parseInt(mlFinalForestsPerHost));
-    finalDbCommand.setForestFilename("data-forest.json");
-    mlAppDeployer.commands.add(finalDbCommand)
-    mlDatabaseCommands.add(finalDbCommand)
-
-    // install the trace database
-    def traceDbCommand = new com.marklogic.appdeployer.command.databases.DeployDatabaseCommand("trace-database.json")
-    traceDbCommand.setForestsPerHost(Integer.parseInt(mlTraceForestsPerHost));
-    traceDbCommand.setForestFilename("data-forest.json");
-    mlAppDeployer.commands.add(traceDbCommand)
-    mlDatabaseCommands.add(traceDbCommand)
-
-    // install the modules database
-    def modulesDbCommand = new com.marklogic.appdeployer.command.databases.DeployDatabaseCommand("modules-database.json")
-    modulesDbCommand.setForestFilename("data-forest.json");
-    mlAppDeployer.commands.add(modulesDbCommand)
-    mlDatabaseCommands.add(modulesDbCommand)
-    
-    // install the modules database
-    def auditDbCommand = new com.marklogic.appdeployer.command.databases.DeployDatabaseCommand("audit-database.json")
-    auditDbCommand.setForestsPerHost(Integer.parseInt(mlAuditForestsPerHost));
-    auditDbCommand.setForestFilename("data-forest.json");
-    mlAppDeployer.commands.add(auditDbCommand)
-    mlDatabaseCommands.add(auditDbCommand)
-
-    // temp workaround for ml-gradle issue #78
-    // https://github.com/rjrudin/ml-gradle/issues/78
-    def lmc = mlAppDeployer.getCommand("LoadModulesCommand")
-    lmc.setModulesLoader(new com.marklogic.client.modulesloader.impl.DefaultModulesLoader(mlAppConfig.newXccAssetLoader()))
-}
-
-ext {
-    myForestNamesAndReplicasCounts = [ "Security": 1, "Schemas": 1, "Meters": 1, "App-Services": 1]
-}
-
-/*
- * The mlConfigureForestReplicas task exposes an instance of ConfigureForestReplicasCommand as the "command" attribute.
- * This allows us to easily modify the forestNamesAndReplicaCounts map, where each key is the name of a primary forest,
- * and the value of each key is the number of replicas to create on each host in the cluster (except the host that the
- * primary forest resides on).
- *
- * Note that this is usually most useful for supporting failover for MarkLogic apps such as Admin and App-Services. For
- * failover for your own forests, you can use this approach, but you may also wish to create forest config files under
- * src/main/ml-config/forests.
- */
-mlConfigureForestReplicas.command.forestNamesAndReplicaCounts = myForestNamesAndReplicasCounts
-
-/*
- * mlDeleteForestReplicas can then use the same map as mlConfigureForestReplicas, as it will delete replicas for all of
- * the forests identified by the keys in the map. This task could be called before mlUndeploy, for example, to first
- * delete all of the forest replicas, thus allowing the primary forests to be deleted safely.
- */
-mlDeleteForestReplicas.command.forestNamesAndReplicaCounts = myForestNamesAndReplicasCounts
-
-task importDictionaries(type: com.marklogic.gradle.task.MlcpTask) {
-	classpath = configurations.mlcp
-	command = "IMPORT"
-	database = mlFinalDbName
-	input_file_path = "data/dictionaries"
-	output_collections = "dictionaries"
-	output_permissions = "rest-reader,read,rest-writer,update"
-	output_uri_replace = ".*/data,''"
+    providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
 }
 
 // Tell Spring Boot, when run by Gradle, to watch the resources directory
 bootRun {
-  addResources = true
+    addResources = true
 }
 
 // See http://docs.spring.io/spring-boot/docs/current/reference/html/deployment-install.html
 springBoot {
-	executable = true
-	mainClass = "org.example.App"
+    executable = true
+    mainClass = "org.example.App"
+}
+
+/**
+ * Example mlcp import task. MlcpTask defines a number of mlcp options as task properties.
+ * You can always pass in mlcp args via the args array.
+ * Before running this, make sure the input directory exists.
+ *
+ * Also, Windows users will see mlcp report an IOException about winutils.exe missing, but
+ * that can be safely ignored.
+ *
+ * For more examples, see https://github.com/rjrudin/ml-gradle/tree/master/examples/mlcp-project .
+ */
+task importData(type: ImportTask) {
+    input_file_path = "data"
+    output_uri_replace = "(.)+/data,''"
+    output_collections = "data"
+    args = []
+}
+
+/**
+ * Example of further simplifying mlcp import tasks by defining some properties.
+ * MlcpTask extends Gradle's JavaExec task, so all of JavaExec's properties are available.
+ */
+class ImportTask extends com.marklogic.gradle.task.MlcpTask {
+    @TaskAction
+    @Override
+    public void exec() {
+        setClasspath(project.configurations.mlcp)
+        setCommand("IMPORT")
+        setPort(project.mlAppConfig.restPort)
+        setDatabase(project.mlAppConfig.contentDatabaseName)
+        super.exec()
+    }
+}
+
+/**
+ * Example Gradle task that runs a corb job. Depends on mlLoadModules so that the modules that it
+ * depends on are guaranteed to be present and up-to-date. For more examples, see
+ * https://github.com/rjrudin/ml-gradle/tree/master/examples/corb2-project .
+ */
+task corbRun(type: com.marklogic.gradle.task.CorbTask, dependsOn: ['mlLoadModules']) {
+    xccConnectionUri = "xcc://${mlUsername}:${mlPassword}@${mlHost}:${mlRestPort}"
+    moduleRoot = "/ext/corb/"
+    urisModule = "uris.xqy"
+    processModule = "transform.xqy"
+}
+
+war {
+  baseName = "mdh-app"
+  version = "0.1.0"
 }

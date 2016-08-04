@@ -1,5 +1,0 @@
-{
-  "database-name": "%%AUDIT_DATABASE%%",
-  "schema-database": "%%SCHEMAS_DATABASE%%",
-  "triggers-database": "%%TRIGGERS_DATABASE%%"
-}

@@ -1,7 +1,0 @@
-{
-  "forest-name": "%%FOREST_NAME%%",
-  "database": "%%FOREST_DATABASE%%",
-  "host": "%%FOREST_HOST%%",
-  "data-directory": "%%FOREST_DIR%%",
-  "failover-enable": true
-}
