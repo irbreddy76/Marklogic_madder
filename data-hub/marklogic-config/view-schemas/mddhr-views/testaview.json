@@ -1,0 +1,14 @@
+{
+   "view-name": "testaview",
+   "schema-name": "mddhr",
+   "column": [ 
+     {
+       "column-name": "PersonBirthDate",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "PersonBirthDate",
+          "scalar-type": "date" 
+       }
+     }	 
+   ] 
+ }

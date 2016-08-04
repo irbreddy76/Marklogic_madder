@@ -1,0 +1,24 @@
+{
+   "view-name": "abawdviewC",
+   "schema-name": "mddhr",
+   "column": [ 
+     {
+       "column-name": "DONum",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "DONum",
+          "scalar-type": "string",
+		  "collation": "http://marklogic.com/collation/codepoint"
+       }
+     },	
+     {
+       "column-name": "AUNum",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "AUNum",
+          "scalar-type": "string",
+		  "collation": "http://marklogic.com/collation/codepoint"
+       }
+     }	 
+   ] 
+ }

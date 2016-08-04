@@ -1,0 +1,33 @@
+{
+   "view-name": "abawdviewB",
+   "schema-name": "mddhr",
+   "element-scope": {"namespace-uri":"/person/ABAWD/","localname":"abawd"},
+   "column": [ 	 
+     {
+       "column-name": "PersonGivenName",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "PersonGivenName",
+          "scalar-type": "string",
+		  "collation": "http://marklogic.com/collation/codepoint"		  
+       }
+     },
+     {
+       "column-name": "PersonSurName",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "PersonSurName",
+          "scalar-type": "string",
+		  "collation": "http://marklogic.com/collation/codepoint"
+       }
+     },
+     {
+       "column-name": "PersonBirthDate",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "PersonBirthDate",
+          "scalar-type": "date" 
+       }
+     }	 
+   ] 
+ }

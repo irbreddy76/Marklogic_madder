@@ -3,10 +3,8 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'net.saliman.properties' version '1.4.5'
-    // Changed to match version from slush
-    //id 'com.marklogic.ml-gradle' version '2.1.0'
-    id 'com.marklogic.ml-gradle' version '2.2.0-RC1'
-    id 'com.marklogic.ml-data-hub' version '1.0.0-beta.6'
+	id 'com.marklogic.ml-gradle' version '2.3.1'
+	id 'com.marklogic.ml-data-hub' version '1.0.0-rc.1'
 }
 
 repositories {
@@ -65,6 +63,9 @@ ext {
         customTokens.put("%%TRACE_SERVER_NAME%%", mlTraceAppserverName)
         customTokens.put("%%TRACE_SERVER_PORT%%", mlTracePort)
         customTokens.put("%%TRACE_DB_NAME%%", mlTraceDbName)
+		
+        customTokens.put("%%mlOdbcAppserverName%%", mlOdbcAppserverName)
+        customTokens.put("%%mlOdbcPort%%", mlOdbcPort)    		
 
         modulePaths = ["plugins"]
     }
@@ -72,6 +73,11 @@ ext {
 
 ext {
     myForestNamesAndReplicasCounts = [ "Security": 1, "Schemas": 1, "Meters": 1, "App-Services": 1]
+}
+
+// Override the default database for deploying views
+ext {
+    mlAppDeployer.getCommand("DeployViewSchemasCommand").databaseIdOrName = mlFinalDbName
 }
 
 /*

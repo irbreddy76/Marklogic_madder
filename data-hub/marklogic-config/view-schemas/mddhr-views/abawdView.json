@@ -1,0 +1,50 @@
+{
+   "view-name": "abawdview",
+   "schema-name": "mddhr",
+   "column": [ 
+     {
+       "column-name": "DONum",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "DONum",
+          "scalar-type": "string",
+		  "collation": "http://marklogic.com/collation/codepoint"
+       }
+     },	
+     {
+       "column-name": "AUNum",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "AUNum",
+          "scalar-type": "string",
+		  "collation": "http://marklogic.com/collation/codepoint"
+       }
+     },		 
+     {
+       "column-name": "PersonGivenName",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "PersonGivenName",
+          "scalar-type": "string",
+		  "collation": "http://marklogic.com/collation/codepoint"		  
+       }
+     },
+     {
+       "column-name": "PersonSurName",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "PersonSurName",
+          "scalar-type": "string",
+		  "collation": "http://marklogic.com/collation/codepoint"
+       }
+     },
+     {
+       "column-name": "PersonBirthDate",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "PersonBirthDate",
+          "scalar-type": "date" 
+       }
+     }	 
+   ] 
+ }
