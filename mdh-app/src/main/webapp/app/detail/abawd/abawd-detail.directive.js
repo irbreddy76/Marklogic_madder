@@ -25,6 +25,8 @@
     ctrl.isLoading = false;
    
     ctrl.params = [
+      { label: 'Screening Question 1', name:'questionOne', value: ''},
+      { label: 'Screening Question 2', name:'questionTwo', value: ''},
       { label: 'ABAWD Status', name: 'abawdStatus', value: '' }
     ];
  

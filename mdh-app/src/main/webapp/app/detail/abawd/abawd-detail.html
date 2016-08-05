@@ -105,7 +105,7 @@
         </table>
       </accordion-group>
     </accordion>
-  </accordion-group>
+  </accordion-group> 
   <accordion-group heading="Previous Determinations" is-open="status.isDeterminationOpen">
     <add-annotation button-style="'button'" 
        title="'Make ABAWD Determination'" source-url="uri" params="ctrl.params" 
@@ -120,7 +120,7 @@
       <tr ng-repeat="determination in ctrl.determinations">
         <td>{{determination.headers.annotationUser}}</td>
         <td>{{determination.headers.annotationDateTime | date: 'MM-dd-yyyy'}}</td>
-        <td>{{determination.headers.properties[0].abawdDetermination}}</td>
+        <td>{{determination.headers.properties[0].abawdStatus}}</td>
         <td>{{determination.content.comments}}</td>
       </tr>
       <tr ng-if="ctrl.determinations.length == 0">

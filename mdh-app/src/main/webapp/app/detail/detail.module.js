@@ -5,6 +5,7 @@
     'app.search',
     'ui.router',
     'person.compare',
-    'ngVis'
+    'ngVis',
+    'annotation.add'
   ]);
 }());
