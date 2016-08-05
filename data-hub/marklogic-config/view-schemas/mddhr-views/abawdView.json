@@ -3,6 +3,15 @@
    "schema-name": "mddhr",
    "column": [ 
      {
+       "column-name": "LdssID",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "LdssID",
+          "scalar-type": "string",
+		  "collation": "http://marklogic.com/collation/codepoint"
+       }
+     },   
+     {
        "column-name": "DONum",
        "element-reference": {
           "namespace-uri": "",
