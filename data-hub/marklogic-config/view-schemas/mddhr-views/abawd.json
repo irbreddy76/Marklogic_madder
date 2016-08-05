@@ -1,0 +1,140 @@
+{
+   "view-name": "abawd",
+   "schema-name": "mddhr",
+   "column": [ 
+     {
+       "column-name": "LdssID",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "LdssID",
+          "scalar-type": "string",
+		  "collation": "http://marklogic.com/collation/codepoint"
+       }
+     },   
+     {
+       "column-name": "DONum",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "DONum",
+          "scalar-type": "string",
+		  "collation": "http://marklogic.com/collation/codepoint"
+       }
+     },	
+     {
+       "column-name": "AUNum",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "AUNum",
+          "scalar-type": "string",
+		  "collation": "http://marklogic.com/collation/codepoint"
+       }
+     },		 
+     {
+       "column-name": "PersonGivenName",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "PersonGivenName",
+          "scalar-type": "string",
+		  "collation": "http://marklogic.com/collation/codepoint"		  
+       }
+     },
+     {
+       "column-name": "PersonSurName",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "PersonSurName",
+          "scalar-type": "string",
+		  "collation": "http://marklogic.com/collation/codepoint"
+       }
+     },
+     {
+       "column-name": "IncomeTypeCode",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "IncomeTypeCode",
+          "scalar-type": "string",
+		  "collation": "http://marklogic.com/collation/codepoint"
+       }
+     },	 
+     {
+       "column-name": "IncomeFrequencyCode",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "IncomeFrequencyCode",
+          "scalar-type": "string",
+		  "collation": "http://marklogic.com/collation/codepoint"
+       }
+     },	 
+     {
+       "column-name": "IncomeWorkHoursNumber",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "IncomeWorkHoursNumber",
+          "scalar-type": "string",
+		  "collation": "http://marklogic.com/collation/codepoint"
+       }
+     },	 
+     {
+       "column-name": "IncomeAmount",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "IncomeAmount",
+          "scalar-type": "string",
+		  "collation": "http://marklogic.com/collation/codepoint"
+       }
+     },	 
+     {
+       "column-name": "IncomeDate",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "IncomeDate",
+          "scalar-type": "string",
+		  "collation": "http://marklogic.com/collation/codepoint"
+       }
+     },	 
+     {
+       "column-name": "PersonHOHCode",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "PersonHOHCode",
+          "scalar-type": "string",
+		  "collation": "http://marklogic.com/collation/codepoint"
+       }
+     },	
+     {
+       "column-name": "PregnancyDueDate",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "PregnancyDueDate",
+          "scalar-type": "string",
+		  "collation": "http://marklogic.com/collation/codepoint"
+       }
+     },
+     {
+       "column-name": "DisabilityTypeCode",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "DisabilityTypeCode",
+          "scalar-type": "string",
+		  "collation": "http://marklogic.com/collation/codepoint"
+       }
+     },	
+     {
+       "column-name": "IdentificationId",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "IdentificationId",
+          "scalar-type": "string",
+		  "collation": "http://marklogic.com/collation/codepoint"
+       }
+     },	 	 
+     {
+       "column-name": "PersonBirthDate",
+       "element-reference": {
+          "namespace-uri": "",
+          "localname": "PersonBirthDate",
+          "scalar-type": "date" 
+       }
+     }	 
+   ] 
+ }
