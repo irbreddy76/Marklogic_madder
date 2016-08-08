@@ -58,7 +58,6 @@ function createContent(id, options) {
           "IncomeFrequencyCode": doc.content.Income_Frequency_Code,
           "IncomeWorkHoursNumber": doc.content.Work_Hours_Number,
           "IncomeAmount": doc.content.Income_Amount,
-          "IncomeDate": doc.content.Benefit_Status_Date
       });
     }
 
@@ -70,7 +69,6 @@ function createContent(id, options) {
       ueIncome.push({"IncomeTypeCode": doc.content.UI_type_Code,
             "IncomeFrequencyCode": doc.content.UI_Frequency_Code,
             "IncomeAmount": doc.content.UI_Amount,
-            "IncomeDate": doc.content.Benefit_Status_Date
       });
     }
 
@@ -92,7 +90,6 @@ function createContent(id, options) {
       PersonHOHCode: root.content.HOH_REL_CODE,
       PersonLanguageCode: root.content.PRIMARY_LANGUAGE_CODE,
       PersonLivingArrangementTypeCode: root.content.Living_Arrangement_Type_code,
-      PregnancyDueDate: root.content.PREGNANCY_DUE_DATE,
       ImmigrationStatusCode: root.content.INS_STATUS_CODE,
       Disability: [{
             "DisabilityTypeCode": root.content.Disability_Type_Code,
@@ -102,6 +99,10 @@ function createContent(id, options) {
       Income: income,
       UnEarnedIncome: ueIncome
     };
+
+    if(datePattern.test(root.content.PREGNANCY_DUE_DATE.toString())) {
+      jsonObject.PregnancyDueDate = root.content.PREGNANCY_DUE_DATE.toString().replace(datePattern,'$1-$2-$3');
+    }
 
   }
   // for everything else
