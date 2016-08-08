@@ -24,6 +24,10 @@
 
     var authInterceptor = {
       request: function(config) {
+    	var url = config.url;
+    	if(url.startsWith('/v1/')) {
+    		config.url = url.replace('/', '');
+    	}
         if (/\/v1\//.test(config.url) && waitingForLoginDefer) {
           // hold off on additional REST API calls until login is resolved
           waitingLineForLoginDefer++;

@@ -99,7 +99,19 @@ gulp.task('templates', ['wiredep'], function () {
         ['app/**/*.module.js', 'app/**/*.js', '!app/**/*.spec.js', 'styles/**/*.css'],
         {read: false, cwd: paths.dest.static}
       ),
-      {selfClosingTag: true, removeTags: true}
+      {
+    	 selfClosingTag: true, 
+    	 removeTags: true,
+    	 transform: function(filepath) {
+    		 if(filepath.startsWith('/') && filepath.endsWith('.css')) {
+    			 return '<link rel="stylesheet" href="' + filepath.slice(1)+ '"/>';
+    		 }
+    		 if(filepath.startsWith('/') && filepath.endsWith('.js')) {
+    			 return '<script src="' + filepath.slice(1) + '"></script>';
+    		 }
+    		 return inject.transform.apply(inject.transform, arguments);
+    	 }
+      }
     ))
     .pipe(gulp.dest(paths.dest.templates));
 });

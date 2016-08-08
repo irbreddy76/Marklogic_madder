@@ -113,7 +113,7 @@
         _isAuthenticated = false;
         $state.reload();
         // Added this, as just reloading the state wasn't forcing a refresh of the whole page on logout.
-        $window.location.href = '/';
+        $window.location.href = '/mdh-app/';
         return response;
       });
     }
