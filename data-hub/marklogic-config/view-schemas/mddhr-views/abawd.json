@@ -73,16 +73,7 @@
           "scalar-type": "string",
 		  "collation": "http://marklogic.com/collation/codepoint"
        }
-     },	 
-     {
-       "column-name": "IncomeAmount",
-       "element-reference": {
-          "namespace-uri": "",
-          "localname": "IncomeAmount",
-          "scalar-type": "string",
-		  "collation": "http://marklogic.com/collation/codepoint"
-       }
-     },	 
+     },	  
      {
        "column-name": "IncomeDate",
        "element-reference": {
