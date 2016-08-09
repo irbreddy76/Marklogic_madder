@@ -75,7 +75,14 @@ gulp.task('wiredep', ['clean-templates'], function () {
   return gulp.src(paths.src.templates)
     .pipe(wiredep({
       exclude: ['angularjs'],
-      ignorePath: "../resources/static/"
+      ignorePath: "../resources/static/",
+      fileTypes: {
+        html: {
+    	  replace: {
+    	    js: '<script src="{{filePath}}"></script>'
+    	  }
+        }
+      }
     }))
     .pipe(gulp.dest(paths.dest.templates));
 });

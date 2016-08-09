@@ -142,4 +142,7 @@ task corbRun(type: com.marklogic.gradle.task.CorbTask, dependsOn: ['mlLoadModule
 }
 
 war {
+  archiveName = "mdh-app.war"
+  webAppDirName = "src/main/resources/static"
+  from ("src/main/resources/templates")  
 }
