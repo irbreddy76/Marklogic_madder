@@ -1,0 +1,9 @@
+{
+	"role-name": "mddhr-write",
+	"description": "Insert/Update MD DHR Records",
+	"compartment": [],
+	"external-name": [],
+	"role": [ "mddhr-read", "rest-writer" ], 
+	"permission": [],
+	"privilege": []
+}
