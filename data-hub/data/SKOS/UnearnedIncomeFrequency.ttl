@@ -1,0 +1,66 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+<http://www.dhr.state.md.us/conceptschemes/ABAWD/UnearnedIncomeFrequency>
+    dct:coverage "ABAWD" ;
+    dct:date "2016-08-02" ;
+    dct:description "How often the unearned income is received.", "UI FREQ CD" ;
+    a skos:ConceptScheme .
+
+<http://www.dhr.state.md.us/conceptschemes/ABAWD/UnearnedIncomeFrequency/AC>
+    a skos:Concept ;
+    skos:altLabel "AC"@en ;
+    skos:inScheme <http://www.dhr.state.md.us/conceptschemes/ABAWD/UnearnedIncomeFrequency> ;
+    skos:notation "AC"^^<http://www.w3.org/2001/XMLSchema/string> ;
+    skos:prefLabel "Actual"@en .
+
+<http://www.dhr.state.md.us/conceptschemes/ABAWD/UnearnedIncomeFrequency/AN>
+    a skos:Concept ;
+    skos:altLabel "AN"@en ;
+    skos:inScheme <http://www.dhr.state.md.us/conceptschemes/ABAWD/UnearnedIncomeFrequency> ;
+    skos:notation "AN"^^<http://www.w3.org/2001/XMLSchema/string> ;
+    skos:prefLabel "Annually"@en .
+
+<http://www.dhr.state.md.us/conceptschemes/ABAWD/UnearnedIncomeFrequency/BM>
+    a skos:Concept ;
+    skos:altLabel "BM"@en ;
+    skos:inScheme <http://www.dhr.state.md.us/conceptschemes/ABAWD/UnearnedIncomeFrequency> ;
+    skos:notation "BM"^^<http://www.w3.org/2001/XMLSchema/string> ;
+    skos:prefLabel "Bi-Monthly"@en .
+
+<http://www.dhr.state.md.us/conceptschemes/ABAWD/UnearnedIncomeFrequency/BW>
+    a skos:Concept ;
+    skos:altLabel "BW"@en ;
+    skos:inScheme <http://www.dhr.state.md.us/conceptschemes/ABAWD/UnearnedIncomeFrequency> ;
+    skos:notation "BW"^^<http://www.w3.org/2001/XMLSchema/string> ;
+    skos:prefLabel "Bi-Weekly"@en .
+
+<http://www.dhr.state.md.us/conceptschemes/ABAWD/UnearnedIncomeFrequency/OT>
+    a skos:Concept ;
+    skos:altLabel "OT"@en ;
+    skos:inScheme <http://www.dhr.state.md.us/conceptschemes/ABAWD/UnearnedIncomeFrequency> ;
+    skos:notation "OT"^^<http://www.w3.org/2001/XMLSchema/string> ;
+    skos:prefLabel "One Time Only"@en .
+
+<http://www.dhr.state.md.us/conceptschemes/ABAWD/UnearnedIncomeFrequency/QU>
+    a skos:Concept ;
+    skos:altLabel "QU"@en ;
+    skos:inScheme <http://www.dhr.state.md.us/conceptschemes/ABAWD/UnearnedIncomeFrequency> ;
+    skos:notation "QU"^^<http://www.w3.org/2001/XMLSchema/string> ;
+    skos:prefLabel "Quarterly"@en .
+
+<http://www.dhr.state.md.us/conceptschemes/ABAWD/UnearnedIncomeFrequency/SA>
+    a skos:Concept ;
+    skos:altLabel "SA"@en ;
+    skos:inScheme <http://www.dhr.state.md.us/conceptschemes/ABAWD/UnearnedIncomeFrequency> ;
+    skos:notation "SA"^^<http://www.w3.org/2001/XMLSchema/string> ;
+    skos:prefLabel "Semi-Annually"@en .
+
+<http://www.dhr.state.md.us/conceptschemes/ABAWD/UnearnedIncomeFrequency/WE>
+    a skos:Concept ;
+    skos:altLabel "WE"@en ;
+    skos:inScheme <http://www.dhr.state.md.us/conceptschemes/ABAWD/UnearnedIncomeFrequency> ;
+    skos:notation "WE"^^<http://www.w3.org/2001/XMLSchema/string> ;
+    skos:prefLabel "Weekly"@en .
+
