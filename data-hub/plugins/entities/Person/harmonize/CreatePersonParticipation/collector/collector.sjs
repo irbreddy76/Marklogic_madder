@@ -8,7 +8,7 @@
 function collect(options) {
   return cts.uris(null, null, 
     cts.andNotQuery(
-      cts.collectionQuery(['CHESSIEPerson']),
+      cts.collectionQuery(['LoadCHESSIEPerson']),
       cts.collectionQuery(['participated'])
     )
   );

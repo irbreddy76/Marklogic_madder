@@ -85,7 +85,7 @@ function getTriples(caseId, centralMember, relationships, members)
 function getPropertyFromLabel(label) 
 {
   var propertyLabel = rdf.langString(label, "en")
-  var store = sem.store([], cts.collectionQuery("Ontology"));
+  var store = sem.store([], cts.collectionQuery("LoadOntologyForRelationship"));
   
   var bindings = {"propertyLabel": propertyLabel};
   var query = "\

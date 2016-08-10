@@ -33,7 +33,7 @@ function createContent(id, options) {
     // Participation documents associated with this person's
     // CARES ID
     var participations = cts.search(cts.andQuery([
-      cts.collectionQuery('CARESParticipation'),
+      cts.collectionQuery('LoadCARESParticipation'),
       cts.jsonPropertyValueQuery('cisId', cisId)
     ])).toArray();
  
@@ -69,7 +69,7 @@ function createContent(id, options) {
 
     var participations = [];
     var participationDetails = cts.search(cts.andQuery([
-      cts.collectionQuery(['CARESParticipationDetail']),
+      cts.collectionQuery(['LoadCARESParticipationDetail']),
       cts.jsonPropertyValueQuery('participationId', participationIds)
     ])).toArray();
     for(i = 0; i < participationDetails.length; i++) {
@@ -98,7 +98,7 @@ function createContent(id, options) {
      
     var addresses = [];
     var addressDocs = cts.search(cts.andQuery([
-      cts.collectionQuery(['CARESAddress']),
+      cts.collectionQuery(['LoadCARESAddress']),
       cts.jsonPropertyValueQuery('cisId', cisId)
     ])).toArray();
     for(i = 0; i < addressDocs.length; i++) {

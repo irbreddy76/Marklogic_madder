@@ -7,7 +7,7 @@
  */
 function collect(options) {
   return cts.uris(null, null, cts.andNotQuery(
-    cts.collectionQuery(['CARESParticipation']),
+    cts.collectionQuery(['LoadCARESParticipation']),
     cts.collectionQuery(['processed'])
   ));
 }
