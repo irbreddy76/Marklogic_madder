@@ -7,7 +7,7 @@
  */
 function collect(options) {
   return cts.uris(null, null, cts.andNotQuery(
-    cts.collectionQuery(['CHESSIEParticipationDetail']),
+    cts.collectionQuery(['LoadCHESSIEParticipationDetail']),
     cts.collectionQuery(['processed'])
   ));
 }

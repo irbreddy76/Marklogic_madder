@@ -11,9 +11,11 @@ function write(id, envelope, options) {
   var type = fn.normalizeSpace(envelope.content.ParticipationType);
   var uri = '/participation/CHESSIE/' + type.replace(' ', '_') + '/' + fn.generateId(envelope) + '.json';
 
-  xdmp.documentInsert(uri, envelope, 
+  xdmp.documentInsert(uri, envelope,
     [xdmp.permission('rest-reader', 'read'),
-     xdmp.permission('rest-writer', 'update')],
+     xdmp.permission('rest-writer', 'update'),
+     xdmp.permission('mddhr-read', 'read'),
+     xdmp.permission('mddhr-write', 'update')],   
     ['CHESSIE', 'ParticipationDetail', 'Sample', type]);
 }
 

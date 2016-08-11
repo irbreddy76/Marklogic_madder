@@ -7,7 +7,7 @@
  */
 function collect(options) {
   return cts.uris(null, null, cts.andNotQuery(
-    cts.collectionQuery(['CHESSIERelationship']),
+    cts.collectionQuery(['LoadCHESSIERelationship']),
     cts.collectionQuery(['processed'])
   ));
 }

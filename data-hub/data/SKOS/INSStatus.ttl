@@ -1,0 +1,18 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+
+<http://www.dhr.state.md.us/conceptschemes/ABAWD/INSStatus> a skos:ConceptScheme; dct:description "INS STATUS"@en; dct:coverage "ABAWD"@en; dct:date "2016-08-02" .                             
+<http://www.dhr.state.md.us/conceptschemes/ABAWD/INSStatus/AA> a skos:Concept; skos:prefLabel "ASYLEE"@en; skos:altLabel "AA"@en; skos:notation "AA"^^<http://www.w3.org/2001/XMLSchema/string>; skos:inScheme <http://www.dhr.state.md.us/conceptschemes/ABAWD/INSStatus> .
+<http://www.dhr.state.md.us/conceptschemes/ABAWD/INSStatus/AS> a skos:Concept; skos:prefLabel "ASYLEE/PAROLEE"@en; skos:altLabel "AS"@en; skos:notation "AS"^^<http://www.w3.org/2001/XMLSchema/string>; skos:inScheme <http://www.dhr.state.md.us/conceptschemes/ABAWD/INSStatus> .
+<http://www.dhr.state.md.us/conceptschemes/ABAWD/INSStatus/CL> a skos:Concept; skos:prefLabel "RESIDENT UNDER COLOR OF LAW"@en; skos:altLabel "CL"@en; skos:notation "CL"^^<http://www.w3.org/2001/XMLSchema/string>; skos:inScheme <http://www.dhr.state.md.us/conceptschemes/ABAWD/INSStatus> .
+<http://www.dhr.state.md.us/conceptschemes/ABAWD/INSStatus/NP> a skos:Concept; skos:prefLabel "NEWLY LEGAL PERMANENT RESIDENT"@en; skos:altLabel "NP"@en; skos:notation "NP"^^<http://www.w3.org/2001/XMLSchema/string>; skos:inScheme <http://www.dhr.state.md.us/conceptschemes/ABAWD/INSStatus> .
+<http://www.dhr.state.md.us/conceptschemes/ABAWD/INSStatus/NR> a skos:Concept; skos:prefLabel "NEWLY LEGAL 'RAW'"@en; skos:altLabel "NR"@en; skos:notation "NR"^^<http://www.w3.org/2001/XMLSchema/string>; skos:inScheme <http://www.dhr.state.md.us/conceptschemes/ABAWD/INSStatus> .
+<http://www.dhr.state.md.us/conceptschemes/ABAWD/INSStatus/NS> a skos:Concept; skos:prefLabel "NEWLY LEGAL 'SAW'"@en; skos:altLabel "NS"@en; skos:notation "NS"^^<http://www.w3.org/2001/XMLSchema/string>; skos:inScheme <http://www.dhr.state.md.us/conceptschemes/ABAWD/INSStatus> .
+<http://www.dhr.state.md.us/conceptschemes/ABAWD/INSStatus/NT> a skos:Concept; skos:prefLabel "NEWLY LEGAL TEMPORARY RESIDENT"@en; skos:altLabel "NT"@en; skos:notation "NT"^^<http://www.w3.org/2001/XMLSchema/string>; skos:inScheme <http://www.dhr.state.md.us/conceptschemes/ABAWD/INSStatus> .
+<http://www.dhr.state.md.us/conceptschemes/ABAWD/INSStatus/RF> a skos:Concept; skos:prefLabel "REFUGEE"@en; skos:altLabel "RF"@en; skos:notation "RF"^^<http://www.w3.org/2001/XMLSchema/string>; skos:inScheme <http://www.dhr.state.md.us/conceptschemes/ABAWD/INSStatus> .
+<http://www.dhr.state.md.us/conceptschemes/ABAWD/INSStatus/ST> a skos:Concept; skos:prefLabel "STUDENT/DIPLOMAT"@en; skos:altLabel "ST"@en; skos:notation "ST"^^<http://www.w3.org/2001/XMLSchema/string>; skos:inScheme <http://www.dhr.state.md.us/conceptschemes/ABAWD/INSStatus> .
+<http://www.dhr.state.md.us/conceptschemes/ABAWD/INSStatus/TR> a skos:Concept; skos:prefLabel "TEMPORARY RESIDENT/VISITOR"@en; skos:altLabel "TR"@en; skos:notation "TR"^^<http://www.w3.org/2001/XMLSchema/string>; skos:inScheme <http://www.dhr.state.md.us/conceptschemes/ABAWD/INSStatus> .
+<http://www.dhr.state.md.us/conceptschemes/ABAWD/INSStatus/PR> a skos:Concept; skos:prefLabel "PERMANENT RESIDENT"@en; skos:altLabel "PR"@en; skos:notation "PR"^^<http://www.w3.org/2001/XMLSchema/string>; skos:inScheme <http://www.dhr.state.md.us/conceptschemes/ABAWD/INSStatus> .

@@ -4,7 +4,7 @@ plugins {
     id 'idea'
     id 'net.saliman.properties' version '1.4.5'
 	id 'com.marklogic.ml-gradle' version '2.3.1'
-	id 'com.marklogic.ml-data-hub' version '1.0.0-rc.1'
+	id 'com.marklogic.ml-data-hub' version '1.0.0-rc.2'
 }
 
 repositories {
@@ -21,7 +21,7 @@ configurations {
 }
 
 dependencies {
-    compile 'com.marklogic:marklogic-data-hub:+'
+    compile 'com.marklogic:marklogic-data-hub:1.0.0-rc.2'
     compile 'com.marklogic:marklogic-xcc:8.0.5'
     
     // Needed for loading modules into MarkLogic
@@ -105,6 +105,17 @@ task importDictionaries(type: com.marklogic.gradle.task.MlcpTask) {
 	database = mlFinalDbName
 	input_file_path = "data/dictionaries"
 	output_collections = "dictionaries"
+	output_permissions = "rest-reader,read,rest-writer,update"
+	output_uri_replace = ".*/data,''"
+}
+
+task importSKOSReference(type: com.marklogic.gradle.task.MlcpTask) {
+	classpath = configurations.mlcp
+	command = "IMPORT"
+	database = mlFinalDbName
+	input_file_path = "data/SKOS"
+	input_file_type = "RDF"
+	output_collections = "SKOS,ABAWD,http://www.dhr.state.md.us/conceptschemes/ABAWD"
 	output_permissions = "rest-reader,read,rest-writer,update"
 	output_uri_replace = ".*/data,''"
 }

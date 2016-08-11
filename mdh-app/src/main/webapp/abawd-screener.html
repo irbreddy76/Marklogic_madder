@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html ng-app="ABAWDScreenerApp">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>ABAWD Screening Tool</title>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.2/angular.min.js"></script>
+
+    <script>
+        //Adding controller and all code to HTML for now to simplify distribution
+        // of prototype and testing.
+        var module = angular.module('ABAWDScreenerApp', []);
+
+        function getAge(dateString) {
+          var date = new Date(dateString);
+          var today = new Date();
+
+          var timeDiff = Math.abs(today.getTime() - date.getTime());
+          var age1 = Math.ceil(timeDiff / (1000 * 3600 * 24)) / 365;
+          return Math.round(age1 * 100) / 100;
+        }
+
+        module.controller("ABAWDScreenerController", function ($scope) {
+
+            $scope.person = {};
+
+            $scope.person.child = false;
+            $scope.person.homeless = false;
+            $scope.person.disability = false;
+            $scope.person.caringForDisabled = false;
+            $scope.person.unemploymentIns = false;
+            $scope.person.pregnant = false;
+            $scope.person.employed = false;
+            $scope.person.treatment = false;
+            $scope.person.workActivity = false;
+            $scope.person.school = false;
+
+            $scope.person.hours = 0;
+
+            $scope.person.expHomelessness = false;
+
+            $scope.showABAWDForm = false;
+            $scope.showABAWDMsg = false;
+            $scope.showPotentialABAWDMsg = false;
+
+            $scope.districts = [
+                { value: "40-Calvert", label: "40" },
+                { value: "80-Charles", label: "80" },
+                { value: "140-Kent", label: "140"},
+                { value: "180-Leonardtown", label: "180"},
+                { value: "182-Lexington Park", label: "182"},
+                { value: "200-Talbot", label: "200"}
+            ];
+
+            $scope.screeningTypes = [
+                { value: "Application", label: "application" },
+                { value: "Initial Screening", label: "initial" },
+                { value: "Recertification Screening", label: "recertification"},
+                { value: "Interim Change Screening", label: "interim"}
+            ];
+
+            var today = new Date();
+            $scope.person.todaysDate = (today.getMonth() + 1) + "/" + today.getDate()  + "/" + today.getFullYear();
+
+            $scope.clearResultMessage = function () {
+              $scope.showABAWDMessage = false;
+              $scope.showWatchMessage = false;
+              $scope.showNotABAWDMessage = false;
+            }
+
+            $scope.applyBirthday = function (birthday) {
+              var age = getAge(birthday);
+              console.log(getAge(birthday));
+              if(age >= 17.5 && age < 18) {
+                $scope.showPotentialABAWDMsg = true;
+                $scope.showABAWDForm = false;
+                $scope.showABAWDMsg = false;
+              } else if (age > 50 || age < 18) {
+                $scope.showABAWDForm = false;
+                $scope.showPotentialABAWDMsg = false;
+                $scope.showABAWDMsg = true;
+              } else {
+                $scope.showABAWDForm = true;
+                $scope.showABAWDMsg = false;
+                $scope.showPotentialABAWDMsg = false;
+              }
+            }
+
+            $scope.isHomeless = function () {
+
+              if($scope.person.expHomelessness && ($scope.person.homelessPhone ||
+                $scope.person.homelessAddress || $scope.person.homelessTransportation ||
+                $scope.person.homelessHygiene || $scope.person.homelessLaundry)) {
+                  $scope.person.homeless = true;
+                } else {
+                  $scope.person.homeless = false;
+                }
+            }
+
+            $scope.screen = function () {
+
+                $scope.customerNameInvalid = false;
+                $scope.clientIDInvalid = false;
+                $scope.caseWorkerNameInvalid = false;
+                $scope.districtInvalid = false;
+                $scope.certPeriodInvalid = false;
+                $scope.screeningTypeInvalid = false;
+                $scope.customerDOBInvalid = false;
+
+                $scope.showABAWDMessage = false;
+                $scope.showNotABAWDMessage = false;
+                $scope.showWatchMessage = false;
+
+                if (!$scope.screenerForm.district.$valid) {
+                    $scope.districtInvalid = true;
+                }
+
+                if (!$scope.screenerForm.customerName.$valid) {
+                    $scope.customerNameInvalid = true;
+                }
+
+                if (!$scope.screenerForm.clientID.$valid) {
+                    $scope.clientIDInvalid = true;
+                }
+
+                if (!$scope.screenerForm.certPeriod.$valid) {
+                    $scope.certPeriodInvalid = true;
+                }
+
+                if (!$scope.screenerForm.caseWorkerName.$valid) {
+                    $scope.caseWorkerNameInvalid = true;
+                }
+
+                if (!$scope.screenerForm.customerDOB.$valid) {
+                    $scope.customerDOBInvalid = true;
+                }
+
+                if (!$scope.screenerForm.screeningType.$valid) {
+                    $scope.screeningTypeInvalid = true;
+                }
+
+                if ($scope.screenerForm.$valid) {
+
+                    //Implement screening logic here.
+
+                    var screeningResult = true;
+                    var abawdCriteria = false;
+                    var abawdWatch = false;
+                    var isABAWD = true;  //default to true
+
+                    //Determine if there is a situation where the person is not currently ABAWD but may be next eval period.
+
+                    if($scope.person.child) {
+                      var age = getAge($scope.person.childDOB);
+                      console.log("child age: " + age);
+                      if(age >= 17.5 && age < 18) {
+                        abawdWatch = true;
+                      }
+                    }
+
+                    //if any of these are true then the person is an not ABAWD, exludes child age rule.
+                    var abawdCriteria = ($scope.person.homeless ||
+                    $scope.person.disability ||
+                    $scope.person.caringForDisabled ||
+                    $scope.person.unemploymentIns ||
+                    $scope.person.pregnant ||
+                    ($scope.person.employed && $scope.person.hours >= 20) ||
+                    $scope.person.treatment ||
+                    $scope.person.workActivity ||
+                    $scope.person.school);
+
+                    //if ABAWD criteria are not met and person's child is less than 18 then not ABAWD
+                    if( ($scope.person.child && getAge($scope.person.childDOB) < 18) || abawdCriteria ) {
+                      console.log("Not abawd")
+                      isABAWD = false;
+                    }
+
+                    if(!abawdCriteria && abawdWatch) {
+                      screeningResult = "ABAWDWatch";
+                    } else if (isABAWD) {
+                      screeningResult = "ABAWD";
+                    } else {
+                      screeningResult = "notABAWD";
+                    }
+
+                    //TODO combine with above logic
+                    if(screeningResult == "ABAWD") {
+                      $scope.showABAWDMessage = true;
+                    } else if (screeningResult == "ABAWDWatch"){
+                      $scope.showWatchMessage = true;
+                    } else {
+                      $scope.showNotABAWDMessage = true;
+                    }
+
+                    console.log($scope.person);
+
+                    $scope.doShow = true;
+                }
+            }
+        })
+
+    </script>
+
+    <style>
+        body, input, select {
+            font: normal 16px/1.4 Georgia;
+        }
+
+        input, select {
+            padding: 5px;
+            margin-top: 12px;
+        }
+
+        input[type='submit'] {
+            width: 100px;
+        }
+
+        input[name='email'].ng-dirty.ng-valid-email {
+            color: green;
+        }
+
+        .invalidfield {
+          color: red;
+        }
+
+        .instructions {
+          clear:both;
+          width:100%;
+          display:block;
+          font: bold 14px/1.4 Georgia;
+        }
+
+        .section {
+          clear:both;
+          width:85%;
+          border:1px solid gray;
+          border-radius: 25px;
+          padding: 10px;"
+        }
+
+        .result {
+          color:red;
+          clear:both;
+          width:85%;
+          display:block;
+          font: normal 14px/1.4 Georgia;
+        }
+
+    </style>
+
+</head>
+<body>
+
+  <div style="width:100%;">
+    <div style="float:left;width:25%"><img src="https://mydhrbenefits.dhr.state.md.us/dashboardClient/images/dhr-logo-6-2016-50h.png"></div>
+    <div style="float:left;width:50%;"><h2>ABAWD Screening Tool</h2></div>
+  </div>
+  <br>
+
+    <div ng-controller="ABAWDScreenerController">
+
+        <form name="screenerForm" ng-submit="screen()" novalidate>
+
+          <!-- Meta info about case worker and candidate -->
+          <div class="section">
+
+            <div class="instructions">
+              <u>INSTRUCTIONS</u>: Screen each individual in the Food Supplement household for potential ABAWD status.  You can use CARES, MABS, The Work Number and SVES to verify status. If you cannot determine the ABAWD status from those systems, then call the customer. Narrate in CARES the date and time of the call and the results of the call.
+            </div>
+
+            <table>
+              <tr><td>
+                <select style="width: 250px;" name="district" ng-model="person.district"
+                        ng-options="obj.label as obj.value for obj in districts" required>
+                    <option value="">Select your district office</option>
+                </select>
+                <span class="invalidfield" ng-show="districtInvalid"><br/>Please select a District Office</span>
+                <br/>
+
+
+                <input type="text" style="width: 250px;" placeholder="Customer's Name" name="customerName" ng-model="person.customerName" required/>
+                <span class="invalidfield" ng-show="customerNameInvalid"><br/>Please enter a value for Customer's Name</span>
+                <br/>
+
+                <input type="text" style="width: 250px;" placeholder="Customer's Client ID" name="clientID" ng-model="person.clientID" required/>
+                <span class="invalidfield" ng-show="clientIDInvalid"><br/>Please enter a value for ClientID</span>
+                <br/>
+
+                <input type="text" style="width: 250px;" placeholder="Cert. Period Begin MO/YR" name="certPeriod" ng-model="person.certPeriod" required/>
+                <span class="invalidfield" ng-show="certPeriodInvalid"><br/>A valid Certification Period is required MO/YR</span>
+                <br/>
+              </td><td>
+
+                <input type="text" style="width: 250px;" placeholder="Your Name" name="caseWorkerName" ng-model="person.caseWorkerName" required/>
+                <span class="invalidfield" ng-show="caseWorkerNameInvalid"><br/>Please enter a value for your name</span>
+                <br/>
+
+                <input type="text" style="width: 250px;" placeholder="Today's Date" name="todaysDate" ng-model="person.todaysDate" readonly/>
+                <br/>
+
+                <select style="width: 250px;" name="screeningType" ng-model="person.screeningType"
+                        ng-options="obj.label as obj.value for obj in screeningTypes" required>
+                    <option value="">Select which screening this is</option>
+                </select>
+                <span class="invalidfield" ng-show="screeningTypeInvalid"><br/>Please select a valid screening type</span>
+                <br/>
+
+                <input type="text" style="width: 250px;" placeholder="Customer's Date of Birth" name="customerDOB" ng-model="person.customerDOB" required ng-blur="applyBirthday(person.customerDOB)"/>
+                <span class="invalidfield" ng-show="customerDOBInvalid"><br/>A valid date of birth is required</span>
+                <br/>
+
+              </td><tr>
+            </table>
+          </div>
+
+          <p>
+
+            <span ng-show="showPotentialABAWDMsg" style="color:red;" class="instructions">
+              This customer is likely to become an ABAWD before the next certification period.  Set up a 745 Alert in CARES.
+            </span>
+
+            <span ng-show="showABAWDMsg" style="color:red;" class="instructions">
+              This customer is NOT an ABAWD.  Save this file as a .PDF and upload it into OnBase.
+            </span>
+
+          <!-- Main ABAWD checklist -->
+          <div ng-show="showABAWDForm" class="section">
+
+            <div class="instructions">
+              Check each of the conditions below that apply
+            </div>
+
+            <input ng-model="person.child" type="checkbox" name="child"
+                   id="child" value="child"  ng-change="clearResultMessage();" ng-click="person.childDOB = null;"/>
+            <label for="child">There is a child in the FSP household under 18 years old </label>
+            <span ng-show=person.child>
+              <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <label for="hours">Enter the date of birth of the youngest child (mm/dd/yyyy):</label>
+              <input type="text" style="height:10px;" size="10" name="childDOB" ng-model="person.childDOB"/>
+            </span>
+
+            <br>
+            <input ng-checked="person.homeless" type="checkbox" name="homeless"
+                   id="homeless" value="homeless" disabled="disabled"/>
+            <label for="homeless">The customer is chronically homeless, based on questions below</label>
+            <br>
+            <input ng-model="person.disability" type="checkbox" name="disability"
+                   id="disability" value="disability" ng-change="clearResultMessage();"/>
+            <label for="disability">The customer is disabled. (Select diability payment below)</label>
+            <br>
+            <input ng-model="person.caringForDisabled" type="checkbox" name="caringForDisabled"
+                   id="caringForDisabled" value="caringForDisabled" ng-change="clearResultMessage();"/>
+            <label for="caringForDisabled">The customer is caring for a disabled person</label>
+            <br>
+            <input ng-model="person.unemploymentIns" type="checkbox" name="unemploymentIns"
+                   id="unemploymentIns" value="unemploymentIns" ng-change="clearResultMessage();"/>
+            <label for="unemploymentIns">The customer applied for or is receiving Unemployment Insurance</label>
+            <br>
+            <input ng-model="person.pregnant" type="checkbox" name="pregnant"
+                   id="pregnant" value="pregnant" ng-change="clearResultMessage();"/>
+            <label for="pregnant">The customer is pregnant</label>
+            <br>
+
+            <input ng-model="person.employed" type="checkbox" name="employed"
+                   id="employed" value="employed"  ng-change="clearResultMessage();" ng-click="person.hours = 0;"/>
+            <label for="employed">The customer is employed or self-employed with proof of hours </label>
+            <span ng-show=person.employed>
+              <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <label for="hours"># hours per week:</label>
+              <input ng-show=person.employed type="text" style="height:10px;" size="3" placeholder="# hours per week" name="hours" ng-model="person.hours"/>
+            </span>
+
+            <br>
+
+            <input ng-model="person.treatment" type="checkbox" name="treatment"
+                   id="treatment" value="treatment" ng-change="clearResultMessage();"/>
+            <label for="treatment">The customer is participating in a drug or alcohol treatment program</label>
+            <br>
+            <input ng-model="person.workActivity" type="checkbox" name="workActivity"
+                   id="workActivity" value="workActivity" ng-change="clearResultMessage();"/>
+            <label for="workActivity">The customer participates in an approved work activity</label>
+            <br>
+            <input ng-model="person.school" type="checkbox" name="school"
+                   id="school" value="school" ng-change="clearResultMessage();"/>
+            <label for="school">The customer attends an accredited school at least part time</label>
+          </div>
+
+          <p>
+
+          <!-- Homeless determination section -->
+          <div ng-show="showABAWDForm" class="section">
+            <div class="instructions">
+              This section is new in order to assess 'chronic homelessness' as a factor for the 'unfit for work' ABAWD exemption.<br>
+                If the customer is coded as homeless in CARES or mentions being homeless during the interview, then ask ALL of the questions below. The answer will then appear below.
+            </div>
+
+            <input ng-model="person.expHomelessness" type="checkbox" name="expHomelessness"
+                   id="expHomelessness" value="expHomelessness" ng-change="isHomeless(); clearResultMessage();"/>
+            <label for="expHomelessness">Are you experiencing homelessness?</label>
+            <br>
+
+            <span ng-show=person.expHomelessness>
+              <input ng-model="person.homelessPhone" type="checkbox" name="homelessPhone"
+                     id="homelessPhone" value="homelessPhone" ng-change="isHomeless(); clearResultMessage();"/>
+              <label for="homelessPhone">Do you have reliable access to a telephone number or email address that a potential employer could use to contact you for an interview?</label>
+              <br>
+            </span>
+
+            <span ng-show=person.expHomelessness>
+              <input ng-model="person.homelessAddress" type="checkbox" name="homelessAddress"
+                     id="homelessAddress" value="homelessAddress" ng-change="isHomeless(); clearResultMessage();"/>
+              <label for="homelessAddress">Is there an address where we can send you mail and you have reliable access to receive it every day?</label>
+              <br>
+            </span>
+
+            <span ng-show=person.expHomelessness>
+              <input ng-model="person.homelessTransportation" type="checkbox" name="homelessTransportation"
+                     id="homelessTransportation" value="homelessTransportation" ng-change="isHomeless(); clearResultMessage();"/>
+              <label for="homelessTransportation">Do you have access to reliable transportation?</label>
+              <br>
+            </span>
+
+            <span ng-show=person.expHomelessness>
+              <input ng-model="person.homelessHygiene" type="checkbox" name="homelessHygiene"
+                     id="homelessHygiene" value="homelessHygiene" ng-change="isHomeless(); clearResultMessage();"/>
+              <label for="homelessHygiene">Do you have daily access to a bathroom, shower/bathtub, soap, shampoo and other personal hygiene products?</label>
+              <br>
+            </span>
+
+            <span ng-show=person.expHomelessness>
+              <input ng-model="person.homelessLaundry" type="checkbox" name="homelessLaundry"
+                     id="homelessLaundry" value="homelessLaundry" ng-change="isHomeless(); clearResultMessage();"/>
+              <label for="homelessLaundry">Do you have reliable access to affordable laundry?</label>
+              <br>
+            </span>
+
+            <div ng-show="person.homeless" class="result">
+                <center><b>Consider this person chronically homeless.</b></center>
+            </div>
+
+          </form>
+          </div>
+
+          <input type="submit" value="Submit" ng-click="screen()"/>
+
+          <p>
+
+          <div class="section">
+            <div ng-show="showABAWDMessage" class="result">
+                This customer is an ABAWD. Code the Google Sheet accordingly. Save this file as a .PDF and upload it to OnBase in the WORK PROGRAM folder under Work Program Letter section.
+            </div>
+            <div class="result" ng-show="showNotABAWDMessage">
+                This customer is NOT and ABAWD. Code the Google Sheet accordingly. Save this file as a .PDF and upload it to OnBase in the WORK PROGRAM folder under Work Program Letter section<br/>
+            </div>
+            <div class="result" ng-show="showWatchMessage">
+                This customer is likely to become an ABAWD before the next certification period.  Set up a 745 Alert in CARES.<br/>
+            </div>
+          </div>
+    </div>
+</div>
+</body>
+</html>

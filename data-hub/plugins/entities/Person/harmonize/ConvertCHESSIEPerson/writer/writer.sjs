@@ -12,7 +12,9 @@ function write(id, envelope, options) {
 
   xdmp.documentInsert(uri, envelope, 
     [xdmp.permission('rest-reader', 'read'),
-     xdmp.permission('rest-writer', 'update')],
+     xdmp.permission('rest-writer', 'update'),
+     xdmp.permission('mddhr-read', 'read'),
+     xdmp.permission('mddhr-write', 'update')],
     ['CHESSIE', 'Person', 'Sample']);
 }
 
