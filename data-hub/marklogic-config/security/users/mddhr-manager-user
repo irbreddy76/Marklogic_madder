@@ -1,0 +1,6 @@
+{
+  "user-name": "mddhr-manager-user",
+  "description": "MD DHR User for Application Configuration",
+  "password": "%%mlManagePassword%%",
+  "role": [ "mddhr-manager" ]
+}

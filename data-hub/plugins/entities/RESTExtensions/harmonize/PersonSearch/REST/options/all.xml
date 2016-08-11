@@ -4,7 +4,7 @@
   <additional-query>
     <cts:and-query xmlns:cts="http://marklogic.com/cts">
       <cts:collection-query>
-        <cts:uri>PersonParticipation</cts:uri>
+        <cts:uri>MasterPerson</cts:uri>
       </cts:collection-query>
       <cts:not-query>
         <cts:collection-query>

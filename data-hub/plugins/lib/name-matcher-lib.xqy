@@ -457,8 +457,8 @@ declare function nm:algorithm-new($params as map:map, $config as map:map) {
   let $query := nm:get-query($params, $config, "xquery")
   let $collection := 
     if($target = "person") then cts:collection-query("Person")
-    else if($target = "personparticipation") then cts:collection-query("PersonParticipation")
-    else cts:collection-query(("Person", "PersonParticipation"))
+    else if($target = "personparticipation") then cts:collection-query("MasterPerson")
+    else cts:collection-query(("Person", "MasterPerson"))
   let $candidates := 
       cts:search(fn:doc(), cts:and-query(($query, $collection, cts:not-query(cts:collection-query("deleted")))), 
         ("score-simple","unfiltered", nm:get-sort-options($params)))[1 to 

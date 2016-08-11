@@ -1,0 +1,5 @@
+{
+	"role-name": "mddhr-CARES",
+	"description": "Restricts access to CARES documents",
+	"compartment": ["CARES"]
+}

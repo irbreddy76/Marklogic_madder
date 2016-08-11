@@ -191,7 +191,7 @@ declare function cm:algorithm-new($params as map:map, $config as map:map) {
   let $target := map:get($params, "target")
   let $query := cm:get-query($params, $config, "xquery")
   let $collection := 
-    if($target = "personParticipation") then cts:collection-query("PersonParticipation")
+    if($target = "personParticipation") then cts:collection-query("MasterPerson")
     else cts:collection-query("ParticipationDetail")  
   let $candidates := 
     if(fn:empty($query)) then ()

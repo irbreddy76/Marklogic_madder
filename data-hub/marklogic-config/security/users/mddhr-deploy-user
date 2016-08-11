@@ -1,12 +1,6 @@
 {
   "user-name": "mddhr-deploy-user",
   "description": "MD DHR User for Application Deployment",
-  "password": "%%mddhrDeployPassword%%",
-  "role": [ "mddhr-read", "mddhr-modules-write"],
-  "permission": [
-    { "role-name": "mddhr-read", "capability": "read" },
-    { "role-name": "mddhr-modules-write", "capability": "insert" },
-    { "role-name": "mddhr-modules-write", "capability": "update" },
-    { "role-name": "mddhr-read", "capability": "execute" },
-  ]
+  "password": "%%mlRestPassword%%",
+  "role": [ "mddhr-deployer"]
 }

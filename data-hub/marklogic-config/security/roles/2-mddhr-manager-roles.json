@@ -1,0 +1,9 @@
+{
+	"role-name": "mddhr-manager",
+	"description": "Role for creating/configuring MD DHR Application",
+	"compartment": [],
+	"external-names": [],
+	"role": [ "manage-admin", "rest-admin" ],
+	"permission": [],
+	"privilege": []
+}
