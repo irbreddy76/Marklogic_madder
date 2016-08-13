@@ -5,18 +5,18 @@
   angular.module('app.search')
     .controller('SearchCtrl', SearchCtrl);
 
-  SearchCtrl.$inject = ['$scope', '$location', 'userService', 'MLSearchFactory', 
+  SearchCtrl.$inject = ['$scope', '$location', 'userService', 'MLSearchFactory',
                         'personHelper', 'caseHelper', 'abawdHelper', 'MLRest'];
 
   // inherit from MLSearchController
   var superCtrl = MLSearchController.prototype;
   SearchCtrl.prototype = Object.create(superCtrl);
 
-  function SearchCtrl($scope, $location, userService, searchFactory, 
+  function SearchCtrl($scope, $location, userService, searchFactory,
 		  personHelper, caseHelper, abawdHelper, MLRest) {
     var ctrl = this;
     ctrl.runMapSearch = false;
-	
+
     var mlSearch = searchFactory.newContext({ queryOptions: 'all' });
 
 	ctrl.myFacets = {};
@@ -27,7 +27,7 @@
     ctrl.case = caseHelper.getCase();
     ctrl.person = personHelper.getPerson();
     ctrl.mode = 'basic';
-    
+
     ctrl.init();
 
     ctrl.updateSearchResults = function (data) {
@@ -60,8 +60,8 @@
       };
       this.mlSearch.setSort($scope.sort.field + $scope.sort.order);
       ctrl.search(this.qtext);
-    };    
-    
+    };
+
     ctrl.doPersonSearch = function(person) {
       this.mlSearch.options.queryOptions = 'all';
       personHelper.updatePerson(person);
@@ -70,9 +70,20 @@
       MLRest.extension('person', {
         method: 'GET',
         params: params
-      }).then(this.submitSearch.bind(this));      
+      }).then(this.submitSearch.bind(this));
     };
-    
+
+    ctrl.doABAWDSearch = function(report) {
+      this.mlSearch.options.queryOptions = 'abawd';
+      abawdHelper.updateReport(report);
+      var params = abawdHelper.getReportQueryParams(report);
+      console.log(params);
+      MLRest.extension('abawd', {
+        method: 'GET',
+        params: params
+      }).then(this.submitSearch.bind(this));
+    };
+
     ctrl.doCaseSearch = function(caseParams) {
       this.mlSearch.options.queryOptions = 'case';
       caseHelper.updateCase(caseParams);
@@ -81,24 +92,26 @@
       MLRest.extension('case', {
         method: 'GET',
         params: params
-      }).then(this.submitSearch.bind(this));      
-    };   
-    
+      }).then(this.submitSearch.bind(this));
+    };
+
     ctrl.submitSearch = function(response) {
        if(response.data) {
+         console.log(response.data); //AGD
          this.mlSearch.setPageLength(ctrl.pageLength);
          mlSearch.additionalQueries = [];
+         console.log(mlSearch);
          mlSearch.additionalQueries.push(response.data);
          return this._search();
        }
-    };     
+    };
 
     ctrl.newSearch = function(qtext) {
       this.page = 1;
       ctrl.search(qtext);
     }
-    
-    ctrl.search = function(qtext) {      
+
+    ctrl.search = function(qtext) {
       switch(ctrl.mode) {
         case 'person':
           ctrl.doPersonSearch(ctrl.person);
@@ -106,9 +119,9 @@
         case 'case':
           ctrl.doCaseSearch(ctrl.case);
           break;
-        // Additional handling for ABAWD report/search here
-        // case 'abawd':
-        //  break;
+          case 'abawd':
+            ctrl.doABAWDSearch(ctrl.abawd);
+            break;
         default:
           if ( arguments.length ) {
 				this.qtext = qtext;
@@ -120,7 +133,7 @@
 			}
 			return this._search();
           break;
-      }	
+      }
     };
 
 		ctrl.mapBoundsChanged = function(bounds) {
@@ -149,7 +162,7 @@
 				}
 			};
 		};
- 	  
+
 		ctrl.toggleMapSearch = function (){
 			if(ctrl.runMapSearch) {
 				mlSearch.additionalQueries.push(ctrl.getGeoConstraint());
@@ -174,16 +187,18 @@
           ctrl.case = {};
           caseHelper.clearCase();
           break;
-        //case 'abawd':
-        // break;
+        case 'abawd':
+          ctrl.abawd = {};
+          abawdHelper.clearReport();
+          break;
         default:
           this.qtext = {};
           break;
       }
       this.mlSearch.clearAllFacets();
       ctrl.search(this.qtext);
-    };    
-    
+    };
+
     ctrl.toggleSort = function(field) {
       if($scope.sort.field === field && $scope.sort.order === 'a') {
         $scope.sort.field = 'ws';
@@ -194,22 +209,22 @@
       } else {
         $scope.sort.order = 'a';
       }
-      
+
       this.mlSearch.setSort($scope.sort.field + $scope.sort.order);
       ctrl.search(this.qtext);
     };
-        
+
     ctrl.pageLength = 10;
-   
+
     ctrl.selectPage = function() {
       this.mlSearch.setPage(this.page);
       ctrl.search(this.qtext);
     };
- 
+
     $scope.sort = {
       field: 'ws',
       order: 'd'
     };
-    
+
   }
 }());

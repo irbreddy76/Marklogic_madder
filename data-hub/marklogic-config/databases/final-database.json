@@ -191,7 +191,7 @@
       "collation": "http://marklogic.com/collation/codepoint",
       "range-value-positions": false,
       "invalid-values": "reject"
-    },  
+    },
     {
       "scalar-type": "string",
       "namespace-uri": "",
@@ -199,23 +199,23 @@
       "collation": "http://marklogic.com/collation/codepoint",
       "range-value-positions": false,
       "invalid-values": "reject"
-    },  
+    },
     {
-      "scalar-type": "string",
+      "scalar-type": "float",
       "namespace-uri": "",
       "localname": "IncomeWorkHoursNumber",
       "collation": "http://marklogic.com/collation/codepoint",
       "range-value-positions": false,
       "invalid-values": "reject"
-    },  
+    },
     {
-      "scalar-type": "string",
+      "scalar-type": "float",
       "namespace-uri": "",
       "localname": "IncomeAmount",
       "collation": "http://marklogic.com/collation/codepoint",
       "range-value-positions": false,
       "invalid-values": "reject"
-    },  
+    },
     {
       "scalar-type": "string",
       "namespace-uri": "",
@@ -223,7 +223,7 @@
       "collation": "http://marklogic.com/collation/codepoint",
       "range-value-positions": false,
       "invalid-values": "reject"
-    },  
+    },
     {
       "scalar-type": "string",
       "namespace-uri": "",
@@ -231,15 +231,15 @@
       "collation": "http://marklogic.com/collation/codepoint",
       "range-value-positions": false,
       "invalid-values": "reject"
-    },  
+    },
     {
-      "scalar-type": "string",
+      "scalar-type": "date",
       "namespace-uri": "",
       "localname": "PregnancyDueDate",
       "collation": "http://marklogic.com/collation/codepoint",
       "range-value-positions": false,
       "invalid-values": "reject"
-    },  
+    },
     {
       "scalar-type": "string",
       "namespace-uri": "",
@@ -247,7 +247,7 @@
       "collation": "http://marklogic.com/collation/codepoint",
       "range-value-positions": false,
       "invalid-values": "reject"
-    },  
+    },
     {
       "scalar-type": "string",
       "namespace-uri": "",
@@ -255,7 +255,7 @@
       "collation": "http://marklogic.com/collation/codepoint",
       "range-value-positions": false,
       "invalid-values": "reject"
-    }   
+    }
   ],
   "schema-database": "%%SCHEMAS_DATABASE%%",
   "triggers-database": "%%TRIGGERS_DATABASE%%",
