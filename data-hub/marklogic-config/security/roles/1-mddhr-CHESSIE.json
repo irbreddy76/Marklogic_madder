@@ -1,0 +1,5 @@
+{
+	"role-name": "mddhr-CHESSIE",
+	"description": "Restricts access to CHESSIE documents",
+	"compartment": ["CHESSIE"]
+}

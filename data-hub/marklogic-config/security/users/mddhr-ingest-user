@@ -1,11 +1,6 @@
 {
   "user-name": "mddhr-ingest-user",
   "description": "MD DHR User for Ingesting Records",
-  "password": "%%mddhrIngestPassword%%",
-  "role": [ "mddhr-write", "mddhr-stage"],
-  "permission": [
-    { "role-name": "mddhr-stage", "capability": "read" },
-    { "role-name": "mddhr-stage", "capability": "insert" },
-    { "role-name": "mddhr-stage", "capability": "update" }
-  ]
+  "password": "%%mlPassword%%",
+  "role": [ "mddhr-ingest" ]
 }

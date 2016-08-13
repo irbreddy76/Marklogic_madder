@@ -24,7 +24,7 @@ declare function s:find-similar($record as map:map, $uri as xs:string?, $limit a
     fn:trace(" -- RecordType = " || $recordType, $TRACE_LEVEL_DETAIL)
   )
   return 
-    if($recordType = "PersonParticipation") then
+    if($recordType = "MasterPerson") then
       s:similar-personparticipation($header, map:get($record, "content"), $uri, $max, $min-score)
     else json:object()
 };
@@ -65,7 +65,7 @@ declare function s:similar-personparticipation($header as map:map, $content as m
     map:put($params, "score", $score)
   )
   let $query := nm:get-query($params, map:map(), "xml")
-  let $collection := "PersonParticipation"
+  let $collection := "MasterPerson"
   let $results :=  
     if(fn:empty($query)) then ()
     else 

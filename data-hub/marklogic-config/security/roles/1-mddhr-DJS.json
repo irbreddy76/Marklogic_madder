@@ -1,0 +1,5 @@
+{
+	"role-name": "mddhr-DJS",
+	"description": "Restricts access to DJS documents",
+	"compartment": ["DJS"]
+}

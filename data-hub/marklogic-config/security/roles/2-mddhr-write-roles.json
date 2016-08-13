@@ -4,6 +4,10 @@
 	"compartment": [],
 	"external-name": [],
 	"role": [ "mddhr-read", "rest-writer" ], 
-	"permission": [],
+	"permission": [
+	  { "role-name": "mddhr-read", "capability": "read" },
+      { "role-name": "mddhr-write", "capability": "insert" },
+      { "role-name": "mddhr-write", "capability": "update" }
+	],
 	"privilege": []
 }

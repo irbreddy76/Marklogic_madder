@@ -33,7 +33,7 @@ function createContent(id, options) {
     // Participation documents associated with this person's
     // CHESSIE ID
     var participations = cts.search(cts.andQuery([
-      cts.collectionQuery('CHESSIEParticipation'),
+      cts.collectionQuery('LoadCHESSIEParticipation'),
       cts.jsonPropertyValueQuery('chessieId', chessieId)
     ])).toArray();
  
@@ -69,7 +69,7 @@ function createContent(id, options) {
 
     var participations = [];
     var participationDetails = cts.search(cts.andQuery([
-      cts.collectionQuery(['CHESSIEParticipationDetail']),
+      cts.collectionQuery(['LoadCHESSIEParticipationDetail']),
       cts.jsonPropertyValueQuery('participationId', participationIds)
     ])).toArray();
     for(i = 0; i < participationDetails.length; i++) {
@@ -98,7 +98,7 @@ function createContent(id, options) {
      
     var addresses = [];
     var addressDocs = cts.search(cts.andQuery([
-      cts.collectionQuery(['CHESSIEAddress']),
+      cts.collectionQuery(['LoadCHESSIEAddress']),
       cts.jsonPropertyValueQuery('chessieId', chessieId)
     ])).toArray();
     for(i = 0; i < addressDocs.length; i++) {

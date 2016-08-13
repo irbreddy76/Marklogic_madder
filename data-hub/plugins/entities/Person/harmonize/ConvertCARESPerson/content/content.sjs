@@ -32,7 +32,7 @@ function createContent(id, options) {
 
     var addresses = [];
     var addressDocs = cts.search(cts.andQuery([
-      cts.collectionQuery(['CARESAddress']),
+      cts.collectionQuery(['LoadCARESAddress']),
       cts.jsonPropertyValueQuery('cisId', cisId)
     ])).toArray();
     for(i = 0; i <= addressDocs.length; i++) {

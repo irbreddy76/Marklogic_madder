@@ -40,7 +40,7 @@ declare function pm:merge($primary-uri as xs:string, $secondary-uri as xs:string
     map:put($merged-doc, "headers", 
       pm:merge-headers($primary-header, $secondary-header, $options))
   )
-  let $uri := "/personParticipation/merged/" || xdmp:hash64(xdmp:to-json-string($merged-doc)) || ".json"
+  let $uri := "/person/merged/" || xdmp:hash64(xdmp:to-json-string($merged-doc)) || ".json"
   return (
     xdmp:document-add-collections($primary-uri, "deleted"),
     xdmp:document-add-collections($secondary-uri, "deleted"),
@@ -94,7 +94,7 @@ declare function pm:merge-headers($primary-header as map:map, $secondary-header 
   $options as item()?) {
   let $header := json:object()
   let $_ := (
-     map:put($header, "RecordType", "PersonParticipation"),
+     map:put($header, "RecordType", "MasterPerson"),
      map:put($header, "SystemIdentifiers", 
        pm:merge-identifiers(
          map:get($primary-header, "SystemIdentifiers"),

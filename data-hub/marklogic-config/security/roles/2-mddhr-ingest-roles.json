@@ -1,10 +1,14 @@
 {
-	"role-name": "mddhr-stage",
-	"description": "Read/Write to MD DHR Staging Database",
+	"role-name": "mddhr-ingest",
+	"description": "Role for Ingestion of MD DHR Data",
 	"compartment": [],
 	"external-name": [],
-	"role": [ "rest-reader", "rest-writer" ],
-	"permission": [],
+	"role": [ "mddhr-write", "mddhr-CARES", "mddhr-CHESSIE", "mddhr-DJS" ],
+	"permission": [
+	  { "role-name": "mddhr-ingest", "capability": "read" },
+      { "role-name": "mddhr-ingest", "capability": "insert" },
+      { "role-name": "mddhr-ingest", "capability": "update" }
+	],
 	"privilege": [
 	  { 
 	      "privilege-name": "unprotected-collections",
