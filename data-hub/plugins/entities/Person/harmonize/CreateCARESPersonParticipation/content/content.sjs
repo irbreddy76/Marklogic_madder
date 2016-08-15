@@ -81,7 +81,7 @@ function createContent(id, options) {
         OpenDate: detail.OpenDate,
         CloseDate: detail.CloseDate,
         CloseCode: detail.CloseCode,
-        PersonRoles: []
+        Participations: []
       };
 
       // Now grab all participation entries that match the
