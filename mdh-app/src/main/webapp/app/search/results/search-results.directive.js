@@ -21,11 +21,16 @@
    * @namespace ml-results
    */
   angular.module('app.search')
-    .directive('searchResults', searchResults);
+    .directive('searchResults', searchResults)
+    .controller('ResultsController', ResultsController);
 
+  ResultsController.$inject = ['$scope'];
+  
   function searchResults() {
     return {
       restrict: 'E',
+      controller: 'ResultsController',
+      controllerAs: 'ctrl',
       scope: {
         results: '=',
         click: '&',
@@ -75,5 +80,9 @@
         result.label = scope.label({ result: result });
       });
     });
+  }
+  
+  function ResultsController($scope) {
+	  
   }
 }());
