@@ -107,9 +107,13 @@
     </accordion>
   </accordion-group> 
   <accordion-group heading="Previous Determinations" is-open="status.isDeterminationOpen">
-    <add-annotation button-style="'button'" 
+    <!-- <add-annotation button-style="'button'" 
        title="'Make ABAWD Determination'" source-url="uri" params="ctrl.params" 
-       template="/app/annotation/add-annotation-button.html"></add-annotation>
+       template="/app/annotation/add-annotation-button.html"></add-annotation>  -->
+    <form action="./abawd-screener.html">
+      <input type="hidden" name="clientID" value="{{ctrl.clientID}}" />
+      <input type="submit" value="Make ABAWD Determination" />
+    </form>
     <table class="table table-bordered table-striped">
       <tr>
         <th>User</th>

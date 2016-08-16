@@ -39,17 +39,30 @@
       isDeterminationOpen: false
     };
     
+    ctrl.clientID = null;
+    
     ctrl.init = function () {
       ctrl.isLoading = true;
-      mlRest.extension('annotation', {
-        method: 'GET',
-          params: {
-            identifiers: $scope.person.headers.SystemIdentifiers
-          }
-        }).then(function(response) {
-          ctrl.isLoading = false;
-          ctrl.determinations = response.data.annotations
-        });       
+      var identifiers = [];
+      for(var i = 0; i < $scope.person.headers.SystemIdentifiers.length; i++) {
+    	  var currentIdentifier = $scope.person.headers.SystemIdentifiers[i];
+    	  if(currentIdentifier.ClientID) {
+    		  ctrl.clientID = currentIdentifier.ClientID;
+    		  identifiers.push({ name: 'ClientID', value: currentIdentifier.ClientID });
+    	  }
+      }
+      
+      if(identifiers.length > 0) {
+        mlRest.extension('annotation', {
+          method: 'GET',
+            params: {
+              identifiers: identifiers
+            }
+          }).then(function(response) {
+            ctrl.isLoading = false;
+            ctrl.determinations = response.data.annotations
+          });
+      } else { ctrl.isLoading = false; } 
     };
     
     ctrl.init();
