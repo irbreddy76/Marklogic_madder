@@ -61,42 +61,37 @@ function createContent(id, options) {
                   "PostalExtensionCode":root.content.COL8.toString().substr(5)});
     }
 
-    var income = [];
+    var uniqueEarnedIncomeArray = uniqueEarnedIncome(docs);
+    var uniqueUnEarnedIncomeArray = uniqueUnEarnedIncome(docs);
 
-    //Earned Income
-    for (var i in docs) {
-      var doc = docs[i].root;
-
-      if(doc.content.Income_Type_Code != "-" &&  doc.content.Income_Frequency_Code != "-" &&
-          doc.content.Work_Hours_Number != "-" &&  doc.content.Income_Amount != "-") {
-          if(! updateEarnedIncome(income, doc.content)) {
-            var newIncome = {"IncomeTypeCode": doc.content.Income_Type_Code,
-                             "IncomeFrequencyCode": doc.content.Income_Frequency_Code,
-                             "IncomeWorkHoursNumber": 0,
-                             "IncomeAmount": 0,
-                            };
-            updateAddWorkHours(newIncome, doc.content.Income_Frequency_Code, doc.content.Work_Hours_Number);
-            updateAddIncome(newIncome, doc.content.Income_Frequency_Code, doc.content.Income_Amount);
-            income.push(newIncome);
-          }
+    //summarize Earned Income by income type
+    var summaryIncome = [];
+    for (var i in uniqueEarnedIncomeArray) {
+      var earnedIncome = uniqueEarnedIncomeArray[i];
+      if(! updateEarnedIncome(summaryIncome, earnedIncome)) {
+        var newIncome = {"IncomeTypeCode": earnedIncome.IncomeTypeCode,
+                         "IncomeFrequencyCode": "AC",
+                         "IncomeWorkHoursNumber": "0",
+                         "IncomeAmount": "0"
+                        };
+        updateAddWorkHours(newIncome, earnedIncome.IncomeFrequencyCode, newIncome.IncomeWorkHoursNumber, earnedIncome.IncomeWorkHoursNumber);
+        updateAddIncome(newIncome, earnedIncome.IncomeFrequencyCode, newIncome.IncomeAmount, earnedIncome.IncomeAmount);
+        summaryIncome.push(newIncome);
       }
     }
 
-    //Unearned Income, add to Income array
-    for (var i in docs) {
-      var doc = docs[i].root;
+    //Summarize UnEarned Income by income type
+    var summaryUnEarnedIncome = [];
+    for (var i in uniqueUnEarnedIncomeArray) {
+      var unEarnedIncome = uniqueUnEarnedIncomeArray[i];
 
-      if(doc.content.UI_type_Code != "-" &&
-          doc.content.UI_Frequency_Code != "-" &&  doc.content.UI_Amount != "-") {
-
-          if(!updateUnEarnedIncome(income, doc.content)) {
-            var newIncome = {"IncomeTypeCode": doc.content.UI_type_Code,
-                             "IncomeFrequencyCode": doc.content.UI_Frequency_Code,
-                             "IncomeAmount": doc.content.UI_Amount,
-                            };
-            updateAddIncome(newIncome, doc.content.UI_Frequency_Code, doc.content.UI_Amount);
-            income.push(newIncome);
-          }
+      if(!updateUnEarnedIncome(summaryUnEarnedIncome, unEarnedIncome)) {
+        var newIncome = {"IncomeTypeCode": unEarnedIncome.IncomeTypeCode,
+                         "IncomeFrequencyCode": "AC",
+                         "IncomeAmount": "0"
+                        };
+        updateAddIncome(newIncome, unEarnedIncome.IncomeFrequencyCode, newIncome.IncomeAmount, unEarnedIncome.IncomeAmount)
+        summaryUnEarnedIncome.push(newIncome);
       }
     }
 
@@ -120,8 +115,20 @@ function createContent(id, options) {
       PersonLivingArrangementTypeCode: root.content.Living_Arrangement_Type_code
     };
 
-    if(income.length > 0) {
-      jsonDoc.Income = income;
+    if(uniqueEarnedIncomeArray.length > 0) {
+      jsonDoc.EarnedIncome = uniqueEarnedIncomeArray;
+    }
+
+    if(uniqueUnEarnedIncomeArray.length > 0) {
+      jsonDoc.UnEarnedIncome = uniqueUnEarnedIncomeArray;
+    }
+
+    if(summaryIncome.length > 0) {
+      jsonDoc.SummaryEarnedIncome = summaryIncome;
+    }
+
+    if(summaryUnEarnedIncome.length > 0) {
+      jsonDoc.SummaryUnEarnedIncome = summaryUnEarnedIncome;
     }
 
     if(root.content.INS_STATUS_CODE && root.content.INS_STATUS_CODE != '-' && root.content.INS_STATUS_CODE != "") {
@@ -145,7 +152,6 @@ function createContent(id, options) {
       });
       jsonDoc.Disability = disability;
     }
-
     return jsonDoc;
 
   }
@@ -155,82 +161,148 @@ function createContent(id, options) {
   }
 }
 
-function updateAddIncome(targetItem, incomeFreqCD, incomeAmount) {
+//creates new earned income array without duplicates
+function uniqueEarnedIncome(docs) {
+    var uniqueIncome = new Array();
+    var inArrayCounter = 0;
+    for (var i in docs) {
+      var doc = docs[i].root;
+      for (var j in uniqueIncome) {
+        var income = uniqueIncome[j];
+        if(! (String(doc.content.Income_Type_Code) == String(income.IncomeTypeCode) &&
+            String(doc.content.Income_Frequency_Code) == String(income.IncomeFrequencyCode) &&
+            String(doc.content.Work_Hours_Number) == String(income.IncomeWorkHoursNumber) &&
+            String(doc.content.Income_Amount) == String(income.IncomeAmount))) {
+          inArrayCounter++;
+        }
+      }
+
+      if(inArrayCounter == uniqueIncome.length) {
+        var newIncome = {"IncomeTypeCode": doc.content.Income_Type_Code,
+                         "IncomeFrequencyCode": doc.content.Income_Frequency_Code,
+                         "IncomeWorkHoursNumber": doc.content.Work_Hours_Number,
+                         "IncomeAmount": doc.content.Income_Amount
+                        };
+        if(newIncome.IncomeTypeCode != "-" &&  newIncome.IncomeFrequencyCode != "-" &&
+          newIncome.IncomeWorkHoursNumber != "-" &&  newIncome.IncomeAmount != "-") {
+              uniqueIncome.push(newIncome);
+        }
+      }
+      inArrayCounter = 0;
+    }
+    return uniqueIncome;
+}
+
+//Creates new un earned income array without duplicates
+function uniqueUnEarnedIncome(docs) {
+    var uniqueIncome = new Array();
+    var inArrayCounter = 0;
+    for (var i in docs) {
+      var doc = docs[i].root;
+      for (var j in uniqueIncome) {
+        var income = uniqueIncome[j];
+        if(! (String(doc.content.UI_type_Code) == String(income.IncomeTypeCode) &&
+            String(doc.content.UI_Frequency_Code) == String(income.IncomeFrequencyCode) &&
+            String(doc.content.UI_Amount) == String(income.IncomeAmount))) {
+          inArrayCounter++;
+        }
+      }
+
+      if(inArrayCounter == uniqueIncome.length) {
+        var newIncome = {"IncomeTypeCode": doc.content.UI_type_Code,
+                         "IncomeFrequencyCode": doc.content.UI_Frequency_Code,
+                         "IncomeAmount": doc.content.UI_Amount
+                        };
+        if(newIncome.IncomeTypeCode != "-" &&  newIncome.IncomeFrequencyCode != "-" &&
+            newIncome.IncomeAmount != "-") {
+              uniqueIncome.push(newIncome);
+        }
+      }
+      inArrayCounter = 0;
+    }
+    return uniqueIncome;
+}
+
+//Add to income amount, normalize income frequency to monthly
+function updateAddIncome(targetItem, incomeFreqCD, srcIncome, addIncome) {
   if (incomeFreqCD == 'WE') {
-    targetItem.IncomeAmount = parseFloat(targetItem.IncomeAmount) + parseFloat(incomeAmount) * 4;
+    targetItem.IncomeAmount = parseFloat(srcIncome) + parseFloat(addIncome) * 4;
     return true;
   } else if (incomeFreqCD == 'BW') {
-    targetItem.IncomeAmount = parseFloat(targetItem.IncomeAmount) + parseFloat(incomeAmount) * 2;
+    targetItem.IncomeAmount = parseFloat(srcIncome) + parseFloat(addIncome) * 2;
     return true;
   } else if (incomeFreqCD == 'BM') {
-    targetItem.IncomeAmount = parseFloat(targetItem.IncomeAmount) + parseFloat(incomeAmount) / 2;
+    targetItem.IncomeAmount = parseFloat(srcIncome) + parseFloat(addIncome) / 2;
     return true;
   } else if (incomeFreqCD == 'QU') {
-    targetItem.IncomeAmount = parseFloat(targetItem.IncomeAmount) + parseFloat(incomeAmount) / 3;
+    targetItem.IncomeAmount = parseFloat(srcIncome) + parseFloat(addIncome) / 3;
     return true;
   } else if (incomeFreqCD == 'AN') {
-    targetItem.IncomeAmount = parseFloat(targetItem.IncomeAmount) + parseFloat(incomeAmount) / 12;
+    targetItem.IncomeAmount = parseFloat(srcIncome) + parseFloat(addIncome) / 12;
     return true;
   } else if (incomeFreqCD == 'SA') {
-    targetItem.IncomeAmount = parseFloat(targetItem.IncomeAmount) + parseFloat(incomeAmount) / 6;
+    targetItem.IncomeAmount = parseFloat(srcIncome) + parseFloat(addIncome) / 6;
     return true;
   } else if (incomeFreqCD == 'AC') {
-    targetItem.IncomeAmount = parseFloat(targetItem.IncomeAmount) + parseFloat(incomeAmount);
+    targetItem.IncomeAmount = parseFloat(srcIncome) + parseFloat(addIncome);
     return true;
   } else if (incomeFreqCD == 'OT') {
-    targetItem.IncomeAmount = parseFloat(targetItem.IncomeAmount) + parseFloat(incomeAmount);
+    targetItem.IncomeAmount = parseFloat(srcIncome) + parseFloat(addIncome);
     return true;
   } else {
     return false;
   }
 }
 
-function updateAddWorkHours(targetItem, incomeFreqCD, workHours) {
+//Add to work hours normalize income frequency to monthly
+function updateAddWorkHours(targetItem, incomeFreqCD, srcHrs, addHrs) {
   if (incomeFreqCD == 'WE') {
-    targetItem.IncomeWorkHoursNumber = parseFloat(targetItem.IncomeWorkHoursNumber) + parseFloat(workHours) * 4;
+    targetItem.IncomeWorkHoursNumber = parseFloat(srcHrs) + parseFloat(addHrs) * 4;
     return true;
   } else if (incomeFreqCD == 'BW') {
-    targetItem.IncomeWorkHoursNumber = (parseFloat(targetItem.IncomeWorkHoursNumber) + parseFloat(workHours) * 2).toString();
-    xdmp.log("work hours total: " + targetItem.IncomeWorkHoursNumber);
+    targetItem.IncomeWorkHoursNumber = parseFloat(srcHrs) + parseFloat(addHrs) * 2;
     return true;
   } else if (incomeFreqCD == 'BM') {
-    targetItem.IncomeWorkHoursNumber = parseFloat(targetItem.IncomeWorkHoursNumber) + parseFloat(workHours) / 2;
+    targetItem.IncomeWorkHoursNumber = parseFloat(srcHrs) + parseFloat(addHrs) / 2;
     return true;
   } else if (incomeFreqCD == 'QU') {
-    targetItem.IncomeWorkHoursNumber = parseFloat(targetItem.IncomeWorkHoursNumber) + parseFloat(workHours) / 3;
+    targetItem.IncomeWorkHoursNumber = parseFloat(srcHrs) + parseFloat(addHrs) / 3;
     return true;
   } else if (incomeFreqCD == 'AN') {
-    targetItem.IncomeWorkHoursNumber = parseFloat(targetItem.IncomeWorkHoursNumber) + parseFloat(workHours) / 12;
+    targetItem.IncomeWorkHoursNumber = parseFloat(srcHrs) + parseFloat(addHrs) / 12;
     return true;
   } else if (incomeFreqCD == 'SA') {
-    targetItem.IncomeWorkHoursNumber = parseFloat(targetItem.IncomeWorkHoursNumber) + parseFloat(workHours) / 6;
+    targetItem.IncomeWorkHoursNumber = parseFloat(srcHrs) + parseFloat(addHrs) / 6;
     return true;
   } else if (incomeFreqCD == 'AC') {
-    targetItem.IncomeWorkHoursNumber = parseFloat(targetItem.IncomeWorkHoursNumber) + parseFloat(workHours);
+    targetItem.IncomeWorkHoursNumber = parseFloat(srcHrs) + parseFloat(addHrs);
     return true;
   } else if (incomeFreqCD == 'OT') {
-    targetItem.IncomeWorkHoursNumber = parseFloat(targetItem.IncomeWorkHoursNumber) + parseFloat(workHours);
+    targetItem.IncomeWorkHoursNumber = parseFloat(srcHrs) + parseFloat(addHrs);
     return true;
   } else {
     return false;
   }
 }
 
+//Loop thru earned income array to see if item already exists, if so add work hours and income amount.
 function updateEarnedIncome(targetArray, sourceItem) {
   for (var i in targetArray) {
-    if (String(targetArray[i].IncomeTypeCode) == String(sourceItem.Income_Type_Code)) {
-      updateAddWorkHours(targetArray[i], sourceItem.Income_Frequency_Code, sourceItem.Work_Hours_Number);
-      updateAddIncome(targetArray[i], sourceItem.Income_Frequency_Code, sourceItem.Income_Amount);
+    //If same income type
+    if (String(targetArray[i].IncomeTypeCode) == String(sourceItem.IncomeTypeCode)) {
+      updateAddWorkHours(targetArray[i], sourceItem.IncomeFrequencyCode, targetArray[i].IncomeWorkHoursNumber, sourceItem.IncomeWorkHoursNumber);
+      updateAddIncome(targetArray[i], sourceItem.IncomeFrequencyCode, targetArray[i].IncomeAmount, sourceItem.IncomeAmount);
       return true;
     }
   }
   return false;
 }
 
+//Loop through unearned income array to see if item already exists, if so add income amount.
 function updateUnEarnedIncome(targetArray, sourceItem) {
   for (var i in targetArray) {
-    if (String(targetArray[i].IncomeTypeCode) == String(sourceItem.UI_type_Code)) {
-      updateAddIncome(targetArray[i], sourceItem.UI_Frequency_Code, sourceItem.UI_Amount);
+    if (String(targetArray[i].IncomeTypeCode) == String(sourceItem.IncomeTypeCode)) {
+      updateAddIncome(targetArray[i], sourceItem.IncomeFrequencyCode, targetArray[i].IncomeAmount, sourceItem.IncomeAmount);
       return true;
     }
   }
