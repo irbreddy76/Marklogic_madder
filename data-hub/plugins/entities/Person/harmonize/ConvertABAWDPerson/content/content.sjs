@@ -69,14 +69,13 @@ function createContent(id, options) {
     for (var i in uniqueEarnedIncomeArray) {
       var earnedIncome = uniqueEarnedIncomeArray[i];
       if(! updateEarnedIncome(summaryIncome, earnedIncome)) {
-        xdmp.log(parseFloat("0") + parseFloat(earnedIncome.IncomeAmount) * 2);
         var newIncome = {"IncomeTypeCode": earnedIncome.IncomeTypeCode,
-                         "IncomeFrequencyCode": earnedIncome.IncomeFrequencyCode,
+                         "IncomeFrequencyCode": "AC",
                          "IncomeWorkHoursNumber": "0",
                          "IncomeAmount": "0"
                         };
-        updateAddWorkHours(newIncome, newIncome.IncomeFrequencyCode, newIncome.IncomeWorkHoursNumber, earnedIncome.IncomeWorkHoursNumber);
-        updateAddIncome(newIncome, newIncome.IncomeFrequencyCode, newIncome.IncomeAmount, earnedIncome.IncomeAmount);
+        updateAddWorkHours(newIncome, earnedIncome.IncomeFrequencyCode, newIncome.IncomeWorkHoursNumber, earnedIncome.IncomeWorkHoursNumber);
+        updateAddIncome(newIncome, earnedIncome.IncomeFrequencyCode, newIncome.IncomeAmount, earnedIncome.IncomeAmount);
         summaryIncome.push(newIncome);
       }
     }
@@ -88,10 +87,10 @@ function createContent(id, options) {
 
       if(!updateUnEarnedIncome(summaryUnEarnedIncome, unEarnedIncome)) {
         var newIncome = {"IncomeTypeCode": unEarnedIncome.IncomeTypeCode,
-                         "IncomeFrequencyCode": unEarnedIncome.IncomeFrequencyCode,
+                         "IncomeFrequencyCode": "AC",
                          "IncomeAmount": "0"
                         };
-        updateAddIncome(newIncome, newIncome.IncomeFrequencyCode, newIncome.IncomeAmount, unEarnedIncome.IncomeAmount)
+        updateAddIncome(newIncome, unEarnedIncome.IncomeFrequencyCode, newIncome.IncomeAmount, unEarnedIncome.IncomeAmount)
         summaryUnEarnedIncome.push(newIncome);
       }
     }

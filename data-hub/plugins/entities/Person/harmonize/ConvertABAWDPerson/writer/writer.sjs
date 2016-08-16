@@ -9,6 +9,9 @@
  */
 function write(id, envelope, options) {
 var uri = '/person/ABAWD/' + fn.generateId(envelope) + '.json';
+
+//TODO get CertificationDate from staging data.  This will need to be manually
+//added to csv and put in to headers.
 var curDate = fn.currentDate().toString().slice(0,7);
 
 xdmp.documentInsert(uri, envelope,
