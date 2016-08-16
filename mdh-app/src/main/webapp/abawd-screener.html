@@ -28,7 +28,9 @@
             if(idTokens && idTokens.length > 0) {
               $scope.person.clientID = idTokens[0].replace("clientID=", "");
             }
-
+            
+            $scope.error = false;
+            $scope.reason = null;
             $scope.person.child = false;
             $scope.person.homeless = false;
             $scope.person.disability = false;
@@ -236,7 +238,12 @@
                           { name: 'annotationType', value: 'ABAWDStatus' }
     	                ]
     	              }
-                    }).then();
+                    }).then(function(response) {
+                        if(response.results[0].error) {
+                          $scope.error = true;
+                          $scope.reason = response.results[0].reason;
+                        }
+                    });
                 }
             }
         }])
@@ -305,7 +312,9 @@
 
           <!-- Meta info about case worker and candidate -->
           <div class="section">
-
+            <div class="errMessage" ng-if="error">
+              Failed to record ABAWD Status: <span>{{reason}}</span>
+            </div>
             <div class="instructions">
               <u>INSTRUCTIONS</u>: Screen each individual in the Food Supplement household for potential ABAWD status.  You can use CARES, MABS, The Work Number and SVES to verify status. If you cannot determine the ABAWD status from those systems, then call the customer. Narrate in CARES the date and time of the call and the results of the call.
             </div>
