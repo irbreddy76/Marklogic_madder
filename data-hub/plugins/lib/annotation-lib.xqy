@@ -70,12 +70,36 @@ declare function an:annotateDocument($uri as xs:string?, $params as map:map) {
   return
     if(fn:empty($uri) or fn:string-length($uri) = 0) then 
       let $identifiers := json:array()
+      let $identifier-query := ()
       let $_ := 
         for $identifier in json:array-values(map:get($params, "identifiers"))
         let $id := json:object()
         let $_ := map:put($id, map:get($identifier, "name"), map:get($identifier, "value"))
+        let $_ := 
+          if(fn:empty($identifier-query)) then 
+            cts:json-property-value-query(map:get($identifier, "name"), map:get($identifier, "value"))
+          else xdmp:set($identifier-query, ($identifier-query, 
+            cts:json-property-value-query(map:get($identifier, "name"), map:get($identifier, "value"))))
         return json:array-push($identifiers, $id)
-      return an:createAnnotation((), $identifiers, $params)
+      let $annotation := an:createAnnotation((), $identifiers, $params)
+      let $_ := 
+        let $uris := cts:uris((), (), cts:and-query((
+          cts:collection-query(("Person", "MasterPerson", "ABAWD")),
+          cts:not-query(cts:collection-query("Annotation")),
+          $identifier-query
+        )))
+        let $_ := fn:trace(fn:concat(fn:count($uris), " person records to annotate found."), $TRACE_LEVEL_DETAIL)
+        for $person in $uris
+        let $doc := xdmp:from-json(fn:doc($person))
+        let $identifiers := map:get(map:get($doc, "headers"), "SystemIdentifiers")
+        let $content := map:get($doc, "content")
+        let $_ := (
+          map:put($content, "annotation", $annotation),
+          map:put($doc, "content", $content)
+        )
+        return xdmp:document-insert($person, xdmp:to-json($doc),
+          xdmp:document-get-permissions($person), xdmp:document-get-collections($person))
+      return $annotation
     else
       let $collections := xdmp:document-get-collections($uri)
       let $permissions := xdmp:document-get-permissions($uri)

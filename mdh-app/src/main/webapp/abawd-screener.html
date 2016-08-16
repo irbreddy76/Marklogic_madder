@@ -9,7 +9,7 @@
     <script>
         //Adding controller and all code to HTML for now to simplify distribution
         // of prototype and testing.
-        var module = angular.module('ABAWDScreenerApp', []);
+        var module = angular.module('ABAWDScreenerApp', ['ml.common']);
 
         function getAge(dateString) {
           var date = new Date(dateString);
@@ -21,8 +21,13 @@
         }
 
         module.controller("ABAWDScreenerController", ['$scope', 'MLRest', function ($scope, MLRest) {
-
+            
             $scope.person = {};
+
+            var idTokens = document.location.search.match(/clientID=[A-Za-z0-9]+/);
+            if(idTokens && idTokens.length > 0) {
+              $scope.person.clientID = idTokens[0].replace("clientID=", "");
+            }
 
             $scope.person.child = false;
             $scope.person.homeless = false;
@@ -202,7 +207,7 @@
     	                collections: ['ABAWDStatus'],
     	                user: $scope.person.caseWorkerName,
     	                identifiers: [
-    	                  { name: 'clientID', value: $scope.person.clientID }
+    	                  { name: 'ClientID', value: $scope.person.clientID }
     	                ],
     	                properties: [
     	                  { name: 'district', value: $scope.person.district },
