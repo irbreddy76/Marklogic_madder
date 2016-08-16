@@ -10,7 +10,7 @@ declare function an:addAnnotation($params as map:map) {
     fn:trace("addAnnotation called", $TRACE_LEVEL_TRACE),
     for $key in map:keys($params)
     return 
-      if($key = "properties") then (
+      if($key = ("properties", "identifiers")) then (
         fn:trace(" -- param:properties:", $TRACE_LEVEL_DETAIL),
         for $property in map:get($params, "properties")
         return fn:trace("   -- property:" || map:get($property, "name") || "=" || map:get($property, "value"),
@@ -19,30 +19,46 @@ declare function an:addAnnotation($params as map:map) {
       else  
         fn:trace("  -- param:" || $key || "=" || map:get($params, $key), $TRACE_LEVEL_DETAIL)
   )
-  for $uri in map:get($params, "uri")
   return
-    try {
-      an:annotateDocument($uri, $params)
-    } catch($e) {
-      let $json := json:object()
-      let $message := fn:concat("Failed to annotate document at URI: ", $uri)
-      let $_ := (
-        xdmp:log($message, "error"),
-        fn:trace($e, $TRACE_LEVEL_DETAIL),
-        map:put($json, "error", $message),
-        map:put($json, "reason", $e/err:message/fn:string(.))
-      )
-      return $json
-    }
+    if(fn:not(fn:empty(map:get($params, "uri")))) then
+      for $uri in map:get($params, "uri")
+      return
+        try {
+          an:annotateDocument($uri, $params)
+        } catch($e) {
+          let $json := json:object()
+          let $message := fn:concat("Failed to annotate document at URI: ", $uri)
+          let $_ := (
+            xdmp:log($message, "error"),
+            fn:trace($e, $TRACE_LEVEL_DETAIL),
+            map:put($json, "error", $message),
+            map:put($json, "reason", $e/err:message/fn:string(.))
+          )
+          return $json
+        }
+    else 
+        try {
+          an:annotateDocument((), $params)
+        } catch($e) {
+          let $json := json:object()
+          let $message := "Failed to create annotation."
+          let $_ := (
+            xdmp:log($message, "error"),
+            fn:trace($e, $TRACE_LEVEL_DETAIL),
+            map:put($json, "error", $message),
+            map:put($json, "reason", $e/err:message/fn:string(.))
+          )
+          return $json 
+        }
 };
 
-declare function an:annotateDocument($uri as xs:string, $params as map:map) {
+declare function an:annotateDocument($uri as xs:string?, $params as map:map) {
   let $_ := (
     fn:trace("annotateDocument called", $TRACE_LEVEL_TRACE),
     fn:trace("document uri: " || $uri, $TRACE_LEVEL_DETAIL),
     for $key in map:keys($params)
     return
-      if($key = "properties") then (
+      if($key = ("properties", "identifiers")) then (
         fn:trace(" -- param:properties:", $TRACE_LEVEL_DETAIL),
         for $property in map:get($params, "properties")
         return fn:trace("   -- property:" || map:get($property, "name") || "=" || map:get($property, "value"),
@@ -51,35 +67,45 @@ declare function an:annotateDocument($uri as xs:string, $params as map:map) {
       else  
         fn:trace("  -- param:" || $key || "=" || map:get($params, $key), $TRACE_LEVEL_DETAIL)
   )
-  let $collections := xdmp:document-get-collections($uri)
-  let $permissions := xdmp:document-get-permissions($uri)
-  return 
-    if(fn:doc-available($uri)) then (
-      let $doc := xdmp:from-json(fn:doc($uri))
-      let $identifiers := map:get(map:get($doc, "headers"), "SystemIdentifiers")
-      let $content := map:get($doc, "content")
-      let $annotation := an:createAnnotation($uri, $identifiers, $params)
-      let $_ := (
-        map:put($content, "annotation", $annotation),
-        map:put($doc, "content", $content)
-      )
-      let $_ := xdmp:document-insert($uri, xdmp:to-json($doc),
-        xdmp:document-get-permissions($uri), xdmp:document-get-collections($uri))
-      return $annotation
-    ) else (
-      let $json := json:object()
-      let $message := fn:concat("Failed to annotate document at URI: ", $uri)
-      let $reason := fn:concat("No document found at ", $uri)
-      let $_ := (
-        xdmp:log($reason, "warning"),
-        map:put($json, "error", $message),
-        map:put($json, "reason", $reason)
-      )
-      return $json        
-    )
+  return
+    if(fn:empty($uri) or fn:string-length($uri) = 0) then 
+      let $identifiers := json:array()
+      let $_ := 
+        for $identifier in json:array-values(map:get($params, "identifiers"))
+        let $id := json:object()
+        let $_ := map:put($id, map:get($identifier, "name"), map:get($identifier, "value"))
+        return json:array-push($identifiers, $id)
+      return an:createAnnotation((), $identifiers, $params)
+    else
+      let $collections := xdmp:document-get-collections($uri)
+      let $permissions := xdmp:document-get-permissions($uri)
+      return 
+        if(fn:doc-available($uri)) then (
+          let $doc := xdmp:from-json(fn:doc($uri))
+          let $identifiers := map:get(map:get($doc, "headers"), "SystemIdentifiers")
+          let $content := map:get($doc, "content")
+          let $annotation := an:createAnnotation($uri, $identifiers, $params)
+          let $_ := (
+            map:put($content, "annotation", $annotation),
+            map:put($doc, "content", $content)
+          )
+          let $_ := xdmp:document-insert($uri, xdmp:to-json($doc),
+            xdmp:document-get-permissions($uri), xdmp:document-get-collections($uri))
+          return $annotation
+        ) else (
+          let $json := json:object()
+          let $message := fn:concat("Failed to annotate document at URI: ", $uri)
+          let $reason := fn:concat("No document found at ", $uri)
+          let $_ := (
+            xdmp:log($reason, "warning"),
+            map:put($json, "error", $message),
+            map:put($json, "reason", $reason)
+          )
+          return $json        
+        )
 };
 
-declare function an:createAnnotation($uri as xs:string, $identifiers, $params as map:map) {
+declare function an:createAnnotation($uri as xs:string?, $identifiers, $params as map:map) {
   let $annotation := json:object()
   let $triples := json:array()
   let $headers := json:object()
@@ -87,7 +113,7 @@ declare function an:createAnnotation($uri as xs:string, $identifiers, $params as
   let $header-props := json:array()
   let $content-props := json:array()
   let $_ := (
-    map:put($headers, "parentUri", $uri),
+    if(fn:not(fn:empty($uri))) then map:put($headers, "parentUri", $uri) else (),
     map:put($headers, "identifiers", $identifiers),
     map:put($headers, "annotationDateTime", fn:current-dateTime()),
     map:put($headers, "annotationUser", 
@@ -109,9 +135,13 @@ declare function an:createAnnotation($uri as xs:string, $identifiers, $params as
     map:put($annotation, "headers", $headers),
     map:put($annotation, "content", $content)
   )
+  let $permissions := if(fn:empty($uri) or fn:string-length($uri) = 0) then xdmp:default-permissions()
+    else xdmp:document-get-permissions($uri)
+  let $collections := if(fn:empty($uri) or fn:string-length($uri) = 0) then () 
+    else xdmp:document-get-collections($uri)
   let $_ := xdmp:document-insert(fn:concat($uri, "/annotations/annotation-", xdmp:hash64(xdmp:to-json-string($annotation)), ".json"), 
-    xdmp:to-json($annotation), xdmp:document-get-permissions($uri), 
-    (xdmp:document-get-collections($uri), "Annotation"))
+    xdmp:to-json($annotation), $permissions, 
+    ($collections, "Annotation", json:array-values(map:get($params, "collections"))))
   return $annotation
 };
 

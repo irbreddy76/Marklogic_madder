@@ -5,7 +5,7 @@
     <title>ABAWD Screening Tool</title>
 
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.2/angular.min.js"></script>
-
+    <script src="/bower_components/ml-common-ng/dist/ml-common-ng.js"></script>
     <script>
         //Adding controller and all code to HTML for now to simplify distribution
         // of prototype and testing.
@@ -20,7 +20,7 @@
           return Math.round(age1 * 100) / 100;
         }
 
-        module.controller("ABAWDScreenerController", function ($scope) {
+        module.controller("ABAWDScreenerController", ['$scope', 'MLRest', function ($scope, MLRest) {
 
             $scope.person = {};
 
@@ -195,9 +195,46 @@
                     console.log($scope.person);
 
                     $scope.doShow = true;
+                    
+                    MLRest.extension('annotation', {
+    	              method: 'POST',
+    	              data: {
+    	                collections: ['ABAWDStatus'],
+    	                user: $scope.person.caseWorkerName,
+    	                identifiers: [
+    	                  { name: 'clientID', value: $scope.person.clientID }
+    	                ],
+    	                properties: [
+    	                  { name: 'district', value: $scope.person.district },
+                          { name: 'customerName', value: $scope.person.customerName },
+                          { name: 'customerDoB', value: $scope.person.customerDOB },
+                          { name: 'certificationPeriod', value: $scope.person.certPeriod },
+                          { name: 'screeningType', value: $scope.person.screeningType }, 
+                          { name: 'hasChild', value: $scope.person.child },
+                          { name: 'childDoB', value: $scope.person.childDOB },
+                          { name: 'isHomeless', value: $scope.person.homeless },
+                          { name: 'isDisabled', value: $scope.person.disability },
+                          { name: 'caringForDisabled', value: $scope.person.caringForDisabled },
+                          { name: 'hasUnemploymentIns', value: $scope.person.unemploymentIns },
+                          { name: 'isPregnant', value: $scope.person.pregnant },
+                          { name: 'isEmployed', value: $scope.person.employed },
+                          { name: 'employedHoursPerWeek', value: $scope.person.hours },
+                          { name: 'inTreatmentProgram', value: $scope.person.treatment },
+                          { name: 'hasWorkActivity', value: $scope.person.workActivity },
+                          { name: 'inSchool', value: $scope.person.school }, 
+                          { name: 'expHomelessness', value: $scope.person.expHomelessness },
+                          { name: 'homelessHasPhone', value: $scope.person.homelessPhone },
+                          { name: 'homelessHasTransport', value: $scope.person.homelessTransportation },
+                          { name: 'homelessHasHygiene', value: $scope.person.homelessHygiene },
+                          { name: 'homelessHasLaundry', value: $scope.person.homelessLaundry },
+                          { name: 'abawdStatus', value: screeningResult },
+                          { name: 'annotationType', value: 'ABAWDStatus' }
+    	                ]
+    	              }
+                    }).then();
                 }
             }
-        })
+        }])
 
     </script>
 
