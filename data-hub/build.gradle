@@ -109,13 +109,24 @@ task importDictionaries(type: com.marklogic.gradle.task.MlcpTask) {
 	output_uri_replace = ".*/data,''"
 }
 
-task importSKOSReference(type: com.marklogic.gradle.task.MlcpTask) {
+task importSKOSABAWD(type: com.marklogic.gradle.task.MlcpTask) {
 	classpath = configurations.mlcp
 	command = "IMPORT"
 	database = mlFinalDbName
-	input_file_path = "data/SKOS"
+	input_file_path = "data/ABAWD-SKOS"
 	input_file_type = "RDF"
 	output_collections = "SKOS,ABAWD,http://www.dhr.state.md.us/conceptschemes/ABAWD"
 	output_permissions = "rest-reader,read,rest-writer,update"
 	output_uri_replace = ".*/data,''"
+}
+
+task importSKOSReference(type: com.marklogic.gradle.task.MlcpTask) {
+    classpath = configurations.mlcp
+    command = "IMPORT"
+    database = mlFinalDbName
+    input_file_path = "data/Reference-SKOS"
+    input_file_type = "RDF"
+    output_collections = "SKOS,reference,http://www.dhr.state.md.us/conceptschemes/reference"
+    output_permissions = "rest-reader,read,rest-writer,update"
+    output_uri_replace = ".*/data,''"
 }

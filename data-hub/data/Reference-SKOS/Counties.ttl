@@ -1,0 +1,33 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix dbo: <http://dbpedia.org/ontology/> .
+@prefix dhr: <http://www.dhr.state.md.us/ontology/abawd#> .
+
+<http://www.dhr.state.md.us/conceptschemes/reference/Counties> a skos:ConceptScheme; dct:description "Maryland Counties"@en; dct:description "Maryland Counties"@en; dct:coverage "General reference data"@en; dct:date "2016-08-16" .
+<http://www.dhr.state.md.us/conceptschemes/reference/Counties/24001> a dbo:PopulatedPlace; a dhr:AdministrativeOffice; dbo:fipsCode "24001"^^<http://www.w3.org/2001/XMLSchema/string>; skos:prefLabel "ALLEGANY"@en .
+<http://www.dhr.state.md.us/conceptschemes/reference/Counties/24003> a dbo:PopulatedPlace; a dhr:AdministrativeOffice; dbo:fipsCode "24003"^^<http://www.w3.org/2001/XMLSchema/string>; skos:prefLabel "ANNE ARUNDEL"@en .
+<http://www.dhr.state.md.us/conceptschemes/reference/Counties/24005> a dbo:PopulatedPlace; a dhr:AdministrativeOffice; dbo:fipsCode "24005"^^<http://www.w3.org/2001/XMLSchema/string>; skos:prefLabel "BALTIMORE"@en .
+<http://www.dhr.state.md.us/conceptschemes/reference/Counties/24510> a dbo:PopulatedPlace; a dhr:AdministrativeOffice; dbo:fipsCode "24510"^^<http://www.w3.org/2001/XMLSchema/string>; skos:prefLabel "BALTIMORE CITY"@en .
+<http://www.dhr.state.md.us/conceptschemes/reference/Counties/24009> a dbo:PopulatedPlace; a dhr:AdministrativeOffice; dbo:fipsCode "24009"^^<http://www.w3.org/2001/XMLSchema/string>; skos:prefLabel "CALVERT"@en .
+<http://www.dhr.state.md.us/conceptschemes/reference/Counties/24011> a dbo:PopulatedPlace; a dhr:AdministrativeOffice; dbo:fipsCode "24011"^^<http://www.w3.org/2001/XMLSchema/string>; skos:prefLabel "CAROLINE"@en .
+<http://www.dhr.state.md.us/conceptschemes/reference/Counties/24013> a dbo:PopulatedPlace; a dhr:AdministrativeOffice; dbo:fipsCode "24013"^^<http://www.w3.org/2001/XMLSchema/string>; skos:prefLabel "CARROLL"@en .
+<http://www.dhr.state.md.us/conceptschemes/reference/Counties/24015> a dbo:PopulatedPlace; a dhr:AdministrativeOffice; dbo:fipsCode "24015"^^<http://www.w3.org/2001/XMLSchema/string>; skos:prefLabel "CECIL"@en .
+<http://www.dhr.state.md.us/conceptschemes/reference/Counties/24017> a dbo:PopulatedPlace; a dhr:AdministrativeOffice; dbo:fipsCode "24017"^^<http://www.w3.org/2001/XMLSchema/string>; skos:prefLabel "CHARLES"@en .
+<http://www.dhr.state.md.us/conceptschemes/reference/Counties/24019> a dbo:PopulatedPlace; a dhr:AdministrativeOffice; dbo:fipsCode "24019"^^<http://www.w3.org/2001/XMLSchema/string>; skos:prefLabel "DORCHESTER"@en .
+<http://www.dhr.state.md.us/conceptschemes/reference/Counties/24021> a dbo:PopulatedPlace; a dhr:AdministrativeOffice; dbo:fipsCode "24021"^^<http://www.w3.org/2001/XMLSchema/string>; skos:prefLabel "FREDERICK"@en .
+<http://www.dhr.state.md.us/conceptschemes/reference/Counties/24023> a dbo:PopulatedPlace; a dhr:AdministrativeOffice; dbo:fipsCode "24023"^^<http://www.w3.org/2001/XMLSchema/string>; skos:prefLabel "GARRETT"@en .
+<http://www.dhr.state.md.us/conceptschemes/reference/Counties/24025> a dbo:PopulatedPlace; a dhr:AdministrativeOffice; dbo:fipsCode "24025"^^<http://www.w3.org/2001/XMLSchema/string>; skos:prefLabel "HARFORD"@en .
+<http://www.dhr.state.md.us/conceptschemes/reference/Counties/24027> a dbo:PopulatedPlace; a dhr:AdministrativeOffice; dbo:fipsCode "24027"^^<http://www.w3.org/2001/XMLSchema/string>; skos:prefLabel "HOWARD"@en .
+<http://www.dhr.state.md.us/conceptschemes/reference/Counties/24029> a dbo:PopulatedPlace; a dhr:AdministrativeOffice; dbo:fipsCode "24029"^^<http://www.w3.org/2001/XMLSchema/string>; skos:prefLabel "KENT"@en .
+<http://www.dhr.state.md.us/conceptschemes/reference/Counties/24031> a dbo:PopulatedPlace; a dhr:AdministrativeOffice; dbo:fipsCode "24031"^^<http://www.w3.org/2001/XMLSchema/string>; skos:prefLabel "MONTGOMERY"@en .
+<http://www.dhr.state.md.us/conceptschemes/reference/Counties/24033> a dbo:PopulatedPlace; a dhr:AdministrativeOffice; dbo:fipsCode "24033"^^<http://www.w3.org/2001/XMLSchema/string>; skos:prefLabel "PRINCE GEORGE'S"@en .
+<http://www.dhr.state.md.us/conceptschemes/reference/Counties/24035> a dbo:PopulatedPlace; a dhr:AdministrativeOffice; dbo:fipsCode "24035"^^<http://www.w3.org/2001/XMLSchema/string>; skos:prefLabel "QUEEN ANNE'S"@en .
+<http://www.dhr.state.md.us/conceptschemes/reference/Counties/24039> a dbo:PopulatedPlace; a dhr:AdministrativeOffice; dbo:fipsCode "24039"^^<http://www.w3.org/2001/XMLSchema/string>; skos:prefLabel "SOMERSET"@en .
+<http://www.dhr.state.md.us/conceptschemes/reference/Counties/24037> a dbo:PopulatedPlace; a dhr:AdministrativeOffice; dbo:fipsCode "24037"^^<http://www.w3.org/2001/XMLSchema/string>; skos:prefLabel "ST. MARY'S"@en .
+<http://www.dhr.state.md.us/conceptschemes/reference/Counties/24041> a dbo:PopulatedPlace; a dhr:AdministrativeOffice; dbo:fipsCode "24041"^^<http://www.w3.org/2001/XMLSchema/string>; skos:prefLabel "TALBOT"@en .
+<http://www.dhr.state.md.us/conceptschemes/reference/Counties/24043> a dbo:PopulatedPlace; a dhr:AdministrativeOffice; dbo:fipsCode "24043"^^<http://www.w3.org/2001/XMLSchema/string>; skos:prefLabel "WASHINGTON"@en .
+<http://www.dhr.state.md.us/conceptschemes/reference/Counties/24045> a dbo:PopulatedPlace; a dhr:AdministrativeOffice; dbo:fipsCode "24045"^^<http://www.w3.org/2001/XMLSchema/string>; skos:prefLabel "WICOMICO"@en .
+<http://www.dhr.state.md.us/conceptschemes/reference/Counties/24047> a dbo:PopulatedPlace; a dhr:AdministrativeOffice; dbo:fipsCode "24047"^^<http://www.w3.org/2001/XMLSchema/string>; skos:prefLabel "WORCESTER"@en .
