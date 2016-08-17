@@ -1,0 +1,11 @@
+{
+  "collection": "DJS",
+  "permission": [
+    { "role-name": "mddhr-DJS", "capability": "read" },
+    { "role-name": "mddhr-DJS", "capability": "insert" },
+    { "role-name": "mddhr-DJS", "capability": "update" },
+    { "role-name": "mddhr-read", "capability": "read" },
+    { "role-name": "mddhr-write", "capability": "insert" },
+    { "role-name": "mddhr-write", "capability": "update" }
+  ]
+}

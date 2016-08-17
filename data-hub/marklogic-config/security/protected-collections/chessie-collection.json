@@ -1,0 +1,11 @@
+{
+  "collection": "CHESSIE",
+  "permission": [
+    { "role-name": "mddhr-CHESSIE", "capability": "read" },
+    { "role-name": "mddhr-CHESSIE", "capability": "insert" },
+    { "role-name": "mddhr-CHESSIE", "capability": "update" },
+    { "role-name": "mddhr-read", "capability": "read" },
+    { "role-name": "mddhr-write", "capability": "insert" },
+    { "role-name": "mddhr-write", "capability": "update" }
+  ]
+}
