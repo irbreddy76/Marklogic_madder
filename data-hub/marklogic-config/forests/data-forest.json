@@ -2,6 +2,6 @@
   "forest-name": "%%FOREST_NAME%%",
   "database": "%%FOREST_DATABASE%%",
   "host": "%%FOREST_HOST%%",
-  "data-directory": "%%FOREST_DIR%%",
+  "data-directory": "%%mlForestPathR%%",
   "failover-enable": true
 }

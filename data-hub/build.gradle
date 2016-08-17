@@ -52,22 +52,18 @@ ext {
         restPort = Integer.parseInt(mlStagingPort)
 
         // Configure custom tokens for our json files
-        customTokens.put("%%STAGING_SERVER_NAME%%", mlStagingAppserverName)
-        customTokens.put("%%STAGING_SERVER_PORT%%", mlStagingPort)
-        customTokens.put("%%STAGING_DB_NAME%%", mlStagingDbName)
-
-        customTokens.put("%%FINAL_SERVER_NAME%%", mlFinalAppserverName)
-        customTokens.put("%%FINAL_SERVER_PORT%%", mlFinalPort)
         customTokens.put("%%mlFinalDbName%%", mlFinalDbName)
-
-        customTokens.put("%%TRACE_SERVER_NAME%%", mlTraceAppserverName)
-        customTokens.put("%%TRACE_SERVER_PORT%%", mlTracePort)
-        customTokens.put("%%TRACE_DB_NAME%%", mlTraceDbName)
-		
         customTokens.put("%%mlOdbcAppserverName%%", mlOdbcAppserverName)
-        customTokens.put("%%mlOdbcPort%%", mlOdbcPort)    		
+        customTokens.put("%%mlOdbcPort%%", mlOdbcPort) 
+        customTokens.put("%%mlRestPassword%%", mlRestPassword)
+        customTokens.put("%%mlManagePassword%%", mlManagePassword)
+        customTokens.put("%%mlPassword%%", mlPassword)
+        customTokens.put("%%mlAuditForestsPerHost%%", mlAuditForestsPerHost)
+        customTokens.put("%%mlAuditDbName%%", mlAuditDbName)
+        customTokens.put("%%mlForestPath%%", mlForestPath)
+        
+        modulePaths = ["plugins"]   		
 
-        modulePaths = ["plugins"]
     }
 }
 
