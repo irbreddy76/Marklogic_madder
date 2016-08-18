@@ -70,19 +70,38 @@ declare function s:buildABAWD($header as map:map, $content as map:map) {
   let $name := map:get($header, "PersonPrimaryName")
   let $ids := map:get($header, "SystemIdentifiers")
   let $ssn := (map:get($content, "PersonSSNIdentification"))[1]
+
+  let $LdssID := map:get($ids[1], "LdssID")
+  let $DONum := map:get($ids[2], "DONum")
   let $personId := map:get($ids[3], "ClientID")
+  let $AUNum := map:get($ids[4], "AUNum")
+
   let $address := (map:get($header, "Addresses"))[1]
   let $addressStr := map:get($address, "LocationStreet") || " " || map:get($address, "LocationCityName") || ", "
       || map:get($address, "LocationStateName") || " " || map:get($address, "LocationPostalCode")
 
   let $_ := (
     map:put($json, "recordType", "ABAWD"),
+
+    map:put($json, "ldssID", $LdssID),
+    map:put($json, "doNum", $DONum),
+    map:put($json, "auNum", $AUNum),
+
     map:put($json, "personId", $personId),
     map:put($json, "firstName", map:get($name, "PersonGivenName")),
     map:put($json, "middleName", map:get($name, "PersonMiddleName")),
     map:put($json, "lastName", map:get($name, "PersonSurName")),
     map:put($json, "id", map:get($ssn, "IdentificationId")),
     map:put($json, "dob", map:get($content, "PersonBirthDate")),
+
+    (: start adding here :)
+    map:put($json, "hohCode", map:get($content, "PersonHOHCode")),
+    map:put($json, "languageCode", map:get($content, "PersonLanguageCode")),
+    map:put($json, "liveArrngmentCode", map:get($content, "PersonLivingArrangementTypeCode")),
+    map:put($json, "summaryUnEIncome", map:get($content, "SummaryUnEarnedIncome")),
+    map:put($json, "summaryEIncome", map:get($content, "SummaryEarnedIncome")),
+    map:put($json, "pregnancyDueDate", map:get($content, "PregnancyDueDate")),
+    map:put($json, "disability", map:get($content, "Disability")),
     map:put($json, "address", $addressStr)
   )
   return $json

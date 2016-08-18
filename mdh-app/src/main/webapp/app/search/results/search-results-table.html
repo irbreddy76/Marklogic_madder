@@ -10,6 +10,15 @@
             <th>SSN</th>
             <th ng-click="toggleSort({field: 'bd'})">DoB<span class="glyphicon glyphicon-sort"></span></th>
             <th>Address</th>
+
+            <th>HOH Code</th>
+            <th>Language Code</th>
+            <th>Living Arrgmt Code</th>
+            <th>Total Earned Income</th>
+            <th>Total Work Hours</th>
+            <th>Total UnEarned Income</th>
+            <th>Pregnancy Due Date</th>
+            <th>Disability Code</th>
             <th>&nbsp;</th>
           </tr>
         </thead>
@@ -21,6 +30,15 @@
             <td>{{result.matches.summary.id}}</td>
             <td>{{result.matches.summary.dob | date: 'MM-dd-yyyy'}}</td>
             <td>{{result.matches.summary.address}}</td>
+            <td>{{result.matches.summary.hohCode}}</td>
+            <td>{{result.matches.summary.languageCode}}</td>
+            <td>{{result.matches.summary.liveArrngmentCode}}</td>
+            <td ng-class="flagIncome(result.matches.summary.summaryEIncome)">${{totalIncome(result.matches.summary.summaryEIncome);}}</td>
+            <td ng-class="flagWorkHours(result.matches.summary.summaryEIncome)">{{totalWorkHours(result.matches.summary.summaryEIncome);}}</td>
+            <td ng-class="flagIncome(result.matches.summary.summaryUnEIncome)">${{totalIncome(result.matches.summary.summaryUnEIncome);}}</td>
+            <td ng-class="flagPregDueDate(result.matches.summary.pregnancyDueDate)">{{result.matches.summary.pregnancyDueDate}}</td>
+            <td>{{result.matches.summary.disability[0].DisabilityTypeCode}}</td>
+
             <td><a ui-sref="root.view({uri: result.uri})">View</a></td>
           </tr>
         </tbody>

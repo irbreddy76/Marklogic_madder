@@ -25,7 +25,7 @@
     .controller('ResultsController', ResultsController);
 
   ResultsController.$inject = ['$scope'];
-  
+
   function searchResults() {
     return {
       restrict: 'E',
@@ -81,8 +81,62 @@
       });
     });
   }
-  
+
   function ResultsController($scope) {
-	  
+
+    //Sum Income Summary
+    $scope.totalIncome = function (income) {
+      var incomeTotal = 0;
+      if(income != null) {
+        income.map(function (item, index) {
+          incomeTotal += item.IncomeAmount;
+        });
+      }
+      return incomeTotal;
+    };
+
+    //Sum Work Hours
+    $scope.totalWorkHours = function (income) {
+      var wrkTotal = 0;
+      if(income != null) {
+        income.map(function (item, index) {
+          wrkTotal += item.IncomeWorkHoursNumber
+        });
+      }
+      return wrkTotal;
+    };
+
+    $scope.flagPregDueDate = function (pregDate) {
+      if(pregDate != null) {
+        var startDateTime = Date.parse(pregDate);
+        var lastYear = new Date();
+        lastYear.setMonth(lastYear.getMonth() - 12);
+        var lastYearTime = lastYear.getTime();
+        if(startDateTime >= lastYearTime) {
+          return "attention-cell";
+        }
+      }
+      return null;
+    };
+
+    $scope.flagIncome = function (income) {
+      if(income != null) {
+        if($scope.totalIncome(income) <= 217.50) {
+          return "attention-cell";
+        }
+      }
+      return null;
+    };
+
+    $scope.flagWorkHours = function (income) {
+      if(income != null) {
+        if($scope.totalWorkHours(income) < 30) {
+          return "attention-cell";
+        }
+      }
+      return null;
+    };
+
+
   }
 }());

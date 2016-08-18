@@ -23,7 +23,7 @@ declare function abawd-lib:get-abawd-query($cert-period as xs:string) as item()?
     ))
 
   (:let $pregQuery := cts:json-property-range-query("PregnancyDueDate", "<", xs:date(fn:current-date() - xs:yearMonthDuration("P1Y"))):)
-  let $pregQuery := cts:not-query(cts:json-property-range-query("PregnancyDueDate", ">=", xs:date(fn:current-date())))
+  let $pregQuery := cts:json-property-range-query("PregnancyDueDate", "&lt;", xs:date(fn:current-date()))
 
   (: We do not have special circumstances field in our data below should be ANDed with this field/value of "HO" :)
   let $chronicallyHomeless := cts:not-query(cts:json-property-value-query("PersonLivingArrangementTypeCode", "HL"))
@@ -32,9 +32,26 @@ declare function abawd-lib:get-abawd-query($cert-period as xs:string) as item()?
   let $domHouse := cts:not-query(cts:json-property-value-query("PersonLivingArrangementTypeCode", "LD"))
 
   (:Update to iterate through list checking date, confirm with customer if we should check end date :)
-  let $disability := cts:or-query((
-      cts:json-property-word-query("DisabilityTypeCode", "U"),
-      cts:json-property-word-query("DisabilityTypeCode", "-")
+  let $disability := cts:not-query(cts:or-query((
+      cts:json-property-word-query("DisabilityTypeCode", "A"),
+      cts:json-property-word-query("DisabilityTypeCode", "B"),
+      cts:json-property-word-query("DisabilityTypeCode", "C"),
+      cts:json-property-word-query("DisabilityTypeCode", "D"),
+      cts:json-property-word-query("DisabilityTypeCode", "E"),
+      cts:json-property-word-query("DisabilityTypeCode", "F"),
+      cts:json-property-word-query("DisabilityTypeCode", "G"),
+      cts:json-property-word-query("DisabilityTypeCode", "H"),
+      cts:json-property-word-query("DisabilityTypeCode", "I"),
+      cts:json-property-word-query("DisabilityTypeCode", "J"),
+      cts:json-property-word-query("DisabilityTypeCode", "K"),
+      cts:json-property-word-query("DisabilityTypeCode", "L"),
+      cts:json-property-word-query("DisabilityTypeCode", "M"),
+      cts:json-property-word-query("DisabilityTypeCode", "N"),
+      cts:json-property-word-query("DisabilityTypeCode", "O"),
+      cts:json-property-word-query("DisabilityTypeCode", "P"),
+      cts:json-property-word-query("DisabilityTypeCode", "R"),
+      cts:json-property-word-query("DisabilityTypeCode", "S"),
+      cts:json-property-word-query("DisabilityTypeCode", "T"))
   ))
 
   return
@@ -58,6 +75,7 @@ declare function abawd-lib:get-potential-abawds($cert-period as xs:string) as xs
   cts:uris((),(), $query)
 };
 
+(:Not used anymore since we are summing the income during harmonization:)
 declare function abawd-lib:calc-earned-income($uri as xs:string, $incomeTypeCode as xs:string) as xs:double {
 
   (: Weekly :)
@@ -134,6 +152,7 @@ declare function abawd-lib:calc-earned-income($uri as xs:string, $incomeTypeCode
     + $otEarnedIncome
 };
 
+(:Not used anymore since we are summing the income during harmonization:)
 declare function abawd-lib:calc-work-hours($uri as xs:string, $incomeTypeCode as xs:string) as xs:double {
 
   (: Weekly :)
