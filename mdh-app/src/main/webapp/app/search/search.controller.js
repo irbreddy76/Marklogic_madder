@@ -225,6 +225,43 @@
       field: 'ws',
       order: 'd'
     };
+    
+    this.parseExtraURLParams = function() {
+        var params = this.$location.search();
+        var queryParamsChanged = false;
+
+        if(params.mode != ctrl.mode) {
+          ctrl.mode = params.mode;
+          queryParamsChanged = true;
+        }
+        
+        if(params.pageLength && params.pageLength != ctrl.pageLength) {
+          ctrl.pageLength = params.pageLength
+          queryParamsChanged = true;
+        } else if(params.pageLength) {
+          // Do nothing if page length hasn't changed
+        } else if(ctrl.pageLength != 10) {
+        	ctrl.pageLength = 10;
+        	queryParamsChanged = true;
+        }
+        return queryParamsChanged;
+    };
+    
+    this.updateExtraURLParams = function() {
+      var paramsToPost = {};
+
+      if(ctrl.pageLength != 10) { paramsToPost.pageLength = ctrl.pageLength; }
+      if(ctrl.mode != 'basic') { paramsToPost.mode = ctrl.mode; }
+      
+      var params = _.chain( this.$location.search() )
+        .omit( ['pageLength', 'mode'] )
+        .merge( paramsToPost )
+        .value();
+
+      this.$location.search( params );
+        
+      return this;
+    };
 
   }
 }());

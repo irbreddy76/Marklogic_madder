@@ -41,8 +41,12 @@
             $scope.person.treatment = false;
             $scope.person.workActivity = false;
             $scope.person.school = false;
-
+        
             $scope.person.hours = 0;
+
+            $scope.person.comments = null;
+            $scope.person.recommendation = null;
+            $scope.person.decision = null;
 
             $scope.person.expHomelessness = false;
 
@@ -199,11 +203,19 @@
                       $scope.showNotABAWDMessage = true;
                     }
 
-                    console.log($scope.person);
+                    $scope.person.recommendation = screeningResult;
+                    $scope.person.decision = screeningResult;
 
-                    $scope.doShow = true;
+                    console.log($scope.person);
                     
-                    MLRest.extension('annotation', {
+                    $scope.doShow = true;
+                }
+            }
+            
+            $scope.save = function() {
+               var result = confirm("Confirm submission of ABAWD Decision");
+               if(result == true) {
+                  MLRest.extension('annotation', {
     	              method: 'POST',
     	              data: {
     	                collections: ['ABAWDStatus'],
@@ -234,17 +246,19 @@
                           { name: 'homelessHasTransport', value: $scope.person.homelessTransportation },
                           { name: 'homelessHasHygiene', value: $scope.person.homelessHygiene },
                           { name: 'homelessHasLaundry', value: $scope.person.homelessLaundry },
-                          { name: 'abawdStatus', value: screeningResult },
+                          { name: 'recommendedScreeningResult', value: $scope.person.recommendation },
+                          { name: 'actualScreeningResult', value: $scope.person.decision },
                           { name: 'annotationType', value: 'ABAWDStatus' }
-    	                ]
+    	                ],
+    	                comments: $scope.person.comments
     	              }
                     }).then(function(response) {
-                        if(response.results[0].error) {
+                        if(response.data.results[0].error) {
                           $scope.error = true;
-                          $scope.reason = response.results[0].reason;
-                        }
+                          $scope.reason = response.data.results[0].reason;
+                        } else { $scope.reason = 'ABAWD Determination Saved'; }
                     });
-                }
+              }
             }
         }])
 
@@ -312,9 +326,6 @@
 
           <!-- Meta info about case worker and candidate -->
           <div class="section">
-            <div class="errMessage" ng-if="error">
-              Failed to record ABAWD Status: <span>{{reason}}</span>
-            </div>
             <div class="instructions">
               <u>INSTRUCTIONS</u>: Screen each individual in the Food Supplement household for potential ABAWD status.  You can use CARES, MABS, The Work Number and SVES to verify status. If you cannot determine the ABAWD status from those systems, then call the customer. Narrate in CARES the date and time of the call and the results of the call.
             </div>
@@ -488,11 +499,10 @@
             <div ng-show="person.homeless" class="result">
                 <center><b>Consider this person chronically homeless.</b></center>
             </div>
-
+          
+            <input type="submit" value="Compute" ng-click="screen()"/>
           </form>
           </div>
-
-          <input type="submit" value="Submit" ng-click="screen()"/>
 
           <p>
 
@@ -505,6 +515,35 @@
             </div>
             <div class="result" ng-show="showWatchMessage">
                 This customer is likely to become an ABAWD before the next certification period.  Set up a 745 Alert in CARES.<br/>
+            </div>
+            <div class="message" ng-show="reason">
+              <span ng-show="error">Failed to record ABAWD Status:</span> <span>{{reason}}</span>
+            </div>
+            <div class="decision">
+              <form ng-submit="save()">
+                <div>
+                  <input type="submit" value="Save" ng-click="save()"/>
+                </div>
+                <div>
+                <p>Decision:</p>
+                <label>
+                  <input type="radio" ng-model="person.decision" value="ABAWD">
+                  ABAWD  
+                </label><br/>
+                <label>
+                  <input type="radio" ng-model="person.decision" value="ABAWDWatch">
+                  ABAWD Watch  
+                </label><br/>
+                <label>
+                  <input type="radio" ng-model="person.decision" value="notABAWD">
+                  Not ABAWD  
+                </label><br/>
+                </div>
+                <div>
+                <p>Reason:</p>
+                <div><textarea class="form-control" ng-model="person.comments"></textarea></div>
+                </div>
+              </form>
             </div>
           </div>
     </div>
