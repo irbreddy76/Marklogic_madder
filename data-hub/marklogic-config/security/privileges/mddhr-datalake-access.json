@@ -1,0 +1,5 @@
+{
+  "privilege-name": "mddhr-datalake-access",
+  "action": "http://dhr.maryland.gov/datalake/access",
+  "kind": "execute"
+}

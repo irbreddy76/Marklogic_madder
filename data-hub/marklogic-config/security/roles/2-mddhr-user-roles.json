@@ -1,0 +1,20 @@
+{
+	"role-name": "mddhr-user",
+	"description": "User with ability to access data lake APIs",
+	"compartment": [],
+	"external-names": [],
+	"role": [],
+	"permission": [
+	  { "role-name": "mddhr-read", "capability": "read" },
+      { "role-name": "mddhr-deployer", "capability": "insert" },
+      { "role-name": "mddhr-deployer", "capability": "update" },
+      { "role-name": "mddhr-read", "capability": "execute" }
+	],
+	"privilege": [
+	  {
+	      "privilege-name": "mddhr-datalake-access",
+	      "action": "http://dhr.maryland.gov/datalake/access",
+	      "kind": "execute"
+	  }
+	]
+}

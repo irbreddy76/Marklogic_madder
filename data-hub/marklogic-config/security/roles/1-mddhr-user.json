@@ -1,0 +1,4 @@
+{
+	"role-name": "mddhr-user",
+	"description": "User with ability to access data lake APIs"
+}

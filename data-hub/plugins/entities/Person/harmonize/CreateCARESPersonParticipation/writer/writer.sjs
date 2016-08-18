@@ -14,7 +14,11 @@ function write(id, envelope, options) {
     [xdmp.permission('rest-reader', 'read'),
      xdmp.permission('rest-writer', 'update'),
      xdmp.permission('mddhr-read', 'read'),
-     xdmp.permission('mddhr-write', 'update')],
+     xdmp.permission('mddhr-write', 'update'),
+     xdmp.permission('mddhr-write', 'insert'),
+     xdmp.permission('mddhr-CARES', 'read'),
+     xdmp.permission('mddhr-CARES', 'update'),
+     xdmp.permission('mddhr-CARES', 'insert')],
     ['CARES', 'MasterPerson', 'Sample']);
 }
 
