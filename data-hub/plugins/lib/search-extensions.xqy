@@ -71,6 +71,10 @@ declare function s:buildABAWD($header as map:map, $content as map:map) {
   let $ids := map:get($header, "SystemIdentifiers")
   let $ssn := (map:get($content, "PersonSSNIdentification"))[1]
 
+  let $annotations := map:get($content, "annotation")
+  let $annotationHdr := map:get($annotations, "headers")
+  let $annotationProps := map:get($annotationHdr, "properties")
+
   let $LdssID := map:get($ids[1], "LdssID")
   let $DONum := map:get($ids[2], "DONum")
   let $personId := map:get($ids[3], "ClientID")
@@ -102,7 +106,11 @@ declare function s:buildABAWD($header as map:map, $content as map:map) {
     map:put($json, "summaryEIncome", map:get($content, "SummaryEarnedIncome")),
     map:put($json, "pregnancyDueDate", map:get($content, "PregnancyDueDate")),
     map:put($json, "disability", map:get($content, "Disability")),
-    map:put($json, "address", $addressStr)
+    map:put($json, "address", $addressStr),
+
+    map:put($json, "abawdStatusDate", map:get($annotationHdr, "annotationDateTime")),
+    map:put($json, "abawdStatus", map:get(map:get($annotationProps, "23"), "abawdStatus"))
+
   )
   return $json
 };
