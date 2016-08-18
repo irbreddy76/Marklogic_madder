@@ -106,6 +106,13 @@
       return wrkTotal;
     };
 
+    $scope.flagScreened = function (abawdStatus) {
+      if(abawdStatus != null) {
+        return "screened-cell";
+      }
+      return null;
+    };
+
     $scope.flagPregDueDate = function (pregDate) {
       if(pregDate != null) {
         var startDateTime = Date.parse(pregDate);

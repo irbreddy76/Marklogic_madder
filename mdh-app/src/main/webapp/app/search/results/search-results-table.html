@@ -7,10 +7,11 @@
             <th>Client ID</th>
             <th ng-click="toggleSort({field: 'fn'})">First Name<span class="glyphicon glyphicon-sort"></span></th>
             <th ng-click="toggleSort({field: 'ln'})">Last Name<span class="glyphicon glyphicon-sort"></span></th>
+            <th>Screening Date</th>
+            <th>Screening Result</th>
             <th>SSN</th>
             <th ng-click="toggleSort({field: 'bd'})">DoB<span class="glyphicon glyphicon-sort"></span></th>
             <th>Address</th>
-
             <th>HOH Code</th>
             <th>Language Code</th>
             <th>Living Arrgmt Code</th>
@@ -27,6 +28,8 @@
             <td>{{result.matches.summary.personId}}</td>
             <td>{{result.matches.summary.firstName}}</td>
             <td>{{result.matches.summary.lastName}}</td>
+            <td ng-class="flagScreened(result.matches.summary.abawdStatusDate)">{{result.matches.summary.abawdStatusDate | date: 'MM-dd-yyyy'}}</td>
+            <td ng-class="flagScreened(result.matches.summary.abawdStatus)">{{result.matches.summary.abawdStatus}}</td>
             <td>{{result.matches.summary.id}}</td>
             <td>{{result.matches.summary.dob | date: 'MM-dd-yyyy'}}</td>
             <td>{{result.matches.summary.address}}</td>

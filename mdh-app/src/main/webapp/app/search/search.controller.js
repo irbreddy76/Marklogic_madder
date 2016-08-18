@@ -97,10 +97,8 @@
 
     ctrl.submitSearch = function(response) {
        if(response.data) {
-         console.log(response.data); //AGD
          this.mlSearch.setPageLength(ctrl.pageLength);
          mlSearch.additionalQueries = [];
-         console.log(mlSearch);
          mlSearch.additionalQueries.push(response.data);
          return this._search();
        }
