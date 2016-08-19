@@ -109,7 +109,7 @@ declare function s:buildABAWD($header as map:map, $content as map:map) {
     map:put($json, "address", $addressStr),
 
     map:put($json, "abawdStatusDate", map:get($annotationHdr, "annotationDateTime")),
-    map:put($json, "abawdStatus", map:get(map:get($annotationProps, "23"), "abawdStatus"))
+    map:put($json, "actualScreeningResult", map:get(map:get($annotationProps, "24"), "actualScreeningResult"))
 
   )
   return $json
