@@ -184,16 +184,17 @@ declare function an:getAnnotation($params as map:map) {
     return 
       if($key = "identifiers") then (
         fn:trace(" -- param:identifiers:", $TRACE_LEVEL_DETAIL),
-        for $property in json:array-values(map:get($params, "identifiers"))
+        for $property in map:get($params, "identifiers")
+        let $prop-json := xdmp:from-json-string($property)
         let $_ :=
           if(fn:empty($identifier-queries)) then 
             xdmp:set($identifier-queries, 
-              cts:json-property-value-query(map:get($property, "name"), map:get($property, "value")))
+              cts:json-property-value-query(map:get($prop-json, "name"), map:get($prop-json, "value")))
           else
             xdmp:set($identifier-queries, ($identifier-queries,
-              cts:json-property-value-query(map:get($property, "name"), map:get($property, "value"))
+              cts:json-property-value-query(map:get($prop-json, "name"), map:get($prop-json, "value"))
             ))
-        return fn:trace("   -- " || map:get($property, "name") || "=" || map:get($property, "value"),
+        return fn:trace("   -- " || map:get($prop-json, "name") || "=" || map:get($prop-json, "value"),
           $TRACE_LEVEL_DETAIL)
       )   
       else  
