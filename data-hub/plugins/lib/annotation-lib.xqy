@@ -206,8 +206,7 @@ declare function an:getAnnotation($params as map:map) {
         cts:json-property-value-query("annotationUser", map:get($params, "user"))
       else (),
       if(fn:empty($identifier-queries)) then ()
-      else cts:or-query(($identifier-queries))
-      else (),
+      else cts:or-query(($identifier-queries)),
       if(map:contains($params, "before")) then
         cts:json-property-range-query(xs:QName("an:annotationDateTime"), "<=", xs:dateTime(map:get($params, "before")))
       else (),
