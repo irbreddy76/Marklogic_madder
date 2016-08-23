@@ -14,7 +14,12 @@ function createHeaders(id, content, options) {
   
   for(var i = 0; i < content.ParticipationIdentifier.length; i++) {
     var identifier = content.ParticipationIdentifier[i];
-    header.participationIds.push({participationId: identifier.ParticipationKey});
+    var value = {};
+    if(identifier.ExtractDateTime) {
+      value.SourceExtractDateTime = new Date(identifier.ExtractDateTime.replace(' ', 'T'));
+    }
+    value.participationId = identifier.ParticipationKey;
+    header.participationIds.push(value);
   }
   return header;
 }

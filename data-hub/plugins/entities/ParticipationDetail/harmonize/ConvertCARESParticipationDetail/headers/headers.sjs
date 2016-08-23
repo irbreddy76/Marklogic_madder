@@ -15,17 +15,19 @@ function createHeaders(id, content, options) {
   
   for(var i = 0; i < content.ParticipationIdentifier.length; i++) {
     var identifier = content.ParticipationIdentifier[i];
+    var value = {};
+    if(identifier.ExtractDateTime) {
+      value.SourceExtractDateTime = new Date(identifier.ExtractDateTime.replace(' ', 'T'));
+    }
     if(identifier.ParticipationType == 'Service Case') {
-      header.ParticipationIds.push({ServiceCaseId: identifier.ParticipationKey});
+      value.ServiceCaseId = identifier.ParticipationKey;
+      header.ParticipationIds.push(value);
       header.CaseType = 'Service Case';
     } else if(identifier.ParticipationType ==  'Adoption Planning') {
-      header.ParticipationIds.push({AdoptionPlanningId: identifier.ParticipationKey});
+      value.AdoptionPlanningId = identifier.ParticipationKey;
+      header.ParticipationIds.push(value);
       header.CaseType = 'Adoption Planning';
-    } else if(identifier.ParticipationType ==  'AU') {
-      header.ParticipationIds.push({AUId: identifier.ParticipationKey});
-      header.CaseType = 'AU';
-    }	
-	
+    }
   }
 
   header.status = content.OpenDate;  

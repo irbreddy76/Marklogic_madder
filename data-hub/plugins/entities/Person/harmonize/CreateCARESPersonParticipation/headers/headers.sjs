@@ -12,17 +12,26 @@ function createHeaders(id, content, options) {
     RecordType: 'MasterPerson',
     SystemIdentifiers: [],
     ParticipationIdentifiers: [],
-    Addresses: []
+    Addresses: [],
+    SystemLoadDate: fn.currentDateTime(),
+    SystemModifiedDate: fn.currentDateTime()
   };
  
   var i, j;
   var person = content.records[0].Person;
   for(i = 0; i < person.SystemIdentifiers.length; i++) {
     var identifier = person.SystemIdentifiers[i];
+    var value = {};
+    
+    if(identifier.ExtractDateTime) {
+      value.SourceExtractDateTime = new Date(identifier.ExtractDateTime.replace(' ', 'T'));
+    }
     if(identifier.SourceSystem == 'MDCHESSIE') {
-      header.SystemIdentifiers.push({chessieId: identifier.SourceKey});
+        value.chessieId = identifier.SourceKey;
+        header.SystemIdentifiers.push(value);
     } else if(identifier.SourceSystem == 'CIS') {
-      header.SystemIdentifiers.push({cisId: identifier.SourceKey});
+        value.cisId = identifier.SourceKey;
+        header.SystemIdentifiers.push(value);
     }
   };
 

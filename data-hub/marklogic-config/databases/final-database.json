@@ -236,7 +236,7 @@
       "scalar-type": "date",
       "namespace-uri": "",
       "localname": "PregnancyDueDate",
-      "collation": "http://marklogic.com/collation/codepoint",
+      "collation": "",
       "range-value-positions": false,
       "invalid-values": "reject"
     },
