@@ -253,7 +253,10 @@
     	                comments: $scope.person.comments
     	              }
                     }).then(function(response) {
-                        if(response.data.results[0].error) {
+                        if(response.data.results.length == 0) {
+                          $scope.error = true;
+                          $scope.reason = 'Unknown Error';
+                        } else if(response.data.results[0].error) {
                           $scope.error = true;
                           $scope.reason = response.data.results[0].reason;
                         } else { $scope.reason = 'ABAWD Determination Saved'; }
@@ -500,7 +503,7 @@
                 <center><b>Consider this person chronically homeless.</b></center>
             </div>
           
-            <input type="submit" value="Compute" ng-click="screen()"/>
+            <input type="submit" value="Compute" />
           </form>
           </div>
 
@@ -522,7 +525,7 @@
             <div class="decision">
               <form ng-submit="save()">
                 <div>
-                  <input type="submit" value="Save" ng-click="save()"/>
+                  <input type="submit" value="Save" />
                 </div>
                 <div>
                 <p>Decision:</p>

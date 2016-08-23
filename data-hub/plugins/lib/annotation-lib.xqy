@@ -177,14 +177,23 @@ declare function an:createAnnotation($uri as xs:string?, $identifiers, $params a
 };
 
 declare function an:getAnnotation($params as map:map) {
+  let $identifier-queries := ()
   let $_ := (
     fn:trace("getAnnotation called", $TRACE_LEVEL_TRACE),
     for $key in map:keys($params)
     return 
       if($key = "identifiers") then (
         fn:trace(" -- param:identifiers:", $TRACE_LEVEL_DETAIL),
-        for $property in map:get($params, "identifiers")
-        return fn:trace("   -- property:" || map:get($property, "name") || "=" || map:get($property, "value"),
+        for $property in json:array-values(map:get($params, "identifiers"))
+        let $_ :=
+          if(fn:empty($identifier-queries)) then 
+            xdmp:set($identifier-queries, 
+              cts:json-property-value-query(map:get($property, "name"), map:get($property, "value")))
+          else
+            xdmp:set($identifier-queries, ($identifier-queries,
+              cts:json-property-value-query(map:get($property, "name"), map:get($property, "value"))
+            ))
+        return fn:trace("   -- " || map:get($property, "name") || "=" || map:get($property, "value"),
           $TRACE_LEVEL_DETAIL)
       )   
       else  
@@ -196,13 +205,8 @@ declare function an:getAnnotation($params as map:map) {
       if(map:contains($params, "user")) then 
         cts:json-property-value-query("annotationUser", map:get($params, "user"))
       else (),
-      if(map:contains($params, "identifiers")) then
-        cts:or-query((
-          for $identifier in map:get($params, "identifiers")
-          return cts:json-property-value-query(map:get($identifier, "name"),
-            map:get($identifier, "value"))
-        ))
-      else (),
+      if(fn:empty($identifier-queries)) then ()
+      else cts:or-query(($identifier-queries)),
       if(map:contains($params, "before")) then
         cts:json-property-range-query(xs:QName("an:annotationDateTime"), "<=", xs:dateTime(map:get($params, "before")))
       else (),
