@@ -93,7 +93,10 @@
         </thead>
         <tbody>
           <tr ng-repeat="result in results">
-            <td>{{result.matches.summary.sourceSystem}}</td>
+            <td ng-if="result.matches.summary.sourceSystem === 'CHESSIE'" bgcolor="Yellow">{{result.matches.summary.sourceSystem}}</td>
+            <td ng-if="result.matches.summary.sourceSystem === 'CARES'" bgcolor="YellowGreen">{{result.matches.summary.sourceSystem}}</td>
+            <td ng-if="result.matches.summary.sourceSystem != 'CHESSIE' &&
+              result.matches.summary.sourceSystem != 'CARES'">{{result.matches.summary.sourceSystem}}</td>
             <td>{{result.matches.summary.firstName}}</td>
             <td>{{result.matches.summary.middleName}}</td>
             <td>{{result.matches.summary.lastName}}</td>
