@@ -56,7 +56,7 @@
         mlRest.extension('annotation', {
           method: 'GET',
             params: {
-              identifiers: identifiers
+              'rs:identifiers': identifiers
             }
           }).then(function(response) {
             ctrl.isLoading = false;

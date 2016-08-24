@@ -8,14 +8,39 @@
  * @return - nothing
  */
 function write(id, envelope, options) {
-  var uri = '/person/CARES/' + fn.generateId(envelope) + '.json';
+  var identifiers = [];
+  
+  var i;
+  
+  for(i = 0; i < envelope.content.SystemIdentifiers.length; i++) {
+    var currentIdentifier = envelope.content.SystemIdentifiers[i];
+    identifiers.push(
+      cts.jsonPropertyValueQuery(currentIdentifier.SourceSystem, currentIdentifier.SourceKey));
+  }
+  
+  var originalRecord = cts.uris((), (), cts.andQuery([identifiers,
+    cts.collectionQuery(['Person']),
+    cts.collectionQuery(['CARES'])]).toArray();
+  
+  if(originalRecord.length == 0) {   
+    var uri = '/person/CARES/' + fn.generateId(envelope) + '.json';
 
-  xdmp.documentInsert(uri, envelope, 
-    [xdmp.permission('rest-reader', 'read'),
-     xdmp.permission('rest-writer', 'update'),
-     xdmp.permission('mddhr-read', 'read'),
-     xdmp.permission('mddhr-write', 'update')],
-    ['CARES', 'Person', 'Sample']);
+    envelope.header.systemModifiedDate = fn.currentDateTime();
+    envelope.header.systemLoadDate = fn.currentDateTime();
+
+    xdmp.documentInsert(uri, envelope, 
+      [xdmp.permission('mddhr-read', 'read'),
+       xdmp.permission('mddhr-write', 'update'),
+       xdmp:permission('mddhr-CARES' 'read'),
+       xdmp:permission('mddhr-CARES' 'update')],
+      ['CARES', 'Person', 'Sample']);
+  } else {
+     let doc = fn.doc(originalRecord[0]);
+     envelope.header.systemModifiedDate = fn.currentDateTime();
+     envelope.header.systemLoadDate = doc.headers.systemLoadDate;
+     xdmp.documentInsert(originalRecord[0], envelope,
+       xdmp.documentGetPermissions(originalRecord[0]), xdmp.documentGetCollections(originalRecord[0]));
+  }
 }
 
 module.exports = {

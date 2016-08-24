@@ -401,7 +401,8 @@ declare function nm:get-query($params as map:map, $config as map:map,  $output a
     fn:trace("GET-QUERY -- CALLED", $TRACE_LEVEL_TRACE),
     for $key in map:keys($params)
     return
-      fn:trace(" -- params.key:" || $key || "=" || map:get($params, $key), $TRACE_LEVEL_DETAIL),
+      for $value in map:get($params, $key)
+      return fn:trace(" -- params.key:" || $key || "=" || $value, $TRACE_LEVEL_DETAIL),
     for $key in map:keys($config)
     return
       fn:trace(" -- config.key:" || $key || "=" || map:get($config, $key), $TRACE_LEVEL_DETAIL),

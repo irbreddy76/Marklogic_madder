@@ -14,10 +14,18 @@ function createHeaders(id, content, options) {
   var i;
   for(i = 0; i < content.SystemIdentifiers.length; i++) {
     var identifier = content.SystemIdentifiers[i];
+    var value = {};
+    
+    if(identifier.ExtractDateTime) {
+      value.SourceExtractDateTime = new Date(identifier.ExtractDateTime.replace(' ', 'T'));
+    }
+    
     if(identifier.SourceSystem == 'MDCHESSIE') {
-      header.identifiers.push( {chessieId: identifier.SourceKey});
+      value.chessieId = identifier.SourceKey;
+      header.identifiers.push(value);
     } else if(identifier.SourceSystem == 'CIS') {
-      header.identifiers.push( {cisId: identifier.SourceKey});
+      value.cisId = identifier.SourceKey;
+      header.identifiers.push(value);
     }
   }
   return header;
