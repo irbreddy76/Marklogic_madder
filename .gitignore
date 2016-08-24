@@ -11,3 +11,4 @@ mdh-app/src/main/resources/templates
 mdh-app/src/main/resources/bower_components
 data-hub/build/
 data-hub/environment.properties
+data-hub/.tmp
