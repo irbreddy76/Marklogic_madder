@@ -79,6 +79,7 @@
         ng-if="results[0].matches.summary.recordType == 'MasterPerson'">
         <thead>
           <tr>
+            <th>Source System</th>
             <th ng-click="toggleSort({field: 'fn'})">First Name<span class="glyphicon glyphicon-sort"></span></th>
             <th>Middle</th>
             <th ng-click="toggleSort({field: 'ln'})">Last Name<span class="glyphicon glyphicon-sort"></span></th>
@@ -92,6 +93,7 @@
         </thead>
         <tbody>
           <tr ng-repeat="result in results">
+            <td>{{result.matches.summary.sourceSystem}}</td>
             <td>{{result.matches.summary.firstName}}</td>
             <td>{{result.matches.summary.middleName}}</td>
             <td>{{result.matches.summary.lastName}}</td>
