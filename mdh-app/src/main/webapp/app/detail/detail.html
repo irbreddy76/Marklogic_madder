@@ -3,7 +3,7 @@
   <case-detail case="ctrl.doc" ng-if="ctrl.doc.headers.RecordType == 'Case'"></case-detail>
   <abawd-detail person="ctrl.doc" uri="ctrl.uri" ng-if="ctrl.doc.headers.RecordType == 'ABAWD'"></abawd-detail>
   <div ng-if="ctrl.doc.headers.RecordType == 'PersonImage'">
-    <img src="{{ '/v1/documents?uri=' + ctrl.doc.content.imageUri }}"/>
+    <img src="{{ 'v1/documents?uri=' + ctrl.doc.content.imageUri }}"/>
   </div>
   <div class="col-sm-8">
     <tabset type="pills">

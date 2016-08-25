@@ -18,6 +18,13 @@ declare function s:buildSummary(
     else if($type = "Person") then s:buildPerson($header, $content)
     else if($type = "ABAWD") then s:buildABAWD($header, $content)
     else ()
+  let $collections := xdmp:document-get-collections(fn:document-uri($result))
+  let $_ :=
+    if("CHESSIE" = $collections) then
+      map:put($summary, "sourceSystem", "CHESSIE")
+    else if("CARES" = $collections) then
+      map:put($summary, "sourceSystem", "CARES")
+    else ()
   let $jsonResult := json:object()
   let $_ := (
     map:put($jsonResult, "summary", $summary)
