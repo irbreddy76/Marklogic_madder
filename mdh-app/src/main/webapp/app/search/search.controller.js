@@ -126,7 +126,7 @@
 
     ctrl.submitSearch = function(response) {
        if(response.data) {
-    	 mlSearch.setPageLength(ctrl.searchParams.page).setPage(this.page);
+    	 mlSearch.setPageLength(ctrl.searchParams.pageLength).setPage(this.page);
          mlSearch.additionalQueries = [];
          mlSearch.additionalQueries.push(response.data);
          return this._search();

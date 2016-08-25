@@ -5,5 +5,11 @@
 	"external-name": [],
 	"role": [ "rest-reader" ],
 	"permission": [],
-	"privilege": []
+	"privilege": [
+	  {
+	      "privilege-name": "sem-sparql",
+	      "action": "http://marklogic.com/xdmp/privileges/sem-sparql",
+	      "kind": "execute"
+	  }
+	]
 }
