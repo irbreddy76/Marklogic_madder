@@ -19,6 +19,11 @@
 	      "privilege-name": "unprotected-uri",
 	      "action": "http://marklogic.com/xdmp/privileges/unprotected-uri",
 	      "kind": "execute"
+	  },
+	  { 
+	      "privilege-name": "root-uri-access",
+	      "action": "/",
+	      "kind": "uri"
 	  }
 	]
 }
