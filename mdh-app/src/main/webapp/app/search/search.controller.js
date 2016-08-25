@@ -6,14 +6,14 @@
     .controller('SearchCtrl', SearchCtrl);
 
   SearchCtrl.$inject = ['$scope', '$location', 'userService', 'MLSearchFactory',
-                        'personHelper', 'caseHelper', 'abawdHelper', 'MLRest'];
+                        'personHelper', 'caseHelper', 'abawdHelper', 'MLRest', 'searchHelper'];
 
   // inherit from MLSearchController
   var superCtrl = MLSearchController.prototype;
   SearchCtrl.prototype = Object.create(superCtrl);
 
   function SearchCtrl($scope, $location, userService, searchFactory,
-		  personHelper, caseHelper, abawdHelper, MLRest) {
+		  personHelper, caseHelper, abawdHelper, MLRest, searchHelper) {
     var ctrl = this;
     ctrl.runMapSearch = false;
 
@@ -26,7 +26,7 @@
     ctrl.report = abawdHelper.getReport(); //Object used to persist any user provided search params
     ctrl.case = caseHelper.getCase();
     ctrl.person = personHelper.getPerson();
-    ctrl.mode = 'basic';
+    ctrl.searchParams = searchHelper.getParams();
 
     ctrl.init();
 
@@ -42,18 +42,46 @@
 
     // Re-run search based off current mode
     ctrl.setMode = function(mode) {
-      ctrl.mode = mode;
-      switch(ctrl.mode) {
+      if(ctrl.searchParams.searchMode != mode) {
+    	  ctrl.searchParams.page = 1;
+    	  this.mlSearch.activeFacets = [];
+      }
+      ctrl.searchParams.searchMode = mode;
+      switch(mode) {
         case 'case':
+          ctrl.searchParams.abawdFacets = [];
           this.mlSearch.options.queryOptions = 'case';
+          ctrl.searchParams.tabStatus.isCaseActive = true;
+          ctrl.searchParams.tabStatus.isPersonActive = false;
+          ctrl.searchParams.tabStatus.isBasicActive = false;
+          ctrl.searchParams.tabStatus.isAbawdActive = false;
           break;
         case 'abawd':
+          this.mlSearch.activeFacets = ctrl.searchParams.abawdFacets;
           this.mlSearch.options.queryOptions = 'abawd';
+          ctrl.searchParams.tabStatus.isCaseActive = false;
+          ctrl.searchParams.tabStatus.isPersonActive = false;
+          ctrl.searchParams.tabStatus.isBasicActive = false;
+          ctrl.searchParams.tabStatus.isAbawdActive = true;
+          break;
+        case 'person':
+          ctrl.searchParams.abawdFacets = [];
+          this.mlSearch.options.queryOptions = 'all';
+          ctrl.searchParams.tabStatus.isCaseActive = false;
+          ctrl.searchParams.tabStatus.isPersonActive = true;
+          ctrl.searchParams.tabStatus.isBasicActive = false;
+          ctrl.searchParams.tabStatus.isAbawdActive = false;
           break;
         default:
+          ctrl.searchParams.abawdFacets = [];
           this.mlSearch.options.queryOptions = 'all';
+          ctrl.searchParams.tabStatus.isCaseActive = false;
+          ctrl.searchParams.tabStatus.isPersonActive = false;
+          ctrl.searchParams.tabStatus.isBasicActive = true;
+          ctrl.searchParams.tabStatus.isAbawdActive = false;
           break;
       }
+   
       $scope.sort = {
         field: 'ws',
         order: 'd'
@@ -75,6 +103,7 @@
 
     ctrl.doABAWDSearch = function(report) {
       this.mlSearch.options.queryOptions = 'abawd';
+      ctrl.searchParams.abawdFacets = this.mlSearch.activeFacets;
       abawdHelper.updateReport(report);
       var params = abawdHelper.getReportQueryParams(report);
       console.log(params);
@@ -97,7 +126,7 @@
 
     ctrl.submitSearch = function(response) {
        if(response.data) {
-         this.mlSearch.setPageLength(ctrl.pageLength);
+    	 mlSearch.setPageLength(ctrl.searchParams.page).setPage(this.page);
          mlSearch.additionalQueries = [];
          mlSearch.additionalQueries.push(response.data);
          return this._search();
@@ -105,12 +134,14 @@
     };
 
     ctrl.newSearch = function(qtext) {
-      this.page = 1;
+      ctrl.searchParams.page = 1;
       ctrl.search(qtext);
     }
 
     ctrl.search = function(qtext) {
-      switch(ctrl.mode) {
+      searchHelper.updateParams(ctrl.searchParams);
+      this.page = ctrl.searchParams.page;
+      switch(ctrl.searchParams.searchMode) {
         case 'person':
           ctrl.doPersonSearch(ctrl.person);
           break;
@@ -124,7 +155,7 @@
           if ( arguments.length ) {
 				this.qtext = qtext;
 			}
-			this.mlSearch.setText( this.qtext ).setPageLength(ctrl.pageLength);
+			this.mlSearch.setText( this.qtext ).setPageLength(ctrl.searchParams.pageLength).setPage(this.page);
 			if (ctrl.runMapSearch) {
 				mlSearch.additionalQueries = [];
 				mlSearch.additionalQueries.push(ctrl.getGeoConstraint());
@@ -176,7 +207,7 @@
     });
 
     ctrl.clearText = function() {
-      switch(ctrl.mode) {
+      switch(ctrl.searchParams.searchMode) {
         case 'person':
           ctrl.person = {};
           personHelper.clearPerson();
@@ -193,6 +224,7 @@
           this.qtext = {};
           break;
       }
+      searchHelper.resetParams();
       this.mlSearch.clearAllFacets();
       ctrl.search(this.qtext);
     };
@@ -212,10 +244,8 @@
       ctrl.search(this.qtext);
     };
 
-    ctrl.pageLength = 10;
-
     ctrl.selectPage = function() {
-      this.mlSearch.setPage(this.page);
+      //this.mlSearch.setPage(this.page);
       ctrl.search(this.qtext);
     };
 
@@ -223,7 +253,8 @@
       field: 'ws',
       order: 'd'
     };
-    
+        
+    /*
     this.parseExtraURLParams = function() {
         var params = this.$location.search();
         var queryParamsChanged = false;
@@ -260,6 +291,6 @@
         
       return this;
     };
-
+    */
   }
 }());
