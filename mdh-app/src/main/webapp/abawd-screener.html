@@ -22,14 +22,14 @@
         }
 
         module.controller("ABAWDScreenerController", ['$scope', 'MLRest', function ($scope, MLRest) {
-            
+
             $scope.person = {};
 
             var idTokens = document.location.search.match(/clientID=[A-Za-z0-9]+/);
             if(idTokens && idTokens.length > 0) {
               $scope.person.clientID = idTokens[0].replace("clientID=", "");
             }
-            
+
             $scope.error = false;
             $scope.reason = null;
             $scope.person.child = false;
@@ -42,7 +42,7 @@
             $scope.person.treatment = false;
             $scope.person.workActivity = false;
             $scope.person.school = false;
-        
+
             $scope.person.hours = 0;
 
             $scope.person.comments = null;
@@ -192,7 +192,7 @@
                     } else if (isABAWD) {
                       screeningResult = "ABAWD";
                     } else {
-                      screeningResult = "notABAWD";
+                      screeningResult = "Exempt";
                     }
 
                     //TODO combine with above logic
@@ -208,11 +208,11 @@
                     $scope.person.decision = screeningResult;
 
                     console.log($scope.person);
-                    
+
                     $scope.doShow = true;
                 }
             }
-            
+
             $scope.save = function() {
                var result = confirm("Confirm submission of ABAWD Decision");
                if(result == true) {
@@ -229,7 +229,7 @@
                           { name: 'customerName', value: $scope.person.customerName },
                           { name: 'customerDoB', value: $scope.person.customerDOB },
                           { name: 'certificationPeriod', value: $scope.person.certPeriod },
-                          { name: 'screeningType', value: $scope.person.screeningType }, 
+                          { name: 'screeningType', value: $scope.person.screeningType },
                           { name: 'hasChild', value: $scope.person.child },
                           { name: 'childDoB', value: $scope.person.childDOB },
                           { name: 'isHomeless', value: $scope.person.homeless },
@@ -241,7 +241,7 @@
                           { name: 'employedHoursPerWeek', value: $scope.person.hours },
                           { name: 'inTreatmentProgram', value: $scope.person.treatment },
                           { name: 'hasWorkActivity', value: $scope.person.workActivity },
-                          { name: 'inSchool', value: $scope.person.school }, 
+                          { name: 'inSchool', value: $scope.person.school },
                           { name: 'expHomelessness', value: $scope.person.expHomelessness },
                           { name: 'homelessHasPhone', value: $scope.person.homelessPhone },
                           { name: 'homelessHasTransport', value: $scope.person.homelessTransportation },
@@ -503,7 +503,7 @@
             <div ng-show="person.homeless" class="result">
                 <center><b>Consider this person chronically homeless.</b></center>
             </div>
-          
+
             <input type="submit" value="Compute" />
           </form>
           </div>
@@ -515,7 +515,7 @@
                 This customer is an ABAWD. Code the Google Sheet accordingly. Save this file as a .PDF and upload it to OnBase in the WORK PROGRAM folder under Work Program Letter section.
             </div>
             <div class="result" ng-show="showNotABAWDMessage">
-                This customer is NOT and ABAWD. Code the Google Sheet accordingly. Save this file as a .PDF and upload it to OnBase in the WORK PROGRAM folder under Work Program Letter section<br/>
+                This customer is NOT an ABAWD. Code the Google Sheet accordingly. Save this file as a .PDF and upload it to OnBase in the WORK PROGRAM folder under Work Program Letter section<br/>
             </div>
             <div class="result" ng-show="showWatchMessage">
                 This customer is likely to become an ABAWD before the next certification period.  Set up a 745 Alert in CARES.<br/>
@@ -532,15 +532,15 @@
                 <p>Decision:</p>
                 <label>
                   <input type="radio" ng-model="person.decision" value="ABAWD">
-                  ABAWD  
+                  ABAWD
                 </label><br/>
                 <label>
                   <input type="radio" ng-model="person.decision" value="ABAWDWatch">
-                  ABAWD Watch  
+                  ABAWD Watch
                 </label><br/>
                 <label>
-                  <input type="radio" ng-model="person.decision" value="notABAWD">
-                  Not ABAWD  
+                  <input type="radio" ng-model="person.decision" value="Exempt">
+                  Exempt
                 </label><br/>
                 </div>
                 <div>
