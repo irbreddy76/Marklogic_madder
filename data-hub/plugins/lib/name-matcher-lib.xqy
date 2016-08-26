@@ -415,16 +415,26 @@ declare function nm:get-query($params as map:map, $config as map:map,  $output a
   let $queries := (
     qh:build-query(map:get($params, $CONFIG/ssn/param/key), $config, $CONFIG/ssn, $output),
     qh:build-query(map:get($params, $CONFIG/dob/param/key), $config, $CONFIG/dob, $output),
-    qh:build-query(fn:lower-case(map:get($params, $CONFIG/middle/param/key)), $config, $CONFIG/middle, 
+    qh:build-query(
+      for $name in map:get($params, $CONFIG/middle/param/key)
+      return fn:lower-case($name), $config, $CONFIG/middle, 
       $output),
-    qh:build-query(fn:lower-case(map:get($params, $CONFIG/first/param/key)), $config, $CONFIG/first,
+    qh:build-query(
+      for $name in map:get($params, $CONFIG/first/param/key)
+      return fn:lower-case($name), $config, $CONFIG/first,
       $output),
-    qh:build-query(fn:lower-case(map:get($params, $CONFIG/last/param/key)), $config, $CONFIG/last,
+    qh:build-query(
+      for $name in map:get($params, $CONFIG/last/param/key)
+      return fn:lower-case($name), $config, $CONFIG/last,
       $output),    
-    qh:build-query(fn:lower-case(map:get($params, $CONFIG/race/param/key)), $config, $CONFIG/race,
+    qh:build-query(
+      for $race in map:get($params, $CONFIG/race/param/key)
+      return fn:lower-case($race), $config, $CONFIG/race,
       $output),
     qh:build-query(map:get($params, $CONFIG/phone/param/key), $config, $CONFIG/phone, $output),
-    qh:build-query(fn:lower-case(map:get($params, $CONFIG/email/param/key)), $config, $CONFIG/email,
+    qh:build-query(
+      for $email in map:get($params, $CONFIG/email/param/key)
+      return fn:lower-case($email), $config, $CONFIG/email,
       $output),
     nm:build-address-query($params, $config, $output)
   )
