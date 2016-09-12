@@ -17,15 +17,8 @@ declare function get(
     map:put($context, "output-types", "application/xml"),
     xdmp:set-response-code(200, "Ok"),
     let $cert-period := map:get($params, "cert-period")
-
     let $q := abawd-lib:get-abawd-structured-query($cert-period)
     return xdmp:to-json($q)
-
-    (:
-    let $q := abawd-lib:get-abawd-query($cert-period)
-    let $obj := object-node{ "query": $q }
-    return xdmp:to-json($obj/query)
-    :)
   } catch($e) {
     map:put($context, "output-types", "text/plain"),
     xdmp:set-response-code(500, "Error"),
@@ -51,6 +44,7 @@ declare function post(
 {
   fn:error((), "RESTAPI-SRVEXERR", (405, "Method Not Allowed", "PUT is not implemented"))
 };
+
 
 declare function delete(
   $context as map:map,

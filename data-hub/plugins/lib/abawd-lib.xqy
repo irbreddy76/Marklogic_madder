@@ -38,18 +38,15 @@ declare function abawd-lib:get-abawd-structured-query($cert-period as xs:string)
 
   let $pregQuery := abawd-lib:not-q(qh:range-q("PregnancyDueDate", xs:date(fn:current-date()), ">=", (), 8, $qh:OUTPUT_JSON, "date", ()))
 
-  let $doQuery := abawd-lib:or-q((
-      qh:value-q("DONum", "20", (), 8, $qh:OUTPUT_JSON, "string"), qh:value-q("DONum", "100", (), 8, $qh:OUTPUT_JSON, "string"),
-      qh:value-q("DONum", "21", (), 8, $qh:OUTPUT_JSON, "string"), qh:value-q("DONum", "130", (), 8, $qh:OUTPUT_JSON, "string"),
-      qh:value-q("DONum", "22", (), 8, $qh:OUTPUT_JSON, "string"), qh:value-q("DONum", "150", (), 8, $qh:OUTPUT_JSON, "string"),
-      qh:value-q("DONum", "30", (), 8, $qh:OUTPUT_JSON, "string"), qh:value-q("DONum", "151", (), 8, $qh:OUTPUT_JSON, "string"),
-      qh:value-q("DONum", "31", (), 8, $qh:OUTPUT_JSON, "string"), qh:value-q("DONum", "152", (), 8, $qh:OUTPUT_JSON, "string"),
-      qh:value-q("DONum", "32", (), 8, $qh:OUTPUT_JSON, "string"), qh:value-q("DONum", "154", (), 8, $qh:OUTPUT_JSON, "string"),
-      qh:value-q("DONum", "33", (), 8, $qh:OUTPUT_JSON, "string"), qh:value-q("DONum", "160", (), 8, $qh:OUTPUT_JSON, "string"),
-      qh:value-q("DONum", "34", (), 8, $qh:OUTPUT_JSON, "string"), qh:value-q("DONum", "161", (), 8, $qh:OUTPUT_JSON, "string"),
-      qh:value-q("DONum", "36", (), 8, $qh:OUTPUT_JSON, "string"), qh:value-q("DONum", "162", (), 8, $qh:OUTPUT_JSON, "string"),
-      qh:value-q("DONum", "60", (), 8, $qh:OUTPUT_JSON, "string"), qh:value-q("DONum", "210", (), 8, $qh:OUTPUT_JSON, "string")
-  ))
+  (: DONum Query
+     Get list of mandatory ABAWD districts from SKOS reference data using triples query
+  :)
+  let $cq := cts:collection-query("http://www.dhr.state.md.us/conceptschemes/ABAWD/CountyDesignations")
+  let $mandatory-districts-subjects := cts:triples((), sem:iri("http://www.dhr.state.md.us/ontology/abawd#abawdMandatory"),
+    sem:typed-literal("true", sem:iri("http://www.w3.org/2001/XMLSchema/boolean")), "=", "concurrent", $cq) ! sem:triple-subject(.)
+  let $mandatory-districts := cts:triples($mandatory-districts-subjects, sem:iri("http://www.w3.org/2004/02/skos/core#notation"), (), "=", "concurrent", $cq)
+    ! sem:triple-object(.)
+  let $doQuery := qh:value-q("DONum", $mandatory-districts, (), 8, $qh:OUTPUT_JSON, "string")
 
   let $livingArrgmnt := abawd-lib:and-q((
       abawd-lib:not-q(qh:value-q("PersonLivingArrangementTypeCode", "HL", (), 8, $qh:OUTPUT_JSON, "string")),
@@ -58,36 +55,7 @@ declare function abawd-lib:get-abawd-structured-query($cert-period as xs:string)
     ))
 
   (:Update to iterate through list checking date, confirm with customer if we should check end date :)
-  let $disability := abawd-lib:or-q((
-      qh:value-q("DisabilityTypeCode", "", (), 8, $qh:OUTPUT_JSON, "string"),
-      qh:value-q("DisabilityTypeCode", "-", (), 8, $qh:OUTPUT_JSON, "string"),
-      qh:value-q("DisabilityTypeCode", "U", (), 8, $qh:OUTPUT_JSON, "string")
-  ))
-
-  (:
-  let $disability := abawd-lib:or-q((
-      abawd-lib:not-q(qh:value-q("DisabilityTypeCode", "A", (), 8, $qh:OUTPUT_JSON, "string")),
-      abawd-lib:not-q(qh:value-q("DisabilityTypeCode", "B", (), 8, $qh:OUTPUT_JSON, "string"),
-      abawd-lib:not-q(qh:value-q("DisabilityTypeCode", "C", (), 8, $qh:OUTPUT_JSON, "string"),
-      abawd-lib:not-q(qh:value-q("DisabilityTypeCode", "D", (), 8, $qh:OUTPUT_JSON, "string"),
-      abawd-lib:not-q(qh:value-q("DisabilityTypeCode", "E", (), 8, $qh:OUTPUT_JSON, "string"),
-      abawd-lib:not-q(qh:value-q("DisabilityTypeCode", "F", (), 8, $qh:OUTPUT_JSON, "string"),
-      abawd-lib:not-q(qh:value-q("DisabilityTypeCode", "G", (), 8, $qh:OUTPUT_JSON, "string"),
-      abawd-lib:not-q(qh:value-q("DisabilityTypeCode", "H", (), 8, $qh:OUTPUT_JSON, "string"),
-      abawd-lib:not-q(qh:value-q("DisabilityTypeCode", "I", (), 8, $qh:OUTPUT_JSON, "string"),
-      abawd-lib:not-q(qh:value-q("DisabilityTypeCode", "J", (), 8, $qh:OUTPUT_JSON, "string"),
-      abawd-lib:not-q(qh:value-q("DisabilityTypeCode", "K", (), 8, $qh:OUTPUT_JSON, "string"),
-      abawd-lib:not-q(qh:value-q("DisabilityTypeCode", "L", (), 8, $qh:OUTPUT_JSON, "string"),
-      abawd-lib:not-q(qh:value-q("DisabilityTypeCode", "M", (), 8, $qh:OUTPUT_JSON, "string"),
-      abawd-lib:not-q(qh:value-q("DisabilityTypeCode", "N", (), 8, $qh:OUTPUT_JSON, "string"),
-      abawd-lib:not-q(qh:value-q("DisabilityTypeCode", "O", (), 8, $qh:OUTPUT_JSON, "string"),
-      abawd-lib:not-q(qh:value-q("DisabilityTypeCode", "P", (), 8, $qh:OUTPUT_JSON, "string"),
-      abawd-lib:not-q(qh:value-q("DisabilityTypeCode", "R", (), 8, $qh:OUTPUT_JSON, "string"),
-      abawd-lib:not-q(qh:value-q("DisabilityTypeCode", "S", (), 8, $qh:OUTPUT_JSON, "string"),
-      abawd-lib:not-q(qh:value-q("DisabilityTypeCode", "T", (), 8, $qh:OUTPUT_JSON, "string")
-    ))
-  )
-  :)
+  let $disability := qh:value-q("DisabilityTypeCode", ("", "-", "U"), (), 8, $qh:OUTPUT_JSON, "string")
 
   let $finalQuery := abawd-lib:and-q((
       $ageQuery,

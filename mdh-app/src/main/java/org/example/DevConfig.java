@@ -1,7 +1,13 @@
 package org.example;
 
+import org.apache.catalina.connector.Connector;
+import org.apache.coyote.http11.Http11NioProtocol;
 import org.example.util.ModuleWatcher;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
+import org.springframework.boot.context.embedded.tomcat.TomcatConnectorCustomizer;
+import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -59,4 +65,36 @@ public class DevConfig {
         return new ModuleWatcher(contentDatabaseClientManager().getObject(),
                 modulesDatabaseClientManager().getObject());
     }
+    
+    
+    /**
+     * Added a customizer for Tomcat so we can set the Max HTTP Header Size.
+     * The search request that includes the additional structured query for ABAWD is
+     * 	very large.
+     * @return
+     */
+    @Bean 
+    EmbeddedServletContainerCustomizer containerCustomizer() {
+    	return new EmbeddedServletContainerCustomizer() {
+            @Override
+            public void customize(ConfigurableEmbeddedServletContainer container) {
+                if(container instanceof TomcatEmbeddedServletContainerFactory) {
+                	TomcatEmbeddedServletContainerFactory tomcat = (TomcatEmbeddedServletContainerFactory) container;
+                	
+                	tomcat.addConnectorCustomizers(
+                            new TomcatConnectorCustomizer() {
+        						@Override
+        						public void customize(Connector connector) {
+        	                        
+        	                        Http11NioProtocol proto = (Http11NioProtocol) connector
+        	    							.getProtocolHandler();
+        	    					proto.setMaxHttpHeaderSize(1000000);
+        						}
+                            });
+                	
+                }
+            }    		
+    	};
+    }
+    
 }
