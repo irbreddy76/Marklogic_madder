@@ -24,7 +24,7 @@
     .directive('searchResults', searchResults)
     .controller('ResultsController', ResultsController);
 
-  ResultsController.$inject = ['$scope'];
+  ResultsController.$inject = ['$scope', '$modal', 'MLRest'];
 
   function searchResults() {
     return {
@@ -82,7 +82,132 @@
     });
   }
 
-  function ResultsController($scope) {
+  function ResultsController($scope, $modal, MLRest) {
+
+    $scope.abawdActions = [
+        { value: "Pro-rated month", label: "Pro-rated month" },
+        { value: "EXEMPT: Over 49", label: "EXEMPT: Over 49" },
+        { value: "EXEMPT: Under 18", label: "EXEMPT: Under 18" },
+        { value: "EXEMPT: Has child <18", label: "EXEMPT: Has child <18" },
+        { value: "EXEMPT: Pregnant", label: "EXEMPT: Pregnant" },
+        { value: "EXEMPT:Is disabled", label: "EXEMPT:Is disabled" },
+        { value: "EXEMPT: Receives disability payment", label: "EXEMPT: Receives disability payment" },
+        { value: "EXEMPT: Applied for Unemployment Insurance", label: "EXEMPT: Applied for Unemployment Insurance" },
+        { value: "EXEMPT: Receives Unemployment Insurance", label: "EXEMPT: Receives Unemployment Insurance" },
+        { value: "EXEMPT: Employed 20+ hours/week", label: "EXEMPT: Employed 20+ hours/week" },
+        { value: "EXEMPT: Self-employed 30+ hours/week", label: "EXEMPT: Self-employed 30+ hours/week" },
+        { value: "EXEMPT: Attends drug or alcohol treatment", label: "EXEMPT: Attends drug or alcohol treatment" },
+        { value: "EXEMPT: Homeless", label: "EXEMPT: Homeless" },
+        { value: "EXEMPT: Age 55 or more with no skills", label: "EXEMPT: Age 55 or more with no skills" },
+        { value: "EXEMPT: Temporary illness lasting > 90 days", label: "EXEMPT: Temporary illness lasting > 90 days" },
+        { value: "EXEMPT: Child care problems", label: "EXEMPT: Child care problems" },
+        { value: "EXEMPT: Migrant or seasonal worker", label: "EXEMPT: Migrant or seasonal worker" },
+        { value: "EXEMPT: Temporarily laid off and will return", label: "EXEMPT: Temporarily laid off and will return" },
+        { value: "EXEMPT: Domestic violence counseling", label: "EXEMPT: Domestic violence counseling" },
+        { value: "EXEMPT:  Transitional housing", label: "EXEMPT:  Transitional housing" },
+        { value: "EXEMPT: Convicted offender working for no pay", label: "EXEMPT: Convicted offender working for no pay" },
+        { value: "EXEMPT: No aceess to transportation", label: "EXEMPT: No aceess to transportation" },
+        { value: "EXEMPT: Attends drug or alcohol treatment", label: "EXEMPT: Attends drug or alcohol treatment" },
+        { value: "ATTENDING: approved work activity 20+ hr/week", label: "ATTENDING: approved work activity 20+ hr/week" },
+        { value: "ATTENDING: school at least part-time", label: "ATTENDING: school at least part-time" },
+        { value: "EMPLOYED: 20+ hrs/wk OR 80+ hrs/mo", label: "EMPLOYED: 20+ hrs/wk OR 80+ hrs/mo" },
+        { value: "SELF-EMPLOYED 30+ hrs/wk", label: "SELF-EMPLOYED 30+ hrs/wk" },
+        { value: "COMBINATION: of work/activities 20+ hrs/wk OR 80+ hrs/mo", label: "COMBINATION: of work/activities 20+ hrs/wk OR 80+ hrs/mo" },
+        { value: "GOOD CAUSE: Illness", label: "GOOD CAUSE: Illness" },
+        { value: "GOOD CAUSE: Caring for ill hh member", label: "GOOD CAUSE: Caring for ill hh member" },
+        { value: "GOOD CAUSE: Emergency", label: "GOOD CAUSE: Emergency" },
+        { value: "GOOD CAUSE: No transportation", label: "GOOD CAUSE: No transportation" },
+        { value: "GOOD CAUSE: Voluntary quit discrimination", label: "GOOD CAUSE: Voluntary quit discrimination" },
+        { value: "GOOD CAUSE: Voluntary quit risk to health and safety", label: "GOOD CAUSE: Voluntary quit risk to health and safety" },
+        { value: "GOOD CAUSE: Voluntary quit unfit to perform duties", label: "GOOD CAUSE: Voluntary quit unfit to perform duties" },
+        { value: "GOOD CAUSE: Voluntary quit not in field of experience", label: "GOOD CAUSE: Voluntary quit not in field of experience" },
+        { value: "GOOD CAUSE: Voluntary quit for religious reasons", label: "GOOD CAUSE: Voluntary quit for religious reasons" },
+        { value: "GOOD CAUSE: Voluntary quit not paid timely", label: "GOOD CAUSE: Voluntary quit not paid timely" },
+        { value: "GOOD CAUSE: Voluntary quit transition to new job or work activity", label: "GOOD CAUSE: Voluntary quit transition to new job or work activity" },
+        { value: "GOOD CAUSE: Voluntary quit move required for job or other work activity", label: "GOOD CAUSE: Voluntary quit move required for job or other work activity" },
+        { value: "APPLICATION APPROVED", label: "APPLICATION APPROVED" },
+        { value: "APPLICATION DENIED: 3 months already received", label: "APPLICATION DENIED: 3 months already received" },
+        { value: "APPLICATION DENIED: non-ABAWD reason", label: "APPLICATION DENIED: non-ABAWD reason" },
+        { value: "1st month not complying: SENT WARNING", label: "1st month not complying: SENT WARNING" },
+        { value: "2nd month not complying: SENT WARNING", label: "2nd month not complying: SENT WARNING" },
+        { value: "3rd month not complying: SENT NOAA & Entered 526 Code", label: "3rd month not complying: SENT NOAA & Entered 526 Code" },
+        { value: "CASE CLOSED 3rd Month", label: "CASE CLOSED 3rd Month" },
+        { value: "CASE CLOSED: Voluntary Quit", label: "CASE CLOSED: Voluntary Quit" },
+        { value: "CASE CLOSED: Other reason", label: "CASE CLOSED: Other reason" },
+        { value: "REGAINED: 1st month: 30 Days of Compliance", label: "REGAINED: 1st month: 30 Days of Compliance" },
+        { value: "REGAINED: 2nd month: SENT WARNING", label: "REGAINED: 2nd month: SENT WARNING" },
+        { value: "REGAINED: 3rd month: SENT NOAA & Entered 526 Code", label: "REGAINED: 3rd month: SENT NOAA & Entered 526 Code" }
+      ];
+
+
+    var modalInstance = null;
+
+    $scope.open = function (result) {
+        modalInstance = $modal.open({
+          animation: ResultsController,
+          templateUrl: 'myModalContent.html',
+          controller: function($scope, $modalInstance, actions, result) {
+
+            console.log(result);
+
+            $scope.abawdActions = actions;
+
+            $scope.ok = function () {
+              result.abawdAction = $scope.actionTaken;
+              $modalInstance.close(result);
+            };
+
+            $scope.cancel = function () {
+              $modalInstance.dismiss('cancel');
+            };
+          },
+          size: null,
+          resolve: {
+            actions: function () {
+              return $scope.abawdActions;
+            },
+            result: function () {
+              return result;
+            }
+
+          }
+        });
+
+        modalInstance.result.then(function (result) {
+              //Save action as an annotation
+              MLRest.extension('annotation', {
+                method: 'POST',
+                data: {
+                  collections: ['ABAWDAction'],
+                  user: "Unknown",
+                  identifiers: [
+                    { name: 'ClientID', value: result.personId }
+                  ],
+                  properties: [
+                      { name: 'customerName', value: result.firstName + " " + result.lastName },
+                      { name: 'customerDoB', value: result.dob },
+                      //{ name: 'certificationPeriod', value: $scope.person.certPeriod },
+                      { name: 'abawdAction', value: result.abawdAction},
+                      { name: 'annotationType', value: 'ABAWDAction' }
+                  ]
+                }
+                }).then(function(response) {
+                    if(response.data.results.length == 0) {
+                      $scope.error = true;
+                      $scope.reason = 'Unknown Error';
+                    } else if(response.data.results[0].error) {
+                      $scope.error = true;
+                      $scope.reason = response.data.results[0].reason;
+                    } else { $scope.reason = 'ABAWD Determination Saved'; }
+                });
+
+
+              console.log("action taken: " + result.abawdAction);
+            }, function () {
+              console.log('Modal dismissed at: ' + new Date());
+            });
+
+    };
 
     //Sum Income Summary
     $scope.totalIncome = function (income) {

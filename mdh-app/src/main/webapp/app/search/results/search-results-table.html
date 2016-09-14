@@ -1,5 +1,22 @@
       <!-- ABAWD Report Edit as needed. Snippets are transformed by search-extensions.xqy.  Can change this in
         the search options: abawd.xml -->
+
+        <script type="text/ng-template" id="myModalContent.html">
+            <div class="modal-header">
+                <h3 class="modal-title">Select the action taken for the potential ABAWD customer</h3>
+            </div>
+            <div class="modal-body">
+              <select style="width: 250px;" name="Action" ng-model="actionTaken"
+                      ng-options="obj.label as obj.value for obj in abawdActions" required>
+                  <option value="">Select the action taken</option>
+              </select>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" ng-click="ok()">OK</button>
+                <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+            </div>
+        </script>
+
       <table class="table table-striped table-hover table-bordered"
         ng-if="results[0].matches.summary.recordType == 'ABAWD'">
         <thead>
@@ -9,6 +26,7 @@
             <th ng-click="toggleSort({field: 'ln'})">Last Name<span class="glyphicon glyphicon-sort"></span></th>
             <th>Screening Date</th>
             <th>Screening Result</th>
+            <th>Action Taken</th>
             <th>SSN</th>
             <th ng-click="toggleSort({field: 'bd'})">DoB<span class="glyphicon glyphicon-sort"></span></th>
             <th>Address</th>
@@ -28,8 +46,11 @@
             <td>{{result.matches.summary.personId}}</td>
             <td>{{result.matches.summary.firstName}}</td>
             <td>{{result.matches.summary.lastName}}</td>
-            <td ng-class="flagScreened(result.matches.summary.abawdStatusDate)">{{result.matches.summary.abawdStatusDate | date: 'MM-dd-yyyy'}}</td>
+            <td ng-class="flagScreened(result.matches.summary.abawdScreeningStatusDate)">{{result.matches.summary.abawdScreeningStatusDate | date: 'MM-dd-yyyy'}}</td>
             <td ng-class="flagScreened(result.matches.summary.actualScreeningResult)">{{result.matches.summary.actualScreeningResult}}</td>
+            <td ng-class="flagScreened(result.matches.summary.abawdAction)">{{result.matches.summary.abawdAction}}
+              <br><button ng-show="result.matches.summary.actualScreeningResult" type="button" class="btn btn-link" ng-click="open(result.matches.summary)">Edit</button>
+            </td>
             <td>{{result.matches.summary.id}}</td>
             <td>{{result.matches.summary.dob | date: 'MM-dd-yyyy'}}</td>
             <td>{{result.matches.summary.address}}</td>

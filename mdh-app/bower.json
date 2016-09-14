@@ -20,7 +20,9 @@
     "vkbeautify-wrapper": "*",
     "ml-esir-maps-ng": "ml-esri-maps-ng#^0.0.1",
     "angularjs-datepicker": "~2.1.4",
-    "angular-visjs": "^4.0.2"
+    "angular-visjs": "^4.0.2",
+    "angular-animate": "~1.4.4",
+    "angular-sanitize": "~1.4.4"
   },
   "overrides": {
     "angular-highlightjs": {

@@ -71,6 +71,24 @@
                 { value: "Interim Change Screening", label: "interim"}
             ];
 
+            $scope.abawdResultOptions = [
+                { value: "Has child<18", label: "Has child<18" },
+                { value: "Pregnant", label: "Pregnant" },
+                { value: "Disabled", label: "Disabled" },
+                { value: "Receives disability payment", label: "Receives disability payment" },
+                { value: "Applied for Unemployment Insurance", label: "Applied for Unemployment Insurance" },
+                { value: "Receives Unemployment Ins.", label: "Receives Unemployment Ins." },
+                { value: "Employed 20+ hours/week", label: "Employed 20+ hours/week" },
+                { value: "Self-employed 30+ hours/week", label: "Self-employed 30+ hours/week" },
+                { value: "Attends drug or alcohol treatment", label: "Attends drug or alcohol treatment" },
+                { value: "Attends approved work activity", label: "Attends approved work activity" },
+                { value: "Attends school at least part-time", label: "Attends school at least part-time" },
+                { value: "NOT EXEMPT", label: "NOT EXEMPT" },
+                { value: "NOT ATTENDING work activity", label: "NOT ATTENDING work activity" },
+                { value: "Other: Enter in Comments", label: "Other: Enter in Comments" }
+
+            ];
+
             var today = new Date();
             $scope.person.todaysDate = (today.getMonth() + 1) + "/" + today.getDate()  + "/" + today.getFullYear();
 
@@ -386,7 +404,7 @@
             </span>
 
             <span ng-show="showABAWDMsg" style="color:red;" class="instructions">
-              This customer is NOT an ABAWD.  Save this file as a .PDF and upload it into OnBase.
+              This customer is NOT an ABAWD.
             </span>
 
           <!-- Main ABAWD checklist -->
@@ -512,10 +530,10 @@
 
           <div class="section">
             <div ng-show="showABAWDMessage" class="result">
-                This customer is an ABAWD. Code the Google Sheet accordingly. Save this file as a .PDF and upload it to OnBase in the WORK PROGRAM folder under Work Program Letter section.
+                This customer is an ABAWD. Code the individual accordingly in the ABAWD Report. A PDF copy of this screener will be saved for future reference as well as all options selected.
             </div>
             <div class="result" ng-show="showNotABAWDMessage">
-                This customer is NOT an ABAWD. Code the Google Sheet accordingly. Save this file as a .PDF and upload it to OnBase in the WORK PROGRAM folder under Work Program Letter section<br/>
+                This customer is NOT an ABAWD. Select the appropriate decision below and code the individual accordingly in the ABAWD Report. A copy of this screener will be saved for future reference.<br/>
             </div>
             <div class="result" ng-show="showWatchMessage">
                 This customer is likely to become an ABAWD before the next certification period.  Set up a 745 Alert in CARES.<br/>
@@ -526,22 +544,14 @@
             <div class="decision">
               <form ng-submit="save()">
                 <div>
-                  <input type="submit" value="Save" />
+                  <p>Decision:<br>
+                  <select style="width: 250px;" name="decision" ng-model="person.decision"
+                          ng-options="obj.label as obj.value for obj in abawdResultOptions" required>
+                      <option value="">Select an ABAWD Result</option>
+                  </select>
                 </div>
                 <div>
-                <p>Decision:</p>
-                <label>
-                  <input type="radio" ng-model="person.decision" value="ABAWD">
-                  ABAWD
-                </label><br/>
-                <label>
-                  <input type="radio" ng-model="person.decision" value="ABAWDWatch">
-                  ABAWD Watch
-                </label><br/>
-                <label>
-                  <input type="radio" ng-model="person.decision" value="Exempt">
-                  Exempt
-                </label><br/>
+                  <input type="submit" value="Save" />
                 </div>
                 <div>
                 <p>Reason:</p>

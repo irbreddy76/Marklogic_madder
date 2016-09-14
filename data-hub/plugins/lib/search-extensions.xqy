@@ -72,15 +72,32 @@ declare function s:buildPerson($header as map:map, $content as map:map) {
   return $json
 };
 
+declare function s:get-annotation-prop($props as item()*, $prop-name as xs:string) as item()* {
+  let $_ := xdmp:log("=============get-annotation-prop==================")
+  let $_ := xdmp:log(map:get($props, $prop-name))
+  let $_ := xdmp:log(json:array-values($props))
+
+  let $value := for $property in json:array-values($props)
+    return
+      if (map:get($property, "name") = $prop-name) then
+        map:get($property, "value")
+      else ()
+  return $value
+};
+
 declare function s:buildABAWD($header as map:map, $content as map:map) {
   let $json := json:object()
   let $name := map:get($header, "PersonPrimaryName")
   let $ids := map:get($header, "SystemIdentifiers")
   let $ssn := (map:get($content, "PersonSSNIdentification"))[1]
 
-  let $annotations := map:get($content, "annotation")
-  let $annotationHdr := map:get($annotations, "headers")
-  let $annotationProps := map:get($annotationHdr, "properties")
+  let $abawd-status-annotation := map:get($content, "annotation-ABAWDStatus")
+  let $abawd-status-annotation-hdr := map:get($abawd-status-annotation, "headers")
+  let $abawd-status-annotation-props := map:get(map:get($abawd-status-annotation, "content"), "properties")
+
+  let $abawd-action-annotation := map:get($content, "annotation-ABAWDAction")
+  let $abawd-action-annotation-hdr := map:get($abawd-action-annotation, "headers")
+  let $abawd-action-annotation-props := map:get(map:get($abawd-action-annotation, "content"), "properties")
 
   let $LdssID := map:get($ids[1], "LdssID")
   let $DONum := map:get($ids[2], "DONum")
@@ -115,9 +132,12 @@ declare function s:buildABAWD($header as map:map, $content as map:map) {
     map:put($json, "disability", map:get($content, "Disability")),
     map:put($json, "address", $addressStr),
 
-    map:put($json, "abawdStatusDate", map:get($annotationHdr, "annotationDateTime")),
-    map:put($json, "actualScreeningResult", map:get(map:get($annotationProps, "24"), "actualScreeningResult"))
+    (: Need to update the below to get the current certification month/period :)
+    map:put($json, "abawdScreeningStatusDate", map:get($abawd-status-annotation-hdr, "annotationDateTime")),
+    map:put($json, "actualScreeningResult", s:get-annotation-prop($abawd-status-annotation-props, "actualScreeningResult")),
 
+    map:put($json, "abawdActionStatusDate", map:get($abawd-action-annotation-hdr, "annotationDateTime")),
+    map:put($json, "abawdAction", s:get-annotation-prop($abawd-action-annotation-props, "abawdAction"))
   )
   return $json
 };

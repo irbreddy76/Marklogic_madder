@@ -18,7 +18,9 @@
     'app.user',
     'ui.bootstrap',
     'ui.router',
-    'ml.esri-maps'
+    'ml.esri-maps',
+    'ngAnimate',
+    'ngSanitize'
   ]);
 
 }());
