@@ -18,10 +18,10 @@ function write(id, envelope, options) {
     identifiers.push(
       cts.jsonPropertyValueQuery(currentIdentifier.SourceSystem, currentIdentifier.SourceKey));
   }
-  
-  var originalRecord = cts.uris((), (), cts.andQuery([identifiers,
-    cts.collectionQuery(['Person']),
-    cts.collectionQuery(['CHESSIE'])]).toArray();
+
+  var originalRecord = cts.uris(null, [], cts.andQuery([identifiers,
+      cts.collectionQuery(['Person']),
+      cts.collectionQuery(['CHESSIE'])])).toArray();    
   
   if(originalRecord.length == 0) {   
     var uri = '/person/CHESSIE/' + fn.generateId(envelope) + '.json';

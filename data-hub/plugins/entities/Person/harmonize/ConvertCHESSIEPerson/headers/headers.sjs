@@ -33,15 +33,21 @@ function createHeaders(id, content, options) {
         header.SystemIdentifiers.push(value);
     } 
   }
+  var gen = require("/lib/soundex.js");
  
   for(i = 0; i < content.PersonName.length; i++) {
     var name = content.PersonName[i];
+    //var surname = gen.soundex(name.PersonSurName);
+    var surname = "";
     if(name.PersonNameType == 'Primary') {
         header.PersonPrimaryName = {
           PersonGivenName: name.PersonGivenName,
           PersonMiddleName: name.PersonMiddleName,
           PersonSurName: name.PersonSurName,
-          PersonFullName: name.PersonFullName
+          PersonFullName: name.PersonFullName,
+          PersonNameAugmentation: {
+            PersonNameSoundexText: surname
+          }
         };
     }
   }
