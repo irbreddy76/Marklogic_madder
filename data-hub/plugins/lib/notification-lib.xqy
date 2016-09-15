@@ -29,13 +29,13 @@ declare namespace http = "xdmp:http";
 declare namespace fo = "http://www.w3.org/1999/XSL/Format";
 declare namespace an = "info:md/dhr/abawd/notices#";
 
-declare variable $XSL-FO-SERVER := "127.0.0.1";
+declare variable $XSL-FO-SERVER := "10.88.186.20";
 declare variable $XSL-FO-PORT := "8080";
 declare variable $PDF-STRATEGY := "xsl-fo";
 declare variable $XSL-FO-AUTHENTICATION := ();
 
 declare variable $globalmap := map:map();
-declare variable $xsl-fo-transform := "/app/xslt/ApprovalNoticeForABAWD.xsl";
+declare variable $xsl-fo-transform := "/ABAWD-Notice-xsl/AppointmentNoticeForABAWD.xsl";
 
 declare variable $XSL-FO-URL :=
   "http://" || $XSL-FO-SERVER || ":" || $XSL-FO-PORT || "/fop/rest/converter";
@@ -124,47 +124,25 @@ declare function notify:echo-parameters($params as map:map)
   return $inputParams
 };
 
-declare function notify:pdf-create(
-  $node as node(),
-  $appId as xs:string,
-  $ezAppId as xs:string,
-  $extramap as map:map?) as element()
-{
-  let $_ :=
-    for $k in map:keys($extramap)
-    return
-      map:put($globalmap, $k, map:get($extramap, $k))
-  let $_ := map:put($globalmap, "appId", $appId)
-  let $_ := map:put($globalmap, "ezAppId", $ezAppId)
-  let $account-id := map:get($globalmap, "actrId")
-  let $_ :=
-    xdmp:log(
-      fn:concat("Attempting transform for PDF creation for FFM App ID: ",
-                $appId,
-                "; EZAppID: ",
-                $ezAppId),
-      "info")
-  return
-    notify:transform-pdf-dispatch($node)
-};
-
-declare function notify:transform-pdf-dispatch($node as node()) as element() {
+declare function notify:pdf-create($node as node(), 
+          $noticeType as xs:string, $clientId as xs:string) as element() {
   typeswitch($node)
     case text() return
       $node
-    case element(at-exch:AccountTransferRequest) return
-      notify:account-transfer($node)
+    case element(an:abawd-notices) return
+      notify:notice-transfer($node, $noticeType, $clientId)
     case element() return
       $node
     default return
-      notify:passthru($node)
+      notify:passthru($node, $noticeType, clientId)
 };
 
-declare function notify:transform-notice-transfer-fo($node as element(at-exch:AccountTransferRequest)) as element() {
+declare function notify:transform-notice-transfer-fo($node as element(an:abawd-notices)) as element() {
   let $xslt-params := map:map()
-  let $put := map:put($xslt-params, “notice-details”, $node)
+  let $put := map:put($xslt-params, "notice-details", $node)
   let $transform :=
     try {
+      (: xdmp:xslt-eval(fn:doc($xsl-fo-transform)/node(), document{$node}, $xslt-params)/fo:root :)
       xdmp:xslt-invoke($xsl-fo-transform, document{$node}, $xslt-params)/fo:root
     } catch($e) {
       ($e, xdmp:log($e, "error"))
@@ -173,36 +151,25 @@ declare function notify:transform-notice-transfer-fo($node as element(at-exch:Ac
   return $transform
 };
 
-declare function notify:account-transfer(
-  $node as element(at-exch:AccountTransferRequest)) as element()
+declare function notify:notice-transfer(
+  $node as element(an:abawd-notices), $noticeType as xs:string, $clientId as xs:string) as element()
 {
-  let $ezappid := map:get($globalmap, "ezAppId")
-  let $appId := map:get($globalmap, "appId")
-  let $activity-id := map:get($globalmap, "actrId")
   let $_ :=
     xdmp:log(
       fn:concat(
-        "Attempting AT transform for PDF creation for FFM App ID: ",
-        $appId,
-        "; EZAppID: ",
-        $ezappid,
-        " ACTR ID: ",
-        $activity-id),
+        "Attempting AT transform for PDF creation for Notices: ",
+        $noticeType),
       "info")
-  let $strategy := $http-config/http:account-transfer/@strategy/fn:string()
-  let $myconfig := $http-config/http:account-transfer/http:strategy[@name eq $strategy]
+  let $strategy := $http-config/http:notify/@strategy/fn:string()
+  let $myconfig := $http-config/http:notify/http:strategy[@name eq $strategy]
   let $host := $myconfig/http:endpoint
   let $_ :=
     xdmp:log(
       fn:concat(
         "Generating ",
         $strategy,
-        " PDF transform output for Account Transfer ActivityIdentification: ",
-        $activity-id,
-        "; EZAppID: ",
-        $ezappid,
-        "; FFM AppID: ",
-        $appId),
+        " PDF transform output for Notice Transfer: ",
+        $noticeType),
       "info")
   return
     if ($strategy eq "xsl-fo") then
@@ -212,22 +179,20 @@ declare function notify:account-transfer(
         (
           xdmp:log(
             fn:concat("Error in generation XSL:FO/PDF output for human readable
-                       Account Transfer save with ActivityIdentification ",
-              $activity-id),
+                       Notice Transfer save with Notice Type ",
+              $noticeType),
             "error"),
           $transform
         )
         else
-          let $inserttransform := notify:insert(fn:concat("/", $ezappid, "/xslfo"), $transform)
-          let $_ := xdmp:log("Created Account Transfer XSL:FO for EZAppID: "||$ezappid, "info")
-          let $_ := xdmp:log("Sending XSL:FO to FOPServlet for EZAppID: "||$ezappid, "info")
+          (: let $inserttransform := notify:insert(fn:concat("/", $ezappid, "/xslfo"), $transform) :)
+          let $_ := xdmp:log("Created Notice Transfer XSL:FO for Notice Type: "||$noticeType, "info")
+          let $_ := xdmp:log("Sending XSL:FO to FOPServlet for Notice Type: "||$noticeType, "info")
           let $options :=
             <options xmlns="xdmp:http">
               {$XSL-FO-AUTHENTICATION}
               <data>{xdmp:quote($transform)}</data>
               <headers>
-                <X-AT-PDF-EZAppID>{$ezappid}</X-AT-PDF-EZAppID>
-                <X-AT-PDF-AppID>{$appId}</X-AT-PDF-AppID>
                 <content-type>text/xml</content-type>
               </headers>
             </options>
@@ -244,14 +209,9 @@ declare function notify:account-transfer(
             if ($request instance of element(error:error)) then
               $request
             else
-              let $pdfuri := fn:concat("/", $ezappid, "/pdf")
+              let $pdfuri := fn:concat("/ABAWD-notices/", $noticeType, "/", $clientId, ".pdf")
               let $insertpdf := notify:insert($pdfuri, $request[2]/binary())
-              let $_ := xdmp:log(fn:concat("Created Account Transfer XSL:FO PDF for EZAppID: ", $ezappid), "info")
-              (:
-              let $sidecar := atnotify:get-pdf-sidecar($ezappid, $appId, $node, $pdfuri)
-        let $insertside := notify:insert(fn:concat("/", $ezappid, "/sidecar"), $sidecar)
-        let $_ := xdmp:log(fn:concat("Created Account Transfer PDF sidecar XML for EZAppID: ", $ezappid), "info")
-        :)
+              let $_ := xdmp:log(fn:concat("Created Notice Transfer XSL:FO PDF for Notice Type: ", $noticeType), "info")
         return
         $transform
           return
@@ -263,50 +223,16 @@ declare function notify:account-transfer(
         fn:error(xs:QName("PDF_CREATION_STRATEGY_ERROR"), $msg)
 };
 
-declare private function notify:passthru($nodes as node()*) as item()* {
+declare private function notify:passthru($nodes as node()*, 
+      $noticeType as xs:string, $clientId as xs:string) as item()* {
   for $node in $nodes/node()
   return
-    notify:transform-pdf-dispatch($node)
+    notify:pdf-create($node, $noticeType, $clientId)
 };
 
 declare private function notify:insert(
   $uri as xs:string,
   $node as node()) as empty-sequence()
 {
-  xdmp:document-insert($uri, $node, xdmp:default-permissions(), "ezat")
-};
-
-declare function notify:http-process-response(
-  $request as node()+,
-  $ezappid as xs:string,
-  $method as xs:string) as node()+
-{
-  let $thismethod :=
-    if (fn:matches($method, "(GET|POST|PUT|HEAD)", "i")) then
-      $method
-    else
-      "request"
-  return
-    if ($request instance of element(error:error)) then
-      let $_ := xdmp:log($request, "error")
-      return $request
-    else
-      let $headers := $request[1]
-      let $body := $request[2]
-      let $status := $headers/http:code/fn:string()
-      let $content-type := $headers/http:headers/http:content-type
-      let $_ :=
-        xdmp:log(
-          fn:concat(
-            "HTTP ", $thismethod, " received status ", $status,
-            " with Content-Type ", fn:normalize-space($content-type),
-            " for EZAppID ",$ezappid, " request to ALC Service"),
-          "info")
-      return
-        if ($status ne "200") then
-          let $_ := xdmp:log($body, "error")
-          return
-            <error:error/>
-        else
-          ($content-type, $body)
+  xdmp:document-insert($uri, $node, xdmp:default-permissions(), "ABAWD-Notice")
 };

@@ -73,13 +73,17 @@ declare %rapi:transaction-mode("update") function post(
   ) as document-node()*
 {
   try {
-    map:put($context, "output-types", "application/xml"),
+    map:put($context, "output-types", "application/pdf"),
     xdmp:set-response-code(200, "Ok"),
     let $noticeType := map:get($params, "noticeType")
+    let $clientId := map:get($params, "clientID")
     (: let $result := notify:echo-parameters($params) 
     return xdmp:to-json($result) :)
-    let $result := notify:xml-create($params)
-    return document{$result}
+    (: let $result := notify:xml-create($params)
+    return document{$result} :)
+    let $noticeXML := notify:xml-create($params)
+    let $pdf := notify:pdf-create($noticeXML, $noticeType, $clientId)
+    return document{$pdf}
   } catch($e) {
     map:put($context, "output-types", "text/plain"),
     xdmp:set-response-code(500, "Error"),
