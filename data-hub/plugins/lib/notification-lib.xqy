@@ -125,7 +125,7 @@ declare function notify:echo-parameters($params as map:map)
 };
 
 declare function notify:pdf-create($node as node(), 
-          $noticeType as xs:string, $clientId as xs:string) as element() {
+          $noticeType as xs:string, $clientId as xs:string) as node() {
   typeswitch($node)
     case text() return
       $node
@@ -151,8 +151,9 @@ declare function notify:transform-notice-transfer-fo($node as element(an:abawd-n
   return $transform
 };
 
+
 declare function notify:notice-transfer(
-  $node as element(an:abawd-notices), $noticeType as xs:string, $clientId as xs:string) as element()
+  $node as element(an:abawd-notices), $noticeType as xs:string, $clientId as xs:string) as node()
 {
   let $_ :=
     xdmp:log(
@@ -209,13 +210,15 @@ declare function notify:notice-transfer(
             if ($request instance of element(error:error)) then
               $request
             else
-              let $pdfuri := fn:concat("/ABAWD-notices/", $noticeType, "/", $clientId, ".pdf")
-              let $insertpdf := notify:insert($pdfuri, $request[2]/binary())
+              let $now := fn:current-dateTime()
+              let $pdfuri := fn:concat("/ABAWD-notices/", $clientId, "/", $noticeType, "/", $now, ".pdf")
+              let $binaryPdf := $request[2]/binary()
+              let $insertpdf := notify:insert($pdfuri, $binaryPdf)
               let $_ := xdmp:log(fn:concat("Created Notice Transfer XSL:FO PDF for Notice Type: ", $noticeType), "info")
-        return
-        $transform
+            return
+                $binaryPdf
           return
-            $transform
+            $response
     else
       let $msg := "PDF creation strategy must be &quot;alc&quot; or &quot;xsl-fo.&quot;"
       let $_ := xdmp:log($msg, "error")
