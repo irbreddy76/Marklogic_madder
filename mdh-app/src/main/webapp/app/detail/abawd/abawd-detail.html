@@ -38,7 +38,7 @@
         <dt>Street</dt>
         <dd>{{address.LocationStreet}}</dd>
         <dt>City</dt>
-        <dd>{{address.LocationCityName}}</dd> 
+        <dd>{{address.LocationCityName}}</dd>
         <dt>State</dt>
         <dd>{{address.LocationStateName}}</dd>
         <dt>Postal Code</dt>
@@ -148,14 +148,14 @@
           </tab>
       </accordion-group>
     </accordion>
-  </accordion-group> 
-  <accordion-group heading="Previous Determinations" is-open="status.isDeterminationOpen">
-    <!-- <add-annotation button-style="'button'" 
-       title="'Make ABAWD Determination'" source-url="uri" params="ctrl.params" 
+  </accordion-group>
+  <accordion-group heading="Previous Screening Results" is-open="status.isDeterminationOpen">
+    <!-- <add-annotation button-style="'button'"
+       title="'Make ABAWD Determination'" source-url="uri" params="ctrl.params"
        template="/app/annotation/add-annotation-button.html"></add-annotation>  -->
     <form action="./abawd-screener.html">
       <input type="hidden" name="clientID" value="{{ctrl.clientID}}" />
-      <input type="submit" value="Make ABAWD Determination" />
+      <input type="submit" value="Screen ABAWD Candidate" />
     </form>
     <table class="table table-bordered table-striped">
       <tr>

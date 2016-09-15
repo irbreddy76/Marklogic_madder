@@ -1,7 +1,7 @@
       <!-- ABAWD Report Edit as needed. Snippets are transformed by search-extensions.xqy.  Can change this in
         the search options: abawd.xml -->
 
-        <script type="text/ng-template" id="myModalContent.html">
+        <script type="text/ng-template" id="editMonthlyStatus.html">
             <div class="modal-header">
                 <h3 class="modal-title">Select the action taken for the potential ABAWD customer</h3>
             </div>
@@ -10,6 +10,74 @@
                       ng-options="obj.label as obj.value for obj in abawdActions" required>
                   <option value="">Select the action taken</option>
               </select>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" ng-click="ok()">OK</button>
+                <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+            </div>
+        </script>
+
+        <script type="text/ng-template" id="notification.html">
+            <div class="modal-header">
+                <center><h4 class="modal-title">Please complete the form to generate the Notification</h4></center>
+            </div>
+
+            <div class="modal-body">
+              <table style="border-collapse:separate; border-spacing: 10px">
+                <tr>
+                  <td><label for="noticeDate">Notice Date</label></td>
+                  <td><input type="text" style="width: 200px;" name="noticeDate" ng-model="result.notificationDate | date :'short' " readonly/></td>
+                </tr>
+                <tr>
+                  <td><label for="Notification">Notification</label></td>
+                  <td>
+                    <select style="width: 250px;" name="Notification" ng-model="notification"
+                          ng-options="obj.label as obj.value for obj in notificationTypes" required>
+                      <option value="">Select the type of notification</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td><label for="ldssID">LDSS</label></td>
+                  <td><input type="text" style="width: 200px;" name="ldssID" ng-model="result.ldssID"/></td>
+                </tr>
+                <tr>
+                  <td><label for="ldssAddress">LDSS Address</label></td>
+                  <td><textarea rows="3" name="ldssAddress" ng-model="result.ldssAddress"/></td>
+                </tr>
+                <tr>
+                  <td><label for="clientID">Client ID</label></td>
+                  <td><input type="text" style="width: 200px;" name="clientID" ng-model="result.personId"/></td>
+                </tr>
+                <tr>
+                  <td><label for="language">Language</label></td>
+                  <td>
+                    <select style="width: 250px;" name="Notification" ng-model="languagePref"
+                          ng-options="obj.label as obj.value for obj in languagePrefs" required>
+                      <option value="">Select preferred language</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td><label for="firstName">First Name</label></td>
+                  <td><input type="text" style="width: 200px;" name="name" ng-model="result.firstName"/></td>
+                </tr>
+                <tr>
+                  <td><label for="lastName">Last Name</label></td>
+                  <td><input type="text" style="width: 200px;" name="lastName" ng-model="result.lastName"/></td>
+                </tr>
+                <tr>
+                  <td><label for="address">Mailing Address</label></td>
+                  <td><textarea  rows="3" name="address" ng-model="result.address"/></td>
+                </tr>
+                  <tr>
+                  <td><label for="telephoneNum">Telephone Number</label></td>
+                  <td><input type="text" style="width: 200px;" name="telephoneNum" ng-model="result.telephoneNum"/></td>
+                </tr>
+                  <td><label for="appointmentDatetime">Appointment Date/Time</label></td>
+                  <td><input type="text" style="width: 200px;" name="appointmentDatetime" ng-model="result.appointmentDatetime"/></td>
+                </tr>
+              </table>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-primary" ng-click="ok()">OK</button>
@@ -26,13 +94,12 @@
             <th ng-click="toggleSort({field: 'ln'})">Last Name<span class="glyphicon glyphicon-sort"></span></th>
             <th>Screening Date</th>
             <th>Screening Result</th>
-            <th>Action Taken</th>
+            <th>Current Month Status</th>
+            <th>Notification</th>
             <th>SSN</th>
             <th ng-click="toggleSort({field: 'bd'})">DoB<span class="glyphicon glyphicon-sort"></span></th>
             <th>Address</th>
-            <th>HOH Code</th>
             <th>Language Code</th>
-            <th>Living Arrgmt Code</th>
             <th>Total Earned Income</th>
             <th>Total Work Hours</th>
             <th>Total UnEarned Income</th>
@@ -49,20 +116,22 @@
             <td ng-class="flagScreened(result.matches.summary.abawdScreeningStatusDate)">{{result.matches.summary.abawdScreeningStatusDate | date: 'MM-dd-yyyy'}}</td>
             <td ng-class="flagScreened(result.matches.summary.actualScreeningResult)">{{result.matches.summary.actualScreeningResult}}</td>
             <td ng-class="flagScreened(result.matches.summary.abawdAction)">{{result.matches.summary.abawdAction}}
-              <br><button ng-show="result.matches.summary.actualScreeningResult" type="button" class="btn btn-link" ng-click="open(result.matches.summary)">Edit</button>
+              <br><button ng-show="result.matches.summary.actualScreeningResult" type="button" class="btn btn-link" ng-click="editStatus(result.matches.summary)">Edit</button>
+              <!--<br><button popover-placement="top" popover="On the Top!" ng-show="result.matches.summary.actualScreeningResult" type="button" class="btn btn-link">History</button>-->
+            </td>
+            <td ng-class="flagScreened(result.matches.summary.notification)">
+              {{result.matches.summary.notification}}<br>{{result.matches.summary.notificationDate | date :'short'}}
+              <br><button ng-show="result.matches.summary.abawdAction" type="button" class="btn btn-link" ng-click="createNotification(result.matches.summary)">Create</button>
             </td>
             <td>{{result.matches.summary.id}}</td>
             <td>{{result.matches.summary.dob | date: 'MM-dd-yyyy'}}</td>
             <td>{{result.matches.summary.address}}</td>
-            <td>{{result.matches.summary.hohCode}}</td>
             <td>{{result.matches.summary.languageCode}}</td>
-            <td>{{result.matches.summary.liveArrngmentCode}}</td>
             <td ng-class="flagIncome(result.matches.summary.summaryEIncome)">${{totalIncome(result.matches.summary.summaryEIncome) | number:2}}</td>
             <td ng-class="flagWorkHours(result.matches.summary.summaryEIncome)">{{totalWorkHours(result.matches.summary.summaryEIncome) | number}}</td>
             <td ng-class="flagIncome(result.matches.summary.summaryUnEIncome)">${{totalIncome(result.matches.summary.summaryUnEIncome) | number:2}}</td>
             <td ng-class="flagPregDueDate(result.matches.summary.pregnancyDueDate)">{{result.matches.summary.pregnancyDueDate | date: 'MM-dd-yyyy'}}</td>
             <td>{{result.matches.summary.disability[0].DisabilityTypeCode}}</td>
-
             <td><a ui-sref="root.view({uri: result.uri})">View</a></td>
           </tr>
         </tbody>

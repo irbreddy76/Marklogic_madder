@@ -24,7 +24,7 @@
     .directive('searchResults', searchResults)
     .controller('ResultsController', ResultsController);
 
-  ResultsController.$inject = ['$scope', '$modal', 'MLRest'];
+  ResultsController.$inject = ['$scope', '$modal', 'MLRest', '$sce', '$http'];
 
   function searchResults() {
     return {
@@ -82,7 +82,35 @@
     });
   }
 
-  function ResultsController($scope, $modal, MLRest) {
+  function ResultsController($scope, $modal, MLRest, $sce, $http) {
+
+    $scope.languagePrefs = [
+      { label: "en", value: "English (en)" },
+      { label: "es", value: "Spanish (es)" },
+      { label: "ar", value: "Arabic (ar)" },
+      { label: "zh", value: "Chinese (zh)" },
+      { label: "fr", value: "French (fr)" },
+      { label: "fa", value: "Farsi (fa)" },
+      { label: "ru", value: "Russian (ru)" },
+      { label: "fa", value: "Farsi (fa)" },
+      { label: "hi", value: "Hindi (hi)" },
+      { label: "vi", value: "Vietnamese (vi)" },
+      { label: "ur", value: "Urdu (ur)" },
+      { label: "sw", value: "Swahili (sw)" },
+      { label: "ne", value: "Napali (ne)" },
+      { label: "rw", value: "Kinyarwanda (rw)" },
+      { label: "am", value: "Amharic (am)" }
+    ];
+
+    $scope.notificationTypes = [
+      { value: "Appointment Notice", label: "Appointment Notice" },
+      { value: "Approval Notice", label: "Approval Notice" },
+      { value: "Denial Notice", label: "Denial Notice" },
+      { value: "1st Month Warning", label: "1st Month Warning" },
+      { value: "2nd Month Warning", label: "2nd Month Warning" },
+      { value: "Change Notice", label: "Change Notice" },
+      { value: "Case Closure Notice - NOAA", label: "Case Closure Notice - NOAA" }
+    ];
 
     $scope.abawdActions = [
         { value: "Pro-rated month", label: "Pro-rated month" },
@@ -140,16 +168,14 @@
       ];
 
 
-    var modalInstance = null;
+    // Modal dialog for Current Monthly Status
+    var curStatusModalInstance = null;
 
-    $scope.open = function (result) {
-        modalInstance = $modal.open({
+    $scope.editStatus = function (result) {
+        curStatusModalInstance = $modal.open({
           animation: ResultsController,
-          templateUrl: 'myModalContent.html',
+          templateUrl: 'editMonthlyStatus.html',
           controller: function($scope, $modalInstance, actions, result) {
-
-            console.log(result);
-
             $scope.abawdActions = actions;
 
             $scope.ok = function () {
@@ -169,11 +195,10 @@
             result: function () {
               return result;
             }
-
           }
         });
 
-        modalInstance.result.then(function (result) {
+        curStatusModalInstance.result.then(function (result) {
               //Save action as an annotation
               MLRest.extension('annotation', {
                 method: 'POST',
@@ -206,6 +231,158 @@
             }, function () {
               console.log('Modal dismissed at: ' + new Date());
             });
+
+    };
+
+    // Modal dialog for Notification
+    var notificationModalInstance = null;
+
+    $scope.createNotification = function (result) {
+        notificationModalInstance = $modal.open({
+          animation: ResultsController,
+          templateUrl: 'notification.html',
+          controller: function($scope, $modalInstance, languagePrefs, notifications, result) {
+            $scope.notificationTypes = notifications;
+            $scope.languagePrefs = languagePrefs;
+            $scope.result = result;
+            $scope.result.notificationDate = new Date();
+
+            $scope.ok = function () {
+              result.notification = $scope.notification;
+              result.languagePref = $scope.languagePref;
+              $modalInstance.close(result);
+            };
+
+            $scope.cancel = function () {
+              $modalInstance.dismiss('cancel');
+            };
+          },
+          size: null,
+          resolve: {
+            languagePrefs: function () {
+              return $scope.languagePrefs;
+            },
+            notifications: function () {
+              return $scope.notificationTypes;
+            },
+            result: function () {
+              return result;
+            }
+          }
+        });
+
+        notificationModalInstance.result.then(function (result) {
+              console.log("notification type: " + result.notification);
+              console.log("notification Date: " + result.notificationDate);
+              console.log("ldssID: " + result.ldssID);
+              console.log("ldssAddress: " + result.ldssAddress);
+              console.log("client id: " + result.personId);
+              console.log("languageCode: " + result.languagePref);
+              console.log(" name: " + result.firstName + " " + result.lastName);
+              console.log("mailing address: " + result.address);
+              console.log("telephoneNum: " + result.telephoneNum);
+              console.log("appointmentDatetime: " + result.appointmentDatetime);
+
+
+              //Save notification as an annotation
+              /*
+              MLRest.extension('annotation', {
+                method: 'POST',
+                data: {
+                  collections: ['ABAWDNotification'],
+                  user: "Unknown",
+                  identifiers: [
+                    { name: 'ClientID', value: result.personId }
+                  ],
+                  properties: [
+                      { name: 'customerName', value: result.firstName + " " + result.lastName },
+                      { name: 'customerDoB', value: result.dob },
+                      //{ name: 'certificationPeriod', value: $scope.person.certPeriod },
+                      { name: 'notification', value: result.notification},
+                      { name: 'annotationType', value: 'ABAWDNotification' }
+                  ]
+                }
+                }).then(function(response) {
+                    if(response.data.results.length == 0) {
+                      $scope.error = true;
+                      $scope.reason = 'Unknown Error';
+                    } else if(response.data.results[0].error) {
+                      $scope.error = true;
+                      $scope.reason = response.data.results[0].reason;
+                    } else { $scope.reason = 'ABAWD Determination Saved'; }
+                });
+                */
+
+              var fileName = "test.pdf";
+              var a = document.createElement("a");
+              document.body.appendChild(a);
+              //a.style = "display: none";
+
+              MLRest.extension('notification', {
+                method: 'POST',
+                responseType: 'blob',
+                params: {
+                  'rs:LDSS': result.ldssID,
+                  'rs:LDSS-Address': result.ldssAddress,
+                  'rs:notice-date': result.notificationDate,
+                  'rs:clientID': result.personId,
+                  'rs:clientLanguagePreferenceCode': result.languagePref,
+                  'rs:recipient-name': result.firstName + " " + result.lastName,
+                  'rs:recipient-mailing-address1': result.address,
+                  'rs:recipient-mailing-address2': 'temp2',
+                  'rs:appointment-dateTime': result.appointmentDatetime,
+                  'rs:telephone-contact-number': result.telephoneNum,
+                  'rs:noticeType': 'AppointmentNotice'
+                }
+              }).then(function(response) {
+                  var file = new Blob([response.data], {type: 'application/pdf'});
+                  var fileURL = URL.createObjectURL(file);
+
+                  a.href = fileURL;
+                  a.download = fileName;
+                  a.click();
+
+                  //$scope.content = $sce.trustAsResourceUrl(fileURL);
+              });
+
+            }, function () {
+              console.log('Modal dismissed at: ' + new Date());
+            });
+    };
+
+
+    $scope.downloadNotification = function () {
+      var fileName = "test.pdf";
+      var a = document.createElement("a");
+      document.body.appendChild(a);
+      //a.style = "display: none";
+
+      MLRest.extension('notification', {
+        method: 'POST',
+        responseType: 'blob',
+        params: {
+          'rs:LDSS': 'Ann',
+          'rs:LDSS-Address': 'temp',
+          'rs:notice-date': '08-11-2016',
+          'rs:clientID': '12343',
+          'rs:clientLanguagePreferenceCode': 'en',
+          'rs:recipient-name': 'Jane',
+          'rs:recipient-mailing-address1': 'temp2',
+          'rs:recipient-mailing-address2': 'temp2',
+          'rs:appointment-dateTime': '12:00',
+          'rs:telephone-contact-number': '301-454-1234',
+          'rs:noticeType': 'AppointmentNotice'
+        }
+      }).then(function(response) {
+          var file = new Blob([response.data], {type: 'application/pdf'});
+          var fileURL = URL.createObjectURL(file);
+
+          a.href = fileURL;
+          a.download = fileName;
+          a.click();
+
+          //$scope.content = $sce.trustAsResourceUrl(fileURL);
+      });
 
     };
 

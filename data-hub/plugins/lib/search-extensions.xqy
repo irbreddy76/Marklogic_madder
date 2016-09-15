@@ -73,10 +73,6 @@ declare function s:buildPerson($header as map:map, $content as map:map) {
 };
 
 declare function s:get-annotation-prop($props as item()*, $prop-name as xs:string) as item()* {
-  let $_ := xdmp:log("=============get-annotation-prop==================")
-  let $_ := xdmp:log(map:get($props, $prop-name))
-  let $_ := xdmp:log(json:array-values($props))
-
   let $value := for $property in json:array-values($props)
     return
       if (map:get($property, "name") = $prop-name) then
@@ -98,6 +94,11 @@ declare function s:buildABAWD($header as map:map, $content as map:map) {
   let $abawd-action-annotation := map:get($content, "annotation-ABAWDAction")
   let $abawd-action-annotation-hdr := map:get($abawd-action-annotation, "headers")
   let $abawd-action-annotation-props := map:get(map:get($abawd-action-annotation, "content"), "properties")
+
+  let $abawd-notification-annotation := map:get($content, "annotation-ABAWDNotification")
+  let $abawd-notification-annotation-hdr := map:get($abawd-notification-annotation, "headers")
+  let $abawd-notification-annotation-props := map:get(map:get($abawd-notification-annotation, "content"), "properties")
+
 
   let $LdssID := map:get($ids[1], "LdssID")
   let $DONum := map:get($ids[2], "DONum")
@@ -138,6 +139,10 @@ declare function s:buildABAWD($header as map:map, $content as map:map) {
 
     map:put($json, "abawdActionStatusDate", map:get($abawd-action-annotation-hdr, "annotationDateTime")),
     map:put($json, "abawdAction", s:get-annotation-prop($abawd-action-annotation-props, "abawdAction"))
+
+    map:put($json, "notificationDate", map:get($abawd-action-annotation-hdr, "annotationDateTime")),
+    map:put($json, "notification", s:get-annotation-prop($abawd-action-annotation-props, "abawdAction"))
+
   )
   return $json
 };
