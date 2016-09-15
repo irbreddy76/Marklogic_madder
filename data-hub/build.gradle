@@ -126,3 +126,13 @@ task importSKOSReference(type: com.marklogic.gradle.task.MlcpTask) {
     output_permissions = "rest-reader,read,rest-writer,update"
     output_uri_replace = ".*/data,''"
 }
+
+task importABAWDNoticeXSL(type: com.marklogic.gradle.task.MlcpTask) {
+    classpath = configurations.mlcp
+    command = "IMPORT"
+    database = mlModulesDbName
+    input_file_path = "data/ABAWD-Notice-xsl"
+    output_collections = "ABAWD-xsl"
+    output_permissions = "rest-reader,read,rest-writer,update"
+    output_uri_replace = ".*/data,''"
+}
