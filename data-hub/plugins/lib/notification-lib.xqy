@@ -102,7 +102,7 @@ declare function notify:xml-create($params  as map:map) as element(an:abawd-noti
     </an:notice>              
     else ()   
     return 
-      <an:abawd-notices xmlns:an="info:md/dhr/abawd/notices#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <an:abawd-notices xmlns="info:md/dhr/abawd/notices#" xmlns:an="info:md/dhr/abawd/notices#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
         {$notificationCore}
         {$notice} 
       </an:abawd-notices>
