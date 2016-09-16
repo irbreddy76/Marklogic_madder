@@ -1,7 +1,6 @@
 xquery version "1.0-ml";
 
 module namespace notify = "http://marklogic.com/notification-service";
-declare namespace at-exch = "http://at.dsh.cms.gov/exchange/1.0";
 
 (:
 import module namespace c = "http://marklogic.com/roxy/config"
@@ -137,9 +136,11 @@ declare function notify:pdf-create($node as node(),
       notify:passthru($node, $noticeType, clientId)
 };
 
-declare function notify:transform-notice-transfer-fo($node as element(an:abawd-notices)) as element() {
+declare function notify:transform-notice-transfer-fo($node as element(an:abawd-notices),
+                $noticeType as xs:string) as element() {
   let $xslt-params := map:map()
   let $put := map:put($xslt-params, "notice-details", $node)
+  let $xsl-fo-transform := notify:retrieve-xsl-path($noticeType)
   let $transform :=
     try {
       (: xdmp:xslt-eval(fn:doc($xsl-fo-transform)/node(), document{$node}, $xslt-params)/fo:root :)
@@ -149,6 +150,28 @@ declare function notify:transform-notice-transfer-fo($node as element(an:abawd-n
     }
   let $_ := xdmp:log($transform, "info")
   return $transform
+};
+
+declare function notify:retrieve-xsl-path($noticeType as xs:string)
+{
+  let $xslPath := 
+    if ($noticeType = "AppointmentNotice") then 
+      "/ABAWD-Notice-xsl/AppointmentNoticeForABAWD.xsl"
+    else if ($noticeType = "ApprovalNotice") then
+      "/ABAWD-Notice-xsl/ApprovalNoticeForABAWD.xsl"
+    else if ($noticeType = "ChangeNotice") then
+      "/ABAWD-Notice-xsl/ChangeNoticeForABAWD.xsl"
+    else if ($noticeType = "WarningNoticeMonthOne") then
+      "/ABAWD-Notice-xsl/WarningNoticeMonth1ForABAWD.xsl" 
+    else if ($noticeType = "WarningNoticeMonthTwo") then
+      "/ABAWD-Notice-xsl/WarningNoticeMonth2ForABAWD.xsl"
+    else if ($noticeType = "CaseClosureNotice") then
+     "/ABAWD-Notice-xsl/CaseCLosureNoticeForABAWD.xsl"
+    else if ($noticeType = "ReapplicationDenialNotice") then
+     "/ABAWD-Notice-xsl/ReapplicationDenialNoticeForABAWD.xsl"
+    else (: default :)
+     "/ABAWD-Notice-xsl/AppointmentNoticeForABAWD.xsl"
+  return $xslPath
 };
 
 
@@ -174,7 +197,7 @@ declare function notify:notice-transfer(
       "info")
   return
     if ($strategy eq "xsl-fo") then
-      let $transform := notify:transform-notice-transfer-fo($node)
+      let $transform := notify:transform-notice-transfer-fo($node, $noticeType)
       return
         if ($transform instance of element(error:error)) then
         (
