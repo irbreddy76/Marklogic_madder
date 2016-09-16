@@ -92,11 +92,11 @@ declare function notify:xml-create($params  as map:map) as element(an:abawd-noti
         <an:application-date>{map:get($params, "application-date")}</an:application-date>
         <an:telephone-contact-number>{map:get($params, "telephone-contact-number")}</an:telephone-contact-number>
     </an:notice>  
-    else if ($noticeType = "WarningNoticeMonth-1") then
+    else if ($noticeType = "WarningNoticeMonthOne") then
     <an:notice xsi:type='{$noticeType}'>
         <an:nil/>
     </an:notice>   
-    else if ($noticeType = "WarningNoticeMonth-2") then
+    else if ($noticeType = "WarningNoticeMonthTwo") then
     <an:notice xsi:type='{$noticeType}'>
         <an:provide-proof-date>{map:get($params, "provide-proof-date")}</an:provide-proof-date>
     </an:notice>              
