@@ -166,7 +166,7 @@ declare function notify:retrieve-xsl-path($noticeType as xs:string)
     else if ($noticeType = "WarningNoticeMonthTwo") then
       "/ABAWD-Notice-xsl/WarningNoticeMonth2ForABAWD.xsl"
     else if ($noticeType = "CaseClosureNotice") then
-     "/ABAWD-Notice-xsl/CaseCLosureNoticeForABAWD.xsl"
+     "/ABAWD-Notice-xsl/CaseClosureNotice.xsl"
     else if ($noticeType = "ReapplicationDenialNotice") then
      "/ABAWD-Notice-xsl/ReapplicationDenialNoticeForABAWD.xsl"
     else (: default :)
