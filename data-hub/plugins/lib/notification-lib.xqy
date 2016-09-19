@@ -2,25 +2,6 @@ xquery version "1.0-ml";
 
 module namespace notify = "http://marklogic.com/notification-service";
 
-(:
-import module namespace c = "http://marklogic.com/roxy/config"
-  at "/app/config/config.xqy";
-
-import module namespace sm = "http://marklogic.com/ps/servicemetrics"
-  at "/modules/marklogic/servicemetrics/servicemetrics.xqy";
-
-import module namespace atnotify = "http://notify.ezapp.cms.gov/at/"
-  at "/app/models/lib-notify-at.xqy";
-
-declare namespace hix-core = "http://hix.cms.gov/0.1/hix-core";
-declare namespace nc = "http://niem.gov/niem/niem-core/2.0";
-declare namespace at-exch = "http://at.dsh.cms.gov/exchange/1.0";
-declare namespace at-ext = "http://at.dsh.cms.gov/extension/1.0";
-declare namespace s = "http://niem.gov/niem/structures/2.0";
-declare namespace hix-ee = "http://hix.cms.gov/0.1/hix-ee";
-declare namespace st = "info:dsh/at/states";
-:)
-
 declare default element namespace "info:md/dhr/abawd/notices#";
 
 declare namespace local = "local";
@@ -102,7 +83,7 @@ declare function notify:xml-create($params  as map:map) as element(an:abawd-noti
     </an:notice>              
     else ()   
     return 
-      <an:abawd-notices xmlns:an="info:md/dhr/abawd/notices#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <an:abawd-notices xmlns="info:md/dhr/abawd/notices#" xmlns:an="info:md/dhr/abawd/notices#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
         {$notificationCore}
         {$notice} 
       </an:abawd-notices>
@@ -110,7 +91,7 @@ declare function notify:xml-create($params  as map:map) as element(an:abawd-noti
 
 declare function notify:echo-parameters($params as map:map)
 {
-  let $result := "Parmaters Passed:"
+  let $result := "Paramaters Passed:"
   let $inputParams := fn:concat($result,map:get($params, "LDSS"),":",
     map:get($params, "LDSS-Address"),":",
     map:get($params, "notice-date"),":",
@@ -166,7 +147,7 @@ declare function notify:retrieve-xsl-path($noticeType as xs:string)
     else if ($noticeType = "WarningNoticeMonthTwo") then
       "/ABAWD-Notice-xsl/WarningNoticeMonth2ForABAWD.xsl"
     else if ($noticeType = "CaseClosureNotice") then
-     "/ABAWD-Notice-xsl/CaseCLosureNoticeForABAWD.xsl"
+     "/ABAWD-Notice-xsl/CaseClosureNotice.xsl"
     else if ($noticeType = "ReapplicationDenialNotice") then
      "/ABAWD-Notice-xsl/ReapplicationDenialNoticeForABAWD.xsl"
     else (: default :)
