@@ -10,11 +10,21 @@ function createContent(id, options) {
 
   var docs = cts.search(cts.andQuery([
     cts.collectionQuery(['LoadABAWDPerson']),
+    cts.notQuery(cts.collectionQuery(['processed'])),
     cts.jsonPropertyValueQuery('CLIENT_ID', id)
   ])).toArray();
 
+  var i;
+  for (i = 0; i < docs.length; i++) {
+    var uri = fn.documentUri(docs[i]);
+    // Mark record as processed so it doesn't get picked up on subsequent runs
+    xdmp.documentAddCollections(uri, 'processed');
+  }
   var root = docs[0].root;
-
+  var filename = fn.documentUri(docs[0]);
+  var rawDate = fn.tokenize(fn.tokenize(filename, '/').toArray().pop(), '_').toArray()[4];
+  var periodDate = rawDate.substr(4) + '-' + rawDate.substr(0, 2) + '-' + rawDate.substr(2, 2);
+  
   // for xml we need to use xpath
   if (root && xdmp.nodeKind(root) === 'element') {
     return root.xpath('/*:envelope/*:content/node()');
@@ -100,47 +110,59 @@ function createContent(id, options) {
 
     //content
     var jsonDoc = {
-      SystemIdentifiers: systemIdentifiers,
-      PersonName: [{
-          "PersonNameType":"Primary",
-          "PersonGivenName": root.content.FIRST_NAME,
-          "PersonSurName": root.content.LAST_NAME,
-          "PersonFullName": root.content.FIRST_NAME + " " + root.content.LAST_NAME
-        }],
-      PersonSSNIdentification: [{"IdentificationId":root.content.SSN}],
-      PersonBirthDate: birthDate,
-      Addresses: addresses,
-      PersonHOHCode: root.content.HOH_REL_CODE,
-      PersonLanguageCode: root.content.PRIMARY_LANGUAGE_CODE,
-      PersonLivingArrangementTypeCode: root.content.Living_Arrangement_Type_code
+      records: [
+        { 
+          Person: {
+            SystemIdentifiers: systemIdentifiers,
+            PersonName: [{
+              "PersonNameType":"Primary",
+              "PersonGivenName": root.content.FIRST_NAME,
+              "PersonSurName": root.content.LAST_NAME,
+              "PersonFullName": root.content.FIRST_NAME + " " + root.content.LAST_NAME
+            }],
+            PersonSSNIdentification: [{"IdentificationId":root.content.SSN}],
+            PersonBirthDate: birthDate,
+            Addresses: addresses,
+            PersonHOHCode: root.content.HOH_REL_CODE,
+            PersonLanguageCode: root.content.PRIMARY_LANGUAGE_CODE,
+            PersonLivingArrangementTypeCode: root.content.Living_Arrangement_Type_code,
+            certificationPeriod: periodDate
+          },
+        }
+      ]
     };
 
+    jsonDoc.records[0].Income = {
+      certificationPeriod: periodDate
+    }
+    
     if(uniqueEarnedIncomeArray.length > 0) {
-      jsonDoc.EarnedIncome = uniqueEarnedIncomeArray;
+      jsonDoc.records[0].Income.EarnedIncome = uniqueEarnedIncomeArray;
     }
 
     if(uniqueUnEarnedIncomeArray.length > 0) {
-      jsonDoc.UnEarnedIncome = uniqueUnEarnedIncomeArray;
+      jsonDoc.records[0].Income.UnEarnedIncome = uniqueUnEarnedIncomeArray;
     }
 
     if(summaryIncome.length > 0) {
-      jsonDoc.SummaryEarnedIncome = summaryIncome;
+      jsonDoc.records[0].Income.SummaryEarnedIncome = summaryIncome;
     }
 
     if(summaryUnEarnedIncome.length > 0) {
-      jsonDoc.SummaryUnEarnedIncome = summaryUnEarnedIncome;
+      jsonDoc.records[0].Income.SummaryUnEarnedIncome = summaryUnEarnedIncome;
     }
 
+    
     if(root.content.INS_STATUS_CODE && root.content.INS_STATUS_CODE != '-' && root.content.INS_STATUS_CODE != "") {
-      jsonDoc.ImmigrationStatusCode = root.content.INS_STATUS_CODE;
+      jsonDoc.records[0].Person.ImmigrationStatusCode = root.content.INS_STATUS_CODE;
     }
 
     if(datePattern.test(root.content.PREGNANCY_DUE_DATE.toString())) {
-      jsonDoc.PregnancyDueDate = root.content.PREGNANCY_DUE_DATE.toString().replace(datePattern,'$1-$2-$3');
+      jsonDoc.records[0].Person.PregnancyDueDate = root.content.PREGNANCY_DUE_DATE.toString().replace(datePattern,'$1-$2-$3');
     }
 
     if(root.content.HOH_REL_CODE && root.content.HOH_REL_CODE != '-') {
-      jsonDoc.PersonHOHCode = root.content.HOH_REL_CODE;
+      jsonDoc.records[0].Person.PersonHOHCode = root.content.HOH_REL_CODE;
     }
 
     if(root.content.Disability_Type_Code && root.content.Disability_Type_Code != "-") {
@@ -150,7 +172,7 @@ function createContent(id, options) {
             "DisabilityStartDate": root.content.Disability_Start_Date,
             "DisabilityEndDate": root.content.Disability_End_Date
       });
-      jsonDoc.Disability = disability;
+      jsonDoc.records[0].Person.Disability = disability;
     }
     return jsonDoc;
 

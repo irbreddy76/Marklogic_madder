@@ -6,7 +6,12 @@
  * @return - an array of ids or uris
  */
 function collect(options) {
-  return cts.elementValues(xs.QName("CLIENT_ID"));
+  return cts.elementValues(xs.QName("CLIENT_ID"), null, null, 
+    cts.andNotQuery(
+      cts.collectionQuery(["LoadABAWDPerson"]),
+      cts.collectionQuery(["processed"])
+    )
+  );
 }
 
 module.exports = {

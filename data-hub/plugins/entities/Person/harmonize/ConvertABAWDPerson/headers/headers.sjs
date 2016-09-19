@@ -11,13 +11,16 @@ function createHeaders(id, content, options) {
   var header = {
     RecordType: 'ABAWD',
     SystemIdentifiers: [],
-    Addresses: []
+    Addresses: [],
+    currentCertificationPeriod: content.records[0].Person.certificationPeriod,
+    SystemLoadDate: fn.currentDateTime(),
+    SystemModifiedDate: fn.currentDateTime()
   };
 
   var i;
 
-  for(i = 0; i < content.SystemIdentifiers.length; i++) {
-    var identifier = content.SystemIdentifiers[i];
+  for(i = 0; i < content.records[0].Person.SystemIdentifiers.length; i++) {
+    var identifier = content.records[0].Person.SystemIdentifiers[i];
     if(identifier.SourceSystem == 'LDSS_ID') {
         header.SystemIdentifiers.push({LdssID: identifier.SourceKey});
     } else if(identifier.SourceSystem == 'DO') {
@@ -29,8 +32,8 @@ function createHeaders(id, content, options) {
     }
   }
 
-  for(i = 0; i < content.PersonName.length; i++) {
-    var name = content.PersonName[i];
+  for(i = 0; i < content.records[0].Person.PersonName.length; i++) {
+    var name = content.records[0].Person.PersonName[i];
     if(name.PersonNameType == 'Primary') {
         header.PersonPrimaryName = {
           PersonGivenName: name.PersonGivenName,
@@ -41,12 +44,12 @@ function createHeaders(id, content, options) {
     }
   }
 
-  if(content.PersonSSNIdentification) {
-    header.SSNIdentificationId = content.PersonSSNIdentification.IdentificationId;
+  if(content.records[0].Person.PersonSSNIdentification) {
+    header.SSNIdentificationId = content.records[0].Person.PersonSSNIdentification.IdentificationId;
   }
 
-  for(i = 0; i < content.Addresses.length; i++) {
-    var address = content.Addresses[i];
+  for(i = 0; i < content.records[0].Person.Addresses.length; i++) {
+    var address = content.records[0].Person.Addresses[i];
     var entry = {
       AddressType: address.AddressType,
       StateDate: address.StartDate,
