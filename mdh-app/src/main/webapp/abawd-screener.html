@@ -30,6 +30,30 @@
               $scope.person.clientID = idTokens[0].replace("clientID=", "");
             }
 
+            var idTokens = document.location.search.match(/firstName=[A-Za-z0-9]+/);
+            if(idTokens && idTokens.length > 0) {
+              var firstName = idTokens[0].replace("firstName=", "");
+            }
+
+            var idTokens = document.location.search.match(/lastName=[A-Za-z0-9]+/);
+            if(idTokens && idTokens.length > 0) {
+              var lastName = idTokens[0].replace("lastName=", "");
+            }
+
+            var idTokens = document.location.search.match(/dob=[^=]+/);
+            if(idTokens && idTokens.length > 0) {
+              var dob = idTokens[0].replace("dob=", "");
+            }
+
+
+            $scope.person.customerName = firstName + " " + ((lastName) ? lastName : "");
+
+            var dobTemp = new Date(dob);
+            $scope.person.customerDOB = dobTemp.getMonth()+1 + "/" + (dobTemp.getDate()+1) + "/" + dobTemp.getFullYear();
+
+            var curDate = new Date();
+            $scope.person.certPeriod = (curDate.getMonth()+1) + "/" + curDate.getFullYear();
+
             $scope.error = false;
             $scope.reason = null;
             $scope.person.child = false;

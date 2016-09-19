@@ -20,16 +20,16 @@
   AbawdDetailCtrl.$inject = ['$scope', '$location', '$filter', 'MLRest'];
   function AbawdDetailCtrl($scope, $location, $filter, mlRest) {
     var ctrl = this;
-    
+
     ctrl.determinations = [];
     ctrl.isLoading = false;
-   
+
     ctrl.params = [
       { label: 'Screening Question 1', name:'questionOne', value: ''},
       { label: 'Screening Question 2', name:'questionTwo', value: ''},
       { label: 'ABAWD Status', name: 'abawdStatus', value: '' }
     ];
- 
+
     $scope.status = {
       isPersonOpen: true,
       isAddressOpen: false,
@@ -38,9 +38,9 @@
       isUnearnedOpen: false,
       isDeterminationOpen: false
     };
-    
+
     ctrl.clientID = null;
-    
+
     ctrl.init = function () {
       ctrl.isLoading = true;
       var identifiers = [];
@@ -51,7 +51,7 @@
     		  identifiers.push({ name: 'ClientID', value: currentIdentifier.ClientID });
     	  }
       }
-      
+
       if(identifiers.length > 0) {
         mlRest.extension('annotation', {
           method: 'GET',
@@ -62,10 +62,10 @@
             ctrl.isLoading = false;
             ctrl.determinations = response.data.annotations
           });
-      } else { ctrl.isLoading = false; } 
+      } else { ctrl.isLoading = false; }
     };
-    
+
     ctrl.init();
-       
+
   }
 }());

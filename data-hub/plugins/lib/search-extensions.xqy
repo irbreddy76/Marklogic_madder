@@ -138,7 +138,7 @@ declare function s:buildABAWD($header as map:map, $content as map:map) {
     map:put($json, "actualScreeningResult", s:get-annotation-prop($abawd-status-annotation-props, "actualScreeningResult")),
 
     map:put($json, "abawdActionStatusDate", map:get($abawd-action-annotation-hdr, "annotationDateTime")),
-    map:put($json, "abawdAction", s:get-annotation-prop($abawd-action-annotation-props, "abawdAction"))
+    map:put($json, "abawdAction", s:get-annotation-prop($abawd-action-annotation-props, "abawdAction")),
 
     map:put($json, "notificationDate", map:get($abawd-action-annotation-hdr, "annotationDateTime")),
     map:put($json, "notification", s:get-annotation-prop($abawd-action-annotation-props, "abawdAction"))

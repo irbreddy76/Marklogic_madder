@@ -155,6 +155,11 @@
        template="/app/annotation/add-annotation-button.html"></add-annotation>  -->
     <form action="./abawd-screener.html">
       <input type="hidden" name="clientID" value="{{ctrl.clientID}}" />
+
+      <input type="hidden" name="firstName" value="{{person.headers.PersonPrimaryName.PersonGivenName}}" />
+      <input type="hidden" name="lastName" value="{{person.headers.PersonPrimaryName.PersonSurName}}" />
+      <input type="hidden" name="dob" value="{{person.content.PersonBirthDate}}" />
+
       <input type="submit" value="Screen ABAWD Candidate" />
     </form>
     <table class="table table-bordered table-striped">

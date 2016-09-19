@@ -84,6 +84,7 @@
 
   function ResultsController($scope, $modal, MLRest, $sce, $http) {
 
+    //TODO Read these from configurable data in MarkLogic (SKOS)
     $scope.languagePrefs = [
       { label: "en", value: "English (en)" },
       { label: "es", value: "Spanish (es)" },
@@ -102,16 +103,18 @@
       { label: "am", value: "Amharic (am)" }
     ];
 
+    //TODO how to read these from configurable data in MarkLogic (SKOS)
     $scope.notificationTypes = [
-      { value: "Appointment Notice", label: "Appointment Notice" },
-      { value: "Approval Notice", label: "Approval Notice" },
-      { value: "Denial Notice", label: "Denial Notice" },
-      { value: "1st Month Warning", label: "1st Month Warning" },
-      { value: "2nd Month Warning", label: "2nd Month Warning" },
-      { value: "Change Notice", label: "Change Notice" },
-      { value: "Case Closure Notice - NOAA", label: "Case Closure Notice - NOAA" }
+      { value: "Appointment Notice", label: "AppointmentNotice" },
+      { value: "Approval Notice", label: "ApprovalNotice" },
+      { value: "Denial Notice", label: "ReapplicationDenialNotice" },
+      { value: "1st Month Warning", label: "WarningNoticeMonthOne" },
+      { value: "2nd Month Warning", label: "WarningNoticeMonthTwo" },
+      { value: "Change Notice", label: "ChangeNotice" },
+      { value: "Case Closure Notice - NOAA", label: "CaseClosureNotice" }
     ];
 
+    //TODO how to read these from configurable data in MarkLogic (SKOS)
     $scope.abawdActions = [
         { value: "Pro-rated month", label: "Pro-rated month" },
         { value: "EXEMPT: Over 49", label: "EXEMPT: Over 49" },
@@ -171,6 +174,7 @@
     // Modal dialog for Current Monthly Status
     var curStatusModalInstance = null;
 
+    //TODO may want to separate controller and template into their own files
     $scope.editStatus = function (result) {
         curStatusModalInstance = $modal.open({
           animation: ResultsController,
@@ -226,7 +230,6 @@
                     } else { $scope.reason = 'ABAWD Determination Saved'; }
                 });
 
-
               console.log("action taken: " + result.abawdAction);
             }, function () {
               console.log('Modal dismissed at: ' + new Date());
@@ -237,6 +240,7 @@
     // Modal dialog for Notification
     var notificationModalInstance = null;
 
+    //TODO separate controller into it's own file
     $scope.createNotification = function (result) {
         notificationModalInstance = $modal.open({
           animation: ResultsController,
@@ -245,11 +249,16 @@
             $scope.notificationTypes = notifications;
             $scope.languagePrefs = languagePrefs;
             $scope.result = result;
-            $scope.result.notificationDate = new Date();
+
+            var curDate = new Date();
+            $scope.result.notificationDate = curDate.toISOString();
+            $scope.result.appointmentDatetime = $scope.result.notificationDate;
 
             $scope.ok = function () {
               result.notification = $scope.notification;
               result.languagePref = $scope.languagePref;
+              result.notificationDate = $scope.result.notificationDate;
+              result.appointmentDatetime = $scope.result.appointmentDatetime;
               $modalInstance.close(result);
             };
 
@@ -272,19 +281,8 @@
         });
 
         notificationModalInstance.result.then(function (result) {
-              console.log("notification type: " + result.notification);
-              console.log("notification Date: " + result.notificationDate);
-              console.log("ldssID: " + result.ldssID);
-              console.log("ldssAddress: " + result.ldssAddress);
-              console.log("client id: " + result.personId);
-              console.log("languageCode: " + result.languagePref);
-              console.log(" name: " + result.firstName + " " + result.lastName);
-              console.log("mailing address: " + result.address);
-              console.log("telephoneNum: " + result.telephoneNum);
-              console.log("appointmentDatetime: " + result.appointmentDatetime);
 
-
-              //Save notification as an annotation
+              //TODO Save notification as an annotation
               /*
               MLRest.extension('annotation', {
                 method: 'POST',
@@ -313,26 +311,28 @@
                 });
                 */
 
+              //TODO - name pdf file according to Notification type.
               var fileName = "test.pdf";
               var a = document.createElement("a");
               document.body.appendChild(a);
-              //a.style = "display: none";
 
+              //TODO fix date formats
               MLRest.extension('notification', {
                 method: 'POST',
                 responseType: 'blob',
                 params: {
                   'rs:LDSS': result.ldssID,
                   'rs:LDSS-Address': result.ldssAddress,
-                  'rs:notice-date': result.notificationDate,
+                  'rs:notice-date': '08-11-2016', //2016-04-04T14:18:34-04:00 result.notificationDate
                   'rs:clientID': result.personId,
                   'rs:clientLanguagePreferenceCode': result.languagePref,
                   'rs:recipient-name': result.firstName + " " + result.lastName,
                   'rs:recipient-mailing-address1': result.address,
-                  'rs:recipient-mailing-address2': 'temp2',
-                  'rs:appointment-dateTime': result.appointmentDatetime,
+                  'rs:recipient-mailing-address2': '',
+                  'rs:appointment-dateTime': '2016-04-04T14:18:34-04:00', //2016-04-04T14:18:34-04:00 result.appointmentDatetime
                   'rs:telephone-contact-number': result.telephoneNum,
-                  'rs:noticeType': 'AppointmentNotice'
+                  'rs:noticeType': result.notification,
+                  'rs:approval-date': '2016-08-11'
                 }
               }).then(function(response) {
                   var file = new Blob([response.data], {type: 'application/pdf'});
@@ -348,42 +348,6 @@
             }, function () {
               console.log('Modal dismissed at: ' + new Date());
             });
-    };
-
-
-    $scope.downloadNotification = function () {
-      var fileName = "test.pdf";
-      var a = document.createElement("a");
-      document.body.appendChild(a);
-      //a.style = "display: none";
-
-      MLRest.extension('notification', {
-        method: 'POST',
-        responseType: 'blob',
-        params: {
-          'rs:LDSS': 'Ann',
-          'rs:LDSS-Address': 'temp',
-          'rs:notice-date': '08-11-2016',
-          'rs:clientID': '12343',
-          'rs:clientLanguagePreferenceCode': 'en',
-          'rs:recipient-name': 'Jane',
-          'rs:recipient-mailing-address1': 'temp2',
-          'rs:recipient-mailing-address2': 'temp2',
-          'rs:appointment-dateTime': '12:00',
-          'rs:telephone-contact-number': '301-454-1234',
-          'rs:noticeType': 'AppointmentNotice'
-        }
-      }).then(function(response) {
-          var file = new Blob([response.data], {type: 'application/pdf'});
-          var fileURL = URL.createObjectURL(file);
-
-          a.href = fileURL;
-          a.download = fileName;
-          a.click();
-
-          //$scope.content = $sce.trustAsResourceUrl(fileURL);
-      });
-
     };
 
     //Sum Income Summary
