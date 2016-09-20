@@ -8,7 +8,19 @@
  * @return - an object of headers
  */
 function createHeaders(id, content, options) {
-  return {};
+  //var certificationPeriod;
+  
+  //if(options.certificationPeriod) {
+  //  certificationPeriod = options.certificationPeriod;
+  //} else {
+  //  certificationPeriod = fn.currentDate();
+  //}
+  return {
+  // Set certification month here
+  // This is used to identify when the record was created
+  // and is used to determine which changes take precedence on merge.
+  //  certificationPeriod: certificationPeriod
+  };
 }
 
 module.exports = {
