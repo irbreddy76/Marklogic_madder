@@ -1,3 +1,15 @@
+<!-- <add-annotation button-style="'button'"
+   title="'Make ABAWD Determination'" source-url="uri" params="ctrl.params"
+   template="/app/annotation/add-annotation-button.html"></add-annotation>  -->
+<form action="./abawd-screener.html">
+  <input type="hidden" name="clientID" value="{{ctrl.clientID}}" />
+  <input type="hidden" name="auNum" value="{{ctrl.auNum}}" />
+  <input type="hidden" name="doNum" value="{{ctrl.doNum}}" />
+  <input type="hidden" name="firstName" value="{{person.headers.PersonPrimaryName.PersonGivenName}}" />
+  <input type="hidden" name="lastName" value="{{person.headers.PersonPrimaryName.PersonSurName}}" />
+  <input type="hidden" name="dob" value="{{person.content.PersonBirthDate}}" />
+  <input type="submit" value="Screen ABAWD Candidate" />
+</form>
 <accordion close-others="false">
   <accordion-group heading="Person Detail" is-open="status.isPersonOpen">
     <div>
@@ -150,26 +162,14 @@
     </accordion>
   </accordion-group>
   <accordion-group heading="Previous Screening Results" is-open="status.isDeterminationOpen">
-    <!-- <add-annotation button-style="'button'"
-       title="'Make ABAWD Determination'" source-url="uri" params="ctrl.params"
-       template="/app/annotation/add-annotation-button.html"></add-annotation>  -->
-    <form action="./abawd-screener.html">
-      <input type="hidden" name="clientID" value="{{ctrl.clientID}}" />
-
-      <input type="hidden" name="firstName" value="{{person.headers.PersonPrimaryName.PersonGivenName}}" />
-      <input type="hidden" name="lastName" value="{{person.headers.PersonPrimaryName.PersonSurName}}" />
-      <input type="hidden" name="dob" value="{{person.content.PersonBirthDate}}" />
-
-      <input type="submit" value="Screen ABAWD Candidate" />
-    </form>
     <table class="table table-bordered table-striped">
       <tr>
         <th>User</th>
         <th>Date</th>
-        <th>Determination</th>
+        <th>Screening Result</th>
         <th>Comments</th>
       </tr>
-      <tr ng-repeat="determination in ctrl.determinations">
+      <tr ng-repeat="determination in ctrl.determinations  | filter:{headers: {properties: {annotationType: 'ABAWDStatus'}}}">
         <td>{{determination.headers.annotationUser}}</td>
         <td>{{determination.headers.annotationDateTime | date: 'MM-dd-yyyy'}}</td>
         <td><span ng-repeat="status in determination.content.properties | filter:{name: 'actualScreeningResult'}">{{status.value}}</span></td>
@@ -180,4 +180,46 @@
       </tr>
     </table>
   </accordion-group>
+
+  <accordion-group heading="Status History" is-open="status.isStatusOpen">
+    <table class="table table-bordered table-striped">
+      <tr>
+        <th>User</th>
+        <th>Date</th>
+        <th>Status</th>
+        <th>Comments</th>
+      </tr>
+      <tr ng-repeat="determination in ctrl.determinations  | filter:{headers: {properties: {annotationType: 'ABAWDAction'}}}">
+        <td>{{determination.headers.annotationUser}}</td>
+        <td>{{determination.headers.annotationDateTime | date: 'MM-dd-yyyy'}}</td>
+        <td><span ng-repeat="status in determination.content.properties | filter:{name: 'abawdAction'}">{{status.value}}</span></td>
+        <td>{{determination.content.comments}}</td>
+      </tr>
+      <tr ng-if="ctrl.determinations.length == 0">
+        <td colspan="4">No previous actions on record</td>
+      </tr>
+    </table>
+  </accordion-group>
+
+  <accordion-group heading="Notification History" is-open="status.isNotificationOpen">
+    <table class="table table-bordered table-striped">
+      <tr>
+        <th>User</th>
+        <th>Date</th>
+        <th>Notice Sent</th>
+        <th>Comments</th>
+      </tr>
+      <tr ng-repeat="determination in ctrl.determinations  | filter:{headers: {properties: {annotationType: 'ABAWDNotification'}}}">
+        <td>{{determination.headers.annotationUser}}</td>
+        <td>{{determination.headers.annotationDateTime | date: 'MM-dd-yyyy'}}</td>
+        <td><span ng-repeat="status in determination.content.properties | filter:{name: 'notification'}">{{status.value}}</span></td>
+        <td>{{determination.content.comments}}</td>
+      </tr>
+      <tr ng-if="ctrl.determinations.length == 0">
+        <td colspan="4">No previous notifications on record</td>
+      </tr>
+    </table>
+  </accordion-group>
+
+
 </accordion>

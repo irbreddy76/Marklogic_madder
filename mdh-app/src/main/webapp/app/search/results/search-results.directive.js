@@ -170,11 +170,28 @@
         { value: "REGAINED: 3rd month: SENT NOAA & Entered 526 Code", label: "REGAINED: 3rd month: SENT NOAA & Entered 526 Code" }
       ];
 
+    //Status history popover properties
+    $scope.statusPopover = {
+      content: '',
+      templateUrl: 'statusPopUpTempl.html',
+      title: 'Status History'
+    };
+
+    //Status history popover function to set content.  I opted to get all
+    //status history with the main data instead of a call to the service
+    //in this function
+    $scope.setContent = function (statusHistory) {
+      $scope.abawdStatusHistory = statusHistory;
+      if (Array.isArray(statusHistory)) {
+        $scope.abawdStatusHistory = statusHistory;
+      } else {
+        $scope.abawdStatusHistory = [statusHistory];
+      }
+    }
 
     // Modal dialog for Current Monthly Status
     var curStatusModalInstance = null;
 
-    //TODO may want to separate controller and template into their own files
     $scope.editStatus = function (result) {
         curStatusModalInstance = $modal.open({
           animation: ResultsController,
@@ -230,9 +247,9 @@
                     } else { $scope.reason = 'ABAWD Determination Saved'; }
                 });
 
-              console.log("action taken: " + result.abawdAction);
+              //console.log("action taken: " + result.abawdAction);
             }, function () {
-              console.log('Modal dismissed at: ' + new Date());
+              //console.log('Modal dismissed at: ' + new Date());
             });
 
     };
@@ -240,7 +257,6 @@
     // Modal dialog for Notification
     var notificationModalInstance = null;
 
-    //TODO separate controller into it's own file
     $scope.createNotification = function (result) {
         notificationModalInstance = $modal.open({
           animation: ResultsController,
@@ -251,9 +267,10 @@
             $scope.result = result;
 
             var curDate = new Date();
-            $scope.result.notificationDate = curDate.toISOString();
-            $scope.result.appointmentDatetime = $scope.result.notificationDate;
+            $scope.result.notificationDate = (curDate.getMonth()+1) + "-" + curDate.getDate() + "-" + curDate.getFullYear();
+            $scope.result.appointmentDatetime = curDate.toISOString(); //"2016-09-22T02:30:03.514Z"
 
+            //TODO set these in result function
             $scope.ok = function () {
               result.notification = $scope.notification;
               result.languagePref = $scope.languagePref;
@@ -263,6 +280,10 @@
             };
 
             $scope.cancel = function () {
+              result.notification = null;
+              result.languagePref = null;
+              result.notificationDate = null;
+              result.appointmentDatetime = null;
               $modalInstance.dismiss('cancel');
             };
           },
@@ -281,9 +302,41 @@
         });
 
         notificationModalInstance.result.then(function (result) {
+              var result = alert("Edited fields will not be saved in CARES");
+              var fileName = result.notification + ".pdf";
+              var a = document.createElement("a");
+              document.body.appendChild(a);
 
-              //TODO Save notification as an annotation
-              /*
+              //TODO fix approval date, add fields for other notification types
+              //TODO set fields conditional to the notification type
+              MLRest.extension('notification', {
+                method: 'POST',
+                responseType: 'blob',
+                params: {
+                  'rs:LDSS': result.ldssID,
+                  'rs:LDSS-Address': result.ldssAddress,
+                  'rs:notice-date': result.notificationDate,
+                  'rs:clientID': result.personId,
+                  'rs:clientLanguagePreferenceCode': result.languagePref,
+                  'rs:recipient-name': result.firstName + " " + result.lastName,
+                  'rs:recipient-mailing-address1': result.address,
+                  'rs:recipient-mailing-address2': '',
+                  'rs:appointment-dateTime': result.appointmentDatetime,
+                  'rs:telephone-contact-number': result.telephoneNum,
+                  'rs:noticeType': result.notification,
+                  'rs:approval-date': '2016-08-11'
+                }
+              }).then(function(response) {
+                  var file = new Blob([response.data], {type: 'application/pdf'});
+                  var fileURL = URL.createObjectURL(file);
+                  a.href = fileURL;
+                  a.download = fileName;
+                  a.click();
+              });
+
+              //May need to put this in the promise result of the Notification
+              //so the annotation is only called if the Notification is successfully created.
+              //Create annotation for the notification
               MLRest.extension('annotation', {
                 method: 'POST',
                 data: {
@@ -309,44 +362,7 @@
                       $scope.reason = response.data.results[0].reason;
                     } else { $scope.reason = 'ABAWD Determination Saved'; }
                 });
-                */
-
-              //TODO - name pdf file according to Notification type.
-              var fileName = "test.pdf";
-              var a = document.createElement("a");
-              document.body.appendChild(a);
-
-              //TODO fix date formats
-              MLRest.extension('notification', {
-                method: 'POST',
-                responseType: 'blob',
-                params: {
-                  'rs:LDSS': result.ldssID,
-                  'rs:LDSS-Address': result.ldssAddress,
-                  'rs:notice-date': '08-11-2016', //2016-04-04T14:18:34-04:00 result.notificationDate
-                  'rs:clientID': result.personId,
-                  'rs:clientLanguagePreferenceCode': result.languagePref,
-                  'rs:recipient-name': result.firstName + " " + result.lastName,
-                  'rs:recipient-mailing-address1': result.address,
-                  'rs:recipient-mailing-address2': '',
-                  'rs:appointment-dateTime': '2016-04-04T14:18:34-04:00', //2016-04-04T14:18:34-04:00 result.appointmentDatetime
-                  'rs:telephone-contact-number': result.telephoneNum,
-                  'rs:noticeType': result.notification,
-                  'rs:approval-date': '2016-08-11'
-                }
-              }).then(function(response) {
-                  var file = new Blob([response.data], {type: 'application/pdf'});
-                  var fileURL = URL.createObjectURL(file);
-
-                  a.href = fileURL;
-                  a.download = fileName;
-                  a.click();
-
-                  //$scope.content = $sce.trustAsResourceUrl(fileURL);
-              });
-
             }, function () {
-              console.log('Modal dismissed at: ' + new Date());
             });
     };
 

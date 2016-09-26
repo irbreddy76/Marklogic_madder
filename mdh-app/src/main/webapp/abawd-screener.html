@@ -30,6 +30,16 @@
               $scope.person.clientID = idTokens[0].replace("clientID=", "");
             }
 
+            var idTokens = document.location.search.match(/auNum=[A-Za-z0-9]+/);
+            if(idTokens && idTokens.length > 0) {
+              $scope.person.auNum = idTokens[0].replace("auNum=", "");
+            }
+
+            var idTokens = document.location.search.match(/doNum=[A-Za-z0-9]+/);
+            if(idTokens && idTokens.length > 0) {
+              $scope.person.district = idTokens[0].replace("doNum=", "");
+            }
+
             var idTokens = document.location.search.match(/firstName=[A-Za-z0-9]+/);
             if(idTokens && idTokens.length > 0) {
               var firstName = idTokens[0].replace("firstName=", "");
@@ -376,8 +386,11 @@
               <u>INSTRUCTIONS</u>: Screen each individual in the Food Supplement household for potential ABAWD status.  You can use CARES, MABS, The Work Number and SVES to verify status. If you cannot determine the ABAWD status from those systems, then call the customer. Narrate in CARES the date and time of the call and the results of the call.
             </div>
 
+            <!-- TODO Add style sheet for table valign=center and align=right -->
             <table>
-              <tr><td>
+              <tr><td align="right">
+                <label for="district">District:</label>
+              </td><td>
                 <select style="width: 250px;" name="district" ng-model="person.district"
                         ng-options="obj.label as obj.value for obj in districts" required>
                     <option value="">Select your district office</option>
@@ -385,34 +398,59 @@
                 <span class="invalidfield" ng-show="districtInvalid"><br/>Please select a District Office</span>
                 <br/>
 
-
+              </td></tr>
+              <tr><td align="right" valign="middle">
+                <label for="customerName">Customer Name:</label>
+              </td><td>
                 <input type="text" style="width: 250px;" placeholder="Customer's Name" name="customerName" ng-model="person.customerName" required/>
                 <span class="invalidfield" ng-show="customerNameInvalid"><br/>Please enter a value for Customer's Name</span>
                 <br/>
-
+              </td><td align="right">
+                <label for="clientID">Client ID:</label>
+              </td><td>
                 <input type="text" style="width: 250px;" placeholder="Customer's Client ID" name="clientID" ng-model="person.clientID" required/>
                 <span class="invalidfield" ng-show="clientIDInvalid"><br/>Please enter a value for ClientID</span>
                 <br/>
-
+              </td></tr>
+              <tr><td align="right">
+                <label for="auNum">Customer's AU Number:</label>
+              </td><td>
+                <input type="text" style="width: 250px;" placeholder="Customer's AU Number" name="auNum" ng-model="person.auNum" required/>
+                <!-- don't validate <span class="invalidfield" ng-show="clientIDInvalid"><br/>Please enter a value for AUNum</span>-->
+                <br/>
+              </td><td align="right">
+                <label for="certPeriod">Cert. Period Begin MO/YR:</label>
+              </td><td>
                 <input type="text" style="width: 250px;" placeholder="Cert. Period Begin MO/YR" name="certPeriod" ng-model="person.certPeriod" required/>
                 <span class="invalidfield" ng-show="certPeriodInvalid"><br/>A valid Certification Period is required MO/YR</span>
                 <br/>
+              </td>
+              </tr><tr>
+              <td align="right">
+                <label for="caseWorkerName">Case Worker Name:</label>
               </td><td>
-
                 <input type="text" style="width: 250px;" placeholder="Your Name" name="caseWorkerName" ng-model="person.caseWorkerName" required/>
                 <span class="invalidfield" ng-show="caseWorkerNameInvalid"><br/>Please enter a value for your name</span>
                 <br/>
-
+              </td><td align="right">
+                <label for="todaysDate">Today's Date:</label>
+              </td><td>
                 <input type="text" style="width: 250px;" placeholder="Today's Date" name="todaysDate" ng-model="person.todaysDate" readonly/>
                 <br/>
+              </td></tr>
+              <tr><td align="right">
 
+                <label for="screeningType">Type of screening:</label>
+              </td><td>
                 <select style="width: 250px;" name="screeningType" ng-model="person.screeningType"
                         ng-options="obj.label as obj.value for obj in screeningTypes" required>
                     <option value="">Select which screening this is</option>
                 </select>
                 <span class="invalidfield" ng-show="screeningTypeInvalid"><br/>Please select a valid screening type</span>
                 <br/>
-
+              </td><td align=right>
+                <label for="customerDOB">Customer's Date of Birth:</label>
+              </td><td>
                 <input type="text" style="width: 250px;" placeholder="Customer's Date of Birth" name="customerDOB" ng-model="person.customerDOB" required ng-blur="applyBirthday(person.customerDOB)"/>
                 <span class="invalidfield" ng-show="customerDOBInvalid"><br/>A valid date of birth is required</span>
                 <br/>

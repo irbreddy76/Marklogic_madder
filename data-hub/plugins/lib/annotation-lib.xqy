@@ -146,17 +146,28 @@ declare function an:annotateDocument($uri as xs:string?, $params as map:map) {
         )
 };
 
-declare function an:createAnnotation($uri as xs:string?, $identifiers, $params as map:map) {
+declare function an:createAnnotation($uri as xs:string?, $identifiers, $params-arg) {
   let $annotation := json:object()
   let $triples := json:array()
   let $headers := json:object()
   let $content := json:object()
   let $header-props := json:array()
   let $content-props := json:array()
+
+  let $_ := xdmp:log("======================= type =======================")
+  let $_ := xdmp:log(xdmp:type($params-arg))
+  let $_ := xdmp:log($params-arg)
+
+  let $params := if ($params-arg instance of map:map) then $params-arg
+      else if ($params-arg instance of xs:string) then xdmp:from-json(xdmp:unquote($params-arg))
+      else xdmp:from-json($params-arg)
+
+  let $annotationDateTime := if (fn:empty(map:get($params, "annotationDateTime")))
+    then fn:current-dateTime() else map:get($params, "annotationDateTime")
   let $_ := (
     if(fn:not(fn:empty($uri))) then map:put($headers, "parentUri", $uri) else (),
     map:put($headers, "identifiers", $identifiers),
-    map:put($headers, "annotationDateTime", fn:current-dateTime()),
+    map:put($headers, "annotationDateTime", $annotationDateTime),
     map:put($headers, "annotationUser",
       (map:get($params, "user"), xdmp:get-current-user())[1]),
     let $comments := map:get($params, "comments")
@@ -186,7 +197,12 @@ declare function an:createAnnotation($uri as xs:string?, $identifiers, $params a
   return $annotation
 };
 
+(: for backward compatibility :)
 declare function an:getAnnotation($params as map:map) {
+  an:getAnnotation("all" , $params)
+};
+
+declare function an:getAnnotation($annotationType as xs:string, $params as map:map) {
   let $identifier-queries := ()
   let $_ := (
     fn:trace("getAnnotation called", $TRACE_LEVEL_TRACE),
@@ -223,7 +239,9 @@ declare function an:getAnnotation($params as map:map) {
       else (),
       if(map:contains($params, "after")) then
         cts:json-property-range-query(xs:QName("an:annotationDateTime"), ">=", xs:dateTime(map:get($params, "after")))
-      else ()
+      else (),
+      if($annotationType = "all") then ()
+      else cts:json-property-value-query("annotationType", $annotationType)
     )))
   let $_ := fn:trace(fn:concat(cts:remainder($results[1]), " annotations found"), $TRACE_LEVEL_TRACE)
   return $results

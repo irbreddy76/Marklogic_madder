@@ -36,10 +36,14 @@
       isDisabilityOpen: false,
       isIncomeOpen: false,
       isUnearnedOpen: false,
-      isDeterminationOpen: false
+      isDeterminationOpen: false,
+      isStatusOpen: false,
+      isNotificationOpen: false
     };
 
     ctrl.clientID = null;
+    ctrl.auNum = null;
+    ctrl.doNum = null;
 
     ctrl.init = function () {
       ctrl.isLoading = true;
@@ -50,13 +54,22 @@
     		  ctrl.clientID = currentIdentifier.ClientID;
     		  identifiers.push({ name: 'ClientID', value: currentIdentifier.ClientID });
     	  }
+
+        //These Identifiers should not be included in the annotation identifiers
+        if(currentIdentifier.AUNum) {
+          ctrl.auNum = currentIdentifier.AUNum;
+        }
+        if(currentIdentifier.DONum) {
+          ctrl.doNum = currentIdentifier.DONum;
+        }
       }
 
       if(identifiers.length > 0) {
         mlRest.extension('annotation', {
           method: 'GET',
             params: {
-              'rs:identifiers': identifiers
+              'rs:identifiers': identifiers,
+              'rs:annotationType': 'all'
             }
           }).then(function(response) {
             ctrl.isLoading = false;

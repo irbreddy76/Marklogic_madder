@@ -3,6 +3,9 @@ module namespace s = "http://marklogic.com/md-dhr/search-extensions";
 import module namespace search = "http://marklogic.com/appservices/search"
   at "/MarkLogic/appservices/search/search.xqy";
 
+import module namespace an = "http://www.dhr.state.md.us/datalake/annotation" at
+  "/lib/annotation-lib.xqy";
+
 declare function s:buildSummary(
    $result as node(),
    $ctsquery as schema-element(cts:query),
@@ -109,6 +112,10 @@ declare function s:buildABAWD($header as map:map, $content as map:map) {
   let $addressStr := map:get($address, "LocationStreet") || " " || map:get($address, "LocationCityName") || ", "
       || map:get($address, "LocationStateName") || " " || map:get($address, "LocationPostalCode")
 
+  let $props := '{"name":"ClientID","value": "' || $personId || '"}'
+  let $params := map:new(map:entry("identifiers", $props))
+  let $statusHistory := an:getAnnotation('ABAWDAction', $params)
+
   let $_ := (
     map:put($json, "recordType", "ABAWD"),
 
@@ -140,8 +147,10 @@ declare function s:buildABAWD($header as map:map, $content as map:map) {
     map:put($json, "abawdActionStatusDate", map:get($abawd-action-annotation-hdr, "annotationDateTime")),
     map:put($json, "abawdAction", s:get-annotation-prop($abawd-action-annotation-props, "abawdAction")),
 
-    map:put($json, "notificationDate", map:get($abawd-action-annotation-hdr, "annotationDateTime")),
-    map:put($json, "notification", s:get-annotation-prop($abawd-action-annotation-props, "abawdAction"))
+    map:put($json, "notificationDate", map:get($abawd-notification-annotation-hdr, "annotationDateTime")),
+    map:put($json, "notification", s:get-annotation-prop($abawd-notification-annotation-props, "notification")),
+
+    map:put($json, "statusHistory", $statusHistory)
 
   )
   return $json

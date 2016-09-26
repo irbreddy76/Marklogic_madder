@@ -1,6 +1,25 @@
       <!-- ABAWD Report Edit as needed. Snippets are transformed by search-extensions.xqy.  Can change this in
         the search options: abawd.xml -->
 
+        <script type="text/ng-template" id="statusPopUpTempl.html">
+          <div>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Status Date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="status in abawdStatusHistory">
+                  <td>{{status.headers.annotationDateTime | date :'short'}}</td>
+                  <td>{{status.headers.properties[2].abawdAction}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </script>
+
         <!-- Figure out how to separate this template into its own file -->
         <script type="text/ng-template" id="editMonthlyStatus.html">
             <div class="modal-header">
@@ -118,12 +137,31 @@
             <td ng-class="flagScreened(result.matches.summary.abawdScreeningStatusDate)">{{result.matches.summary.abawdScreeningStatusDate | date: 'MM-dd-yyyy'}}</td>
             <td ng-class="flagScreened(result.matches.summary.actualScreeningResult)">{{result.matches.summary.actualScreeningResult}}</td>
             <td ng-class="flagScreened(result.matches.summary.abawdAction)">{{result.matches.summary.abawdAction}}
-              <br><button ng-show="result.matches.summary.actualScreeningResult" type="button" class="btn btn-link" ng-click="editStatus(result.matches.summary)">Edit</button>
-              <!--<br><button popover-placement="top" popover="On the Top!" ng-show="result.matches.summary.actualScreeningResult" type="button" class="btn btn-link">History</button>-->
+              <br>
+
+              <div class="row">
+                <div class="pull-left" valign="bottom">
+                  <button ng-show="result.matches.summary.actualScreeningResult" type="button" class="btn btn-link"
+                      tooltip="Set Monthly Status" tooltip-popup-delay='500'
+                      ng-click="editStatus(result.matches.summary)"><span class="glyphicon glyphicon-pencil"></span></button>
+                </div>
+                <div class="pull-right" valign="bottom">
+                 <button popover-template="statusPopover.templateUrl" ng-click="setContent(result.matches.summary.statusHistory)"
+                  popover-title="Status History" popover-trigger="focus" tooltip="View Status History" tooltip-popup-delay='500'
+                  ng-show="result.matches.summary.statusHistory" type="button" class="btn btn-link"><span class="glyphicon glyphicon-info-sign"></span></button>
+                </div>
+              </div>
+
             </td>
             <td ng-class="flagScreened(result.matches.summary.notification)">
               {{result.matches.summary.notification}}<br>{{result.matches.summary.notificationDate | date :'short'}}
-              <br><button ng-show="result.matches.summary.abawdAction" type="button" class="btn btn-link" ng-click="createNotification(result.matches.summary)">Create</button>
+              <br>
+              <div style="float:left; vertical-align: top;">
+                <button ng-show="result.matches.summary.abawdAction" type="button" class="btn btn-link"
+                  tooltip="Generate Notification" tooltip-popup-delay='500'
+                  ng-click="createNotification(result.matches.summary)"><span class="glyphicon glyphicon-file"></span>
+                </button>
+              </div>
             </td>
             <td>{{result.matches.summary.id}}</td>
             <td>{{result.matches.summary.dob | date: 'MM-dd-yyyy'}}</td>
