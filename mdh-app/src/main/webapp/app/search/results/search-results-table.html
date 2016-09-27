@@ -13,7 +13,7 @@
               <tbody>
                 <tr ng-repeat="status in abawdStatusHistory">
                   <td>{{status.headers.annotationDateTime | date :'short'}}</td>
-                  <td>{{status.headers.properties[2].abawdAction}}</td>
+                  <td><span ng-repeat="property in status.content.properties | filter:{name: 'abawdAction'}">{{property.value}}</span></td>
                 </tr>
               </tbody>
             </table>

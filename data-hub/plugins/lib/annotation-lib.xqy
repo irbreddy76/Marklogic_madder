@@ -154,10 +154,7 @@ declare function an:createAnnotation($uri as xs:string?, $identifiers, $params-a
   let $header-props := json:array()
   let $content-props := json:array()
 
-  let $_ := xdmp:log("======================= type =======================")
-  let $_ := xdmp:log(xdmp:type($params-arg))
-  let $_ := xdmp:log($params-arg)
-
+  (:TODO Test this again, it may not be needed :)
   let $params := if ($params-arg instance of map:map) then $params-arg
       else if ($params-arg instance of xs:string) then xdmp:from-json(xdmp:unquote($params-arg))
       else xdmp:from-json($params-arg)
@@ -199,7 +196,10 @@ declare function an:createAnnotation($uri as xs:string?, $identifiers, $params-a
 
 (: for backward compatibility :)
 declare function an:getAnnotation($params as map:map) {
-  an:getAnnotation("all" , $params)
+  let $_ := xdmp:log("==================getAnnotation==================")
+  let $_ := xdmp:log($params)
+
+  return an:getAnnotation("all" , $params)
 };
 
 declare function an:getAnnotation($annotationType as xs:string, $params as map:map) {
