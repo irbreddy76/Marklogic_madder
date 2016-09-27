@@ -146,7 +146,7 @@
                       ng-click="editStatus(result.matches.summary)"><span class="glyphicon glyphicon-pencil"></span></button>
                 </div>
                 <div class="pull-right" valign="bottom">
-                 <button popover-template="statusPopover.templateUrl" ng-click="setContent(result.matches.summary.statusHistory)"
+                 <button popover-placement="right" popover-template="statusPopover.templateUrl" ng-click="setContent(result.matches.summary.statusHistory)"
                   popover-title="Status History" popover-trigger="focus" tooltip="View Status History" tooltip-popup-delay='500'
                   ng-show="result.matches.summary.statusHistory" type="button" class="btn btn-link"><span class="glyphicon glyphicon-info-sign"></span></button>
                 </div>
