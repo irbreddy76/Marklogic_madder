@@ -41,6 +41,16 @@
         </div>
       </div>
     </div>
+
+    <div class="form-group">
+      <div class="row">
+        <label class="col-md-2 control-label">ABAWD Only</label>
+        <div class="col-md-2">
+          <input type="checkbox" class="checkbox" name="abawdOnly" id="abawdOnly" value="abawdOnly" ng-model="ctrl.user.abawdOnly">
+        </div>
+      </div>
+    </div>
+
     <div class="row">
       <a class="col-md-offset-7 btn btn-default" href="/">Cancel</a>
       <button class="btn btn-primary" ng-click="ctrl.submit(profileForm)">Submit</button>

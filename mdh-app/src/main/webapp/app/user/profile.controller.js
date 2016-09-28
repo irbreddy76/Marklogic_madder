@@ -4,10 +4,11 @@
   angular.module('app.user')
     .controller('ProfileCtrl', ProfileCtrl);
 
-  ProfileCtrl.$inject = ['$scope', '$state', 'MLRest', 'userService'];
+  ProfileCtrl.$inject = ['$scope', '$state', 'MLRest', 'userService', '$window'];
 
-  function ProfileCtrl($scope, $state, mlRest, userService) {
+  function ProfileCtrl($scope, $state, mlRest, userService, $window) {
     var ctrl = this;
+
     angular.extend(ctrl, {
       user: null,
       newEmail: '',
@@ -41,6 +42,7 @@
     }
 
     function submit(form) {
+
       if (form.$valid) {
         addEmail();
 
@@ -51,7 +53,8 @@
         mlRest.updateDocument({
           user: {
             'fullname': ctrl.user.fullname,
-            'emails': ctrl.user.emails
+            'emails': ctrl.user.emails,
+            'abawdOnly': ctrl.user.abawdOnly
           }
         }, {
           format: 'json',
@@ -61,6 +64,7 @@
           // 'perm:sample-role': 'update'
         }).then(function(data) {
           $state.go('root');
+          $window.location.reload();
         });
       }
     }

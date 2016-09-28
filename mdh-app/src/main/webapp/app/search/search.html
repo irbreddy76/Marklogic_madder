@@ -1,22 +1,23 @@
-<h1>Data Lake Search Application</h1>
+
+<div class="content">
 <div class="row" ng-if="!ctrl.currentUser">Please log in to see content</div>
 
 <div class="row" ng-if="ctrl.currentUser">
   <div class="col-md-12">
     <tabset>
-      <tab heading="Basic Search" select="ctrl.setMode('basic')" active="ctrl.searchParams.tabStatus.isBasicActive">
-        <ml-input qtext="ctrl.qtext" search="ctrl.newSearch(qtext)" template="fa" 
+      <tab ng-show="!ctrl.abawdOnly" heading="Basic Search" select="ctrl.setMode('basic')" active="ctrl.searchParams.tabStatus.isBasicActive">
+        <ml-input qtext="ctrl.qtext" search="ctrl.newSearch(qtext)" template="fa"
           class="search"></ml-input>
       </tab>
-      <tab heading="Person Search" select="ctrl.setMode('person')" active="ctrl.searchParams.tabStatus.isPersonActive">
+      <tab ng-show="!ctrl.abawdOnly" heading="Person Search" select="ctrl.setMode('person')" active="ctrl.searchParams.tabStatus.isPersonActive">
         <person-search person="ctrl.person" search="ctrl.newSearch(qtext)"
           suggest="ctrl.suggest(value, field)" clear-text="ctrl.clearText()"></person-search>
       </tab>
-      <tab heading="Case Search" select="ctrl.setMode('case')" active="ctrl.searchParams.tabStatus.isCaseActive">
+      <tab ng-show="!ctrl.abawdOnly" heading="Case Search" select="ctrl.setMode('case')" active="ctrl.searchParams.tabStatus.isCaseActive">
         <case-search case="ctrl.case" search="ctrl.newSearch(qtext)"
           suggest="ctrl.suggest(value, field)" clear-text="ctrl.clearText()"></case-search>
       </tab>
-      <tab heading="ABAWD Report" select="ctrl.setMode('abawd')" active="ctrl.searchParams.tabStatus.isAbawdActive">
+      <tab heading="ABAWD Report" select="ctrl.setMode('abawd')" active="true">
         <abawd-report case="ctrl.report" search="ctrl.newSearch(qtext)"
           suggest="ctrl.suggest(value, field)" clear-text="ctrl.clearText()"></abawd-report>
       </tab>
@@ -25,7 +26,7 @@
 </div>
 
 <div class="search row" ng-if="ctrl.currentUser">
-  <div class="col-md-3 right-col">
+  <div class="col-sm-2 right-col">
     <!--
     <div class="checkbox">
       <label>
@@ -34,7 +35,7 @@
       </label>
     </div>
     -->
-    <ml-facets facets="ctrl.response.facets" toggle="ctrl.toggleFacet(facet, value)" 
+    <ml-facets facets="ctrl.response.facets" toggle="ctrl.toggleFacet(facet, value)"
       active-facets="ctrl.mlSearch.activeFacets" show-more="ctrl.mlSearch.showMoreFacets(facet, facetName)"
       negate="ctrl.toggleNegatedFacet(facet,value)"></ml-facets>
   </div>
@@ -53,8 +54,8 @@
   <div class="col-md-9" ng-hide="ctrl.isSearchPending()">
     <h4 ng-if="ctrl.response.total === 0">No results to show</h4>
   <!--
-    <ml-esri-search-map options="ctrl.mapOptions" features-list="ctrl.response.results" 
-      facets="ctrl.myFacets.facets" 
+    <ml-esri-search-map options="ctrl.mapOptions" features-list="ctrl.response.results"
+      facets="ctrl.myFacets.facets"
       bounds-changed="ctrl.mapBoundsChanged(bounds)"></ml-esri-search-map>
   -->
     <br/>
@@ -62,8 +63,8 @@
       <div class="row">
         <div class="col-sm-8">
           <div class="pagination-ctrls">
-            <pagination class="pagination pagination-sm" ng-model="ctrl.searchParams.page" 
-              ng-change="ctrl.selectPage()" max-size="10" boundary-links="true" 
+            <pagination class="pagination pagination-sm" ng-model="ctrl.searchParams.page"
+              ng-change="ctrl.selectPage()" max-size="10" boundary-links="true"
               total-items="ctrl.response.total" items-per-page="ctrl.response['page-length']">
             </pagination>
           </div>
@@ -84,4 +85,5 @@
         toggle-sort="ctrl.toggleSort(field)"></search-results>
     </div>
   </div>
+</div>
 </div>

@@ -4,10 +4,11 @@
   angular.module('app.root')
     .controller('RootCtrl', RootCtrl);
 
-  RootCtrl.$inject = ['messageBoardService'];
+  RootCtrl.$inject = ['messageBoardService', 'user'];
 
-  function RootCtrl(messageBoardService) {
+  function RootCtrl(messageBoardService, user) {
     var ctrl = this;
+    ctrl.abawdOnly = user.abawdOnly;
     angular.extend(ctrl, {
       messageBoardService: messageBoardService,
       currentYear: new Date().getUTCFullYear()

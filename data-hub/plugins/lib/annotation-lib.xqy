@@ -196,10 +196,7 @@ declare function an:createAnnotation($uri as xs:string?, $identifiers, $params-a
 
 (: for backward compatibility :)
 declare function an:getAnnotation($params as map:map) {
-  let $_ := xdmp:log("==================getAnnotation==================")
-  let $_ := xdmp:log($params)
-
-  return an:getAnnotation("all" , $params)
+  an:getAnnotation("all" , $params)
 };
 
 declare function an:getAnnotation($annotationType as xs:string, $params as map:map) {

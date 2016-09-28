@@ -6,16 +6,17 @@
     .controller('SearchCtrl', SearchCtrl);
 
   SearchCtrl.$inject = ['$scope', '$location', 'userService', 'MLSearchFactory',
-                        'personHelper', 'caseHelper', 'abawdHelper', 'MLRest', 'searchHelper'];
+                        'personHelper', 'caseHelper', 'abawdHelper', 'MLRest', 'searchHelper', 'user'];
 
   // inherit from MLSearchController
   var superCtrl = MLSearchController.prototype;
   SearchCtrl.prototype = Object.create(superCtrl);
 
   function SearchCtrl($scope, $location, userService, searchFactory,
-		  personHelper, caseHelper, abawdHelper, MLRest, searchHelper) {
+		  personHelper, caseHelper, abawdHelper, MLRest, searchHelper, user) {
     var ctrl = this;
     ctrl.runMapSearch = false;
+    ctrl.abawdOnly = user.abawdOnly;
 
     var mlSearch = searchFactory.newContext({ queryOptions: 'all' });
 
@@ -81,7 +82,7 @@
           ctrl.searchParams.tabStatus.isAbawdActive = false;
           break;
       }
-   
+
       $scope.sort = {
         field: 'ws',
         order: 'd'
@@ -253,7 +254,7 @@
       field: 'ws',
       order: 'd'
     };
-        
+
     /*
     this.parseExtraURLParams = function() {
         var params = this.$location.search();
@@ -263,7 +264,7 @@
           ctrl.mode = params.mode;
           queryParamsChanged = true;
         }
-        
+
         if(params.pageLength && params.pageLength != ctrl.pageLength) {
           ctrl.pageLength = params.pageLength
           queryParamsChanged = true;
@@ -275,20 +276,20 @@
         }
         return queryParamsChanged;
     };
-    
+
     this.updateExtraURLParams = function() {
       var paramsToPost = {};
 
       if(ctrl.pageLength != 10) { paramsToPost.pageLength = ctrl.pageLength; }
       if(ctrl.mode != 'basic') { paramsToPost.mode = ctrl.mode; }
-      
+
       var params = _.chain( this.$location.search() )
         .omit( ['pageLength', 'mode'] )
         .merge( paramsToPost )
         .value();
 
       this.$location.search( params );
-        
+
       return this;
     };
     */

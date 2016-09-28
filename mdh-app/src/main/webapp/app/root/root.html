@@ -11,16 +11,24 @@
   <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
     <ul class="nav navbar-nav">
       <li><a href="/">Home</a></li>
-      <li><a href="/search">Search</a></li>
-      <li><a href="/create">Create</a></li>
-      <li><a href="/upload">Upload</a></li>
-      <li><a href="/migrate">Migrate</a></li>
+      <li ng-show="ctrl.abawdOnly"><a href="/search">ABAWD</a></li>
+      <li ng-show="!ctrl.abawdOnly"><a href="/search">Search</a></li>
+      <li ng-show="!ctrl.abawdOnly"><a href="/create">Create</a></li>
+      <li ng-show="!ctrl.abawdOnly"><a href="/upload">Upload</a></li>
+      <li ng-show="!ctrl.abawdOnly"><a href="/migrate">Migrate</a></li>
+
     </ul>
     <ml-user mode="inline"></ml-user>
   </div><!-- /.navbar-collapse -->
 </nav>
+<br>
+
+<div ng-show="ctrl.abawdOnly">
+  <ui-view></ui-view>
+</div>
+
 <!-- Add your site or application content here -->
-<div class=" content">
+<div ng-show="!ctrl.abawdOnly" class=" content">
   <div class="container">
     <message-board msg="ctrl.messageBoardService.message()"></message-board>
     <div ng-hide="ctrl.messageBoardService.message()">

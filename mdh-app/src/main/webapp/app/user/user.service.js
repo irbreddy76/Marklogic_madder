@@ -4,8 +4,8 @@
   angular.module('app.user')
     .factory('userService', UserService);
 
-  UserService.$inject = ['$rootScope', 'loginService'];
-  function UserService($rootScope, loginService) {
+  UserService.$inject = ['$rootScope', 'loginService', 'MLRest'];
+  function UserService($rootScope, loginService, MLRest) {
     var _currentUser = null;
 
     function currentUser() {
@@ -31,18 +31,23 @@
         name: data.username,
       };
 
-      if ( data.profile ) {
-        _currentUser.hasProfile = true;
-        _currentUser.fullname = data.profile.fullname;
+      MLRest.getDocument('/api/users/' + data.username + '.json')
+        .then(function(response) {
+          data.profile = response.data.user;
+          if ( data.profile ) {
+            _currentUser.hasProfile = true;
+            _currentUser.fullname = data.profile.fullname;
+            _currentUser.abawdOnly = data.profile.abawdOnly;
 
-        if ( _.isArray(data.profile.emails) ) {
-          _currentUser.emails = data.profile.emails;
-        }
-        else if (data.profile.emails) {
-          // wrap single value in array, needed for repeater
-          _currentUser.emails = [data.profile.emails];
-        }
-      }
+            if ( _.isArray(data.profile.emails) ) {
+              _currentUser.emails = data.profile.emails;
+            }
+            else if (data.profile.emails) {
+              // wrap single value in array, needed for repeater
+              _currentUser.emails = [data.profile.emails];
+            }
+          }
+        });
 
       return _currentUser;
     }
