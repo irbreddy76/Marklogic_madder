@@ -24,7 +24,7 @@
     .directive('searchResults', searchResults)
     .controller('ResultsController', ResultsController);
 
-  ResultsController.$inject = ['$scope', '$modal', 'MLRest', '$sce', '$http'];
+  ResultsController.$inject = ['$scope', '$modal', 'MLRest', '$sce', '$http', 'userService'];
 
   function searchResults() {
     return {
@@ -82,7 +82,7 @@
     });
   }
 
-  function ResultsController($scope, $modal, MLRest, $sce, $http) {
+  function ResultsController($scope, $modal, MLRest, $sce, $http, userService) {
 
     //TODO Read these from configurable data in MarkLogic (SKOS)
     $scope.languagePrefs = [
@@ -225,7 +225,7 @@
                 method: 'POST',
                 data: {
                   collections: ['ABAWDAction'],
-                  user: "Unknown",
+                  user: userService.currentUser().name,
                   identifiers: [
                     { name: 'ClientID', value: result.personId }
                   ],
@@ -309,6 +309,9 @@
 
               //TODO fix approval date, add fields for other notification types
               //TODO set fields conditional to the notification type
+              //TODO Had to update the ml-common-ng library to get this to work.
+              // should update to use $http service since Geert suggested to not
+              // use MLRest.
               MLRest.extension('notification', {
                 method: 'POST',
                 responseType: 'blob',
@@ -341,7 +344,7 @@
                 method: 'POST',
                 data: {
                   collections: ['ABAWDNotification'],
-                  user: "Unknown",
+                  user: userService.currentUser().name,
                   identifiers: [
                     { name: 'ClientID', value: result.personId }
                   ],
